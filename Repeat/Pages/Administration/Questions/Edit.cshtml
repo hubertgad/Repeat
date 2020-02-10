@@ -1,0 +1,75 @@
+﻿@page
+@model Repeat.Pages.Administration.Questions.EditModel
+@inject UserManager<IdentityUser> UserManager
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Pages/Administration/_Layout.cshtml";
+}
+
+<br />
+<h4>Edit question</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <div class="input-group mb-3">
+                    <select asp-for="Question.CategoryID" class="form-control"
+                            asp-items="ViewBag.CategoryID">
+                        <option value="" selected disabled>-- Select category --</option>
+                    </select>
+                </div>
+                <span asp-validation-for="Question.CategoryID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <label class="control-label">Question:</label>
+                        </div>
+                    </div>
+                    <textarea asp-for="Question.QuestionText" class="form-control"></textarea>
+                </div>
+                <span asp-validation-for="Question.QuestionText" class="text-danger"></span>
+            </div>
+            @for (int i = 0; i < Model.Question.Answers.Count(); i++)
+            {
+                <div class="form-group">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                <input asp-for="Question.Answers[i].IsTrue" class="control-label">
+                            </div>
+                        </div>
+                        <textarea asp-for="Question.Answers[i].AnswerText" placeholder="Answer @((char)('A' + i))" class="form-control" aria-label="Text input with checkbox"></textarea>
+                    </div>
+                    <span asp-validation-for="Question.Answers[i].AnswerText" class="text-danger"></span>
+                </div>
+            }
+            <div class="form-group">
+                <input asp-for="FileUpload.FormFile" class="form-control-file" />
+                <span asp-validation-for="Question.Picture" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Belongs to sets:</label>
+                <select asp-for="SelectedSets" class="form-control" asp-items="ViewBag.SetID"
+                        selected="selected" multiple="multiple">
+                </select>
+            </div>
+            <input type="hidden" asp-for="Question.OwnerID" value="@Model.Question.OwnerID" />
+            <input type="hidden" asp-for="Question.ID" value="@Model.Question.ID" />
+            <div class="form-group">
+                <input type="submit" value="Edit" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

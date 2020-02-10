@@ -1,0 +1,53 @@
+﻿@page
+@model Repeat.Pages.Administration.Questions.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Administration/_Layout.cshtml";
+}
+
+<br />
+<h4>List of questions</h4>
+<hr />
+
+<div class="">
+    <form method="post">
+        <div class="input-group mb-3">
+            <select asp-for="SelectedCategory" asp-items="ViewBag.CategoryID" class="form-control custom-control-inline">
+                <option value="" selected disabled>-- Select category --</option>
+            </select>
+            <select asp-for="SelectedSet" asp-items="ViewBag.SetID" class="form-control custom-control-inline">
+                <option value="" selected disabled>-- Select set --</option>
+            </select>
+            <div class="input-group-prepend">
+                <input type="submit" value="Submit" asp-page-handler="Category" class="btn btn-primary" />
+            </div>
+        </div>
+    </form>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Questions[0].QuestionText)
+            </th>
+            <th align="right"></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Questions) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.QuestionText)
+            </td>
+            <td align="right">
+                <nobr>
+                    <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
+                    <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
+                </nobr>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

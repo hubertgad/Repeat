@@ -1,0 +1,38 @@
+﻿@page
+@model Repeat.Pages.Administration.Categories.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Pages/Administration/_Layout.cshtml";
+}
+
+<br />
+<h4>Edit category</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Category.ID" />
+            <div class="form-group">
+                <label asp-for="Category.Name" class="control-label"></label>
+                <input asp-for="Category.Name" class="form-control" />
+                <span asp-validation-for="Category.Name" class="text-danger"></span>
+            </div>
+            <div>
+                <input type="hidden" asp-for="Category.OwnerID" value="@Model.Category.OwnerID" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

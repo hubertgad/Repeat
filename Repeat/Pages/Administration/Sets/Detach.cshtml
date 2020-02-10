@@ -1,0 +1,21 @@
+﻿@page
+@model Repeat.DetachModel
+
+@{
+    ViewData["Title"] = "Detach";
+    Layout = "~/Pages/Administration/_Layout.cshtml";
+}
+
+<br />
+<h4>Are you sure you want to remove this question from set?</h4>
+<div>
+    <hr />    
+    <form method="post">
+        <div class="text-center">
+            <input type="hidden" asp-for="QuestionSet.QuestionID" />
+            <input type="hidden" asp-for="QuestionSet.SetID" />
+            <input type="submit" value="Delete" class="btn btn-danger" />
+            <a class="btn btn-dark" asp-page="./Edit" asp-route-id="@Model.QuestionSet.SetID">Cancel</a>
+        </div>
+    </form>
+</div>

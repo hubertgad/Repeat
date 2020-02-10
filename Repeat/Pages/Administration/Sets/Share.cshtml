@@ -1,0 +1,65 @@
+﻿@page
+@model Repeat.ShareModel
+
+@{
+    ViewData["Title"] = "Share";
+    Layout = "~/Pages/Administration/_Layout.cshtml";
+}
+
+<br />
+<h4>Share set</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label>Set</label>
+                <select asp-for="SetUser.SetID" class ="form-control d-inline" asp-items="ViewBag.SetID"></select>
+            </div>
+            <div class="form-group">
+                <label>User</label>
+                <select asp-for="SetUser.UserID" class ="form-control" asp-items="ViewBag.UserID"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Share" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<br />
+<h5>Shares:</h5>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <table>
+            <tbody>
+                @foreach (var user in Model.SetUsers)
+                {
+                    <tr>
+                        <td class="col-md-4">
+                            @user.Set.Name
+                        </td>
+                        <td class="col-md-4">
+                            @user.User.UserName
+                        </td>
+                        <td class="col-md-4">
+                            <a class="btn btn-danger btn-sm">Remove</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<br />
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
