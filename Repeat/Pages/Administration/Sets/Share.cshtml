@@ -34,30 +34,49 @@
 <div class="row">
     <div class="col-md-12">
         <table>
+            <thead>
+                <tr>
+                    <th>
+                        <label class="font-weight-bold col-md-4">Set</label>
+                    </th>
+                    <th>
+                        <label class="font-weight-bold col-md-4">User</label>
+                    </th>
+                    <th>
+                        <label class="font-weight-bold col-md-4">Edit</label>
+                    </th>
+                </tr>
+            </thead>
             <tbody>
-                @foreach (var user in Model.SetUsers)
+                @foreach (var set in Model.Sets)
                 {
-                    <tr>
-                        <td class="col-md-4">
-                            @user.Set.Name
-                        </td>
-                        <td class="col-md-4">
-                            @user.User.UserName
-                        </td>
-                        <td class="col-md-4">
-                            <a class="btn btn-danger btn-sm">Remove</a>
-                        </td>
-                    </tr>
+                    @foreach (var user in set.SetUsers)
+                    {
+                        <tr>
+                            <td class="col-md-4">
+                                @user.Set.Name
+                            </td>
+                            <td class="col-md-4">
+                                @user.User.UserName
+                            </td>
+                            <td class="col-md-4">
+                                <form method="post" asp-page-handler="Unshare">
+                                    <input type="hidden" asp-for="SetUser.UserID" value="@user.UserID" />
+                                    <input type="hidden" asp-for="SetUser.SetID" value="@set.ID" />
+                                    <input type="submit" value="Unshare" class="btn btn-danger btn-sm" />
+                                </form>
+                            </td>
+                        </tr>
+                    }
                 }
             </tbody>
         </table>
     </div>
 </div>
 
-
 <br />
 <div>
-    <a asp-page="Index">Back to List</a>
+    <a asp-page="Index" class="btn btn-dark">Back to List</a>
 </div>
 
 @section Scripts {

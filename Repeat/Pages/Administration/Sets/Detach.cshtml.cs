@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,7 @@ namespace Repeat
 
         public async Task<IActionResult> OnGetAsync(int? sid, int? qid)
         {
-            if (sid == null || qid == null)
+            if (sid == null || qid == null || !await CheckOwnerAsync(sid))
             {
                 return NotFound();
             }
@@ -44,14 +45,13 @@ namespace Repeat
 
         public async Task<IActionResult> OnPostAsync(int? sid, int? qid)
         {
-            if (sid == null || qid == null)
+            if (sid == null || qid == null || !await CheckOwnerAsync(sid))
             {
                 return NotFound();
             }
 
             QuestionSet = await _context.QuestionSets
-                .FirstOrDefaultAsync(q => q.QuestionID == qid
-                && q.SetID == sid);
+                .FirstOrDefaultAsync(q => q.QuestionID == qid && q.SetID == sid);
 
             if (QuestionSet != null)
             {
@@ -60,6 +60,18 @@ namespace Repeat
             }
 
             return RedirectToPage("./Edit", new { id = sid });
+        }
+
+        private async Task<string> GetUserIDAsync() => (await _userManager.GetUserAsync(User)).Id;
+        private async Task<bool> CheckOwnerAsync(int? sid)
+        {
+            string currentUserID = await GetUserIDAsync();
+            string ownerID = await _context
+                .Sets
+                .Where(p => p.ID == sid)
+                .Select(q => q.OwnerID)
+                .FirstOrDefaultAsync();
+            return currentUserID == ownerID;
         }
     }
 }

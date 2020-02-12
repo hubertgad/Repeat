@@ -77,8 +77,9 @@
 <div>
     @{ if (Model.Question.OwnerID == Model.CurrentUserID)
         {
-    <a asp-page="./Edit" asp-route-id="@Model.Question.ID">Edit</a> <a>|</a>
+            <a asp-page="./Edit" asp-route-id="@Model.Question.ID"
+               class="btn btn-warning">Edit</a> <a>|</a>
         }
-     }
-    <a asp-page="./Index">Back to List</a>
+    }
+    <a asp-page="Index" class="btn btn-dark">Back to List</a>
 </div>

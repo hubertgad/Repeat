@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,6 +12,7 @@ using Repeat.Models;
 
 namespace Repeat
 {
+    [Authorize]
     public class ShareModel : PageModel
     {
         public ShareModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
@@ -24,20 +25,21 @@ namespace Repeat
         private readonly UserManager<IdentityUser> _userManager;
         [BindProperty]
         public SetUser SetUser { get; set; }
-        public List<SetUser> SetUsers { get; set; }
-        public string CurrentUserID { get; set; }
+        [BindProperty]
+        public List<Set> Sets { get; set; }
+        private string currentUserID { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
             ViewData["SetID"] = new SelectList(_context.Sets, "ID", "Name");
             ViewData["UserID"] = new SelectList(_context.Users, "Id", "UserName");
 
-            CurrentUserID = await GetUserIDAsync();
-            SetUsers = await _context
-                .SetUsers
-                .Where(q => q.UserID == CurrentUserID)
+            currentUserID = await GetUserIDAsync();
+            Sets = await _context
+                .Sets
+                .Include(q => q.SetUsers)
+                .Where(q => q.OwnerID == currentUserID)
                 .ToListAsync();
-
             return Page();
         }
 
@@ -48,16 +50,38 @@ namespace Repeat
                 return Page();
             }
 
-            _context.SetUsers.Add(SetUser);
-            await _context.SaveChangesAsync();
+            if (!_context.SetUsers.Any(q => q == SetUser))
+            {
+                _context.SetUsers.Add(SetUser);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                return RedirectToPage();
+            }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage();
         }
-
-        private async Task<string> GetUserIDAsync()
+        public async Task<IActionResult> OnPostUnshareAsync()
         {
-            var user = await _userManager.GetUserAsync(User);
-            return user.Id;
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
+            if (_context.SetUsers.Any(q => q == SetUser))
+            {
+                _context.SetUsers.Remove(SetUser);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                return RedirectToPage();
+            }
+
+            return RedirectToPage();
         }
+
+        private async Task<string> GetUserIDAsync() => (await _userManager.GetUserAsync(User)).Id;
     }
 }
