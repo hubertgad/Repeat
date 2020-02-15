@@ -42,7 +42,6 @@ namespace Repeat.Data.Migrations
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     QuestionText = table.Column<string>(maxLength: 1000, nullable: false),
-                    Picture = table.Column<byte[]>(nullable: true),
                     CategoryID = table.Column<int>(nullable: false),
                     OwnerID = table.Column<string>(nullable: false)
                 },
@@ -54,6 +53,30 @@ namespace Repeat.Data.Migrations
                         column: x => x.CategoryID,
                         principalTable: "Categories",
                         principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SetUsers",
+                columns: table => new
+                {
+                    SetID = table.Column<int>(nullable: false),
+                    UserID = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SetUsers", x => new { x.SetID, x.UserID });
+                    table.ForeignKey(
+                        name: "FK_SetUsers_Sets_SetID",
+                        column: x => x.SetID,
+                        principalTable: "Sets",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SetUsers_AspNetUsers_UserID",
+                        column: x => x.UserID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -73,6 +96,24 @@ namespace Repeat.Data.Migrations
                     table.ForeignKey(
                         name: "FK_Answers_Questions_QuestionID",
                         column: x => x.QuestionID,
+                        principalTable: "Questions",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Pictures",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false),
+                    Data = table.Column<byte[]>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Pictures", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Pictures_Questions_ID",
+                        column: x => x.ID,
                         principalTable: "Questions",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
@@ -116,6 +157,11 @@ namespace Repeat.Data.Migrations
                 name: "IX_QuestionSets_SetID",
                 table: "QuestionSets",
                 column: "SetID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SetUsers_UserID",
+                table: "SetUsers",
+                column: "UserID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -124,7 +170,13 @@ namespace Repeat.Data.Migrations
                 name: "Answers");
 
             migrationBuilder.DropTable(
+                name: "Pictures");
+
+            migrationBuilder.DropTable(
                 name: "QuestionSets");
+
+            migrationBuilder.DropTable(
+                name: "SetUsers");
 
             migrationBuilder.DropTable(
                 name: "Questions");

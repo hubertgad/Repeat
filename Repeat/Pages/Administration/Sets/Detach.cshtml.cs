@@ -1,7 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -10,31 +10,28 @@ using Repeat.Models;
 
 namespace Repeat
 {
-    [Authorize]
     public class DetachModel : PageModel
     {
-        public DetachModel(Repeat.Data.ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        private readonly Repeat.Data.ApplicationDbContext _context;
+
+        public DetachModel(Repeat.Data.ApplicationDbContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
-
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
 
         [BindProperty]
         public QuestionSet QuestionSet { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? sid, int? qid)
+        public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (sid == null || qid == null || !await CheckOwnerAsync(sid))
+            if (id == null)
             {
                 return NotFound();
             }
 
-            QuestionSet = await _context
-                .QuestionSets
-                .FirstOrDefaultAsync(m => m.QuestionID == qid && m.SetID == sid);
+            QuestionSet = await _context.QuestionSets
+                .Include(q => q.Question)
+                .Include(q => q.Set).FirstOrDefaultAsync(m => m.QuestionID == id);
 
             if (QuestionSet == null)
             {
@@ -43,15 +40,14 @@ namespace Repeat
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? sid, int? qid)
+        public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (sid == null || qid == null || !await CheckOwnerAsync(sid))
+            if (id == null)
             {
                 return NotFound();
             }
 
-            QuestionSet = await _context.QuestionSets
-                .FirstOrDefaultAsync(q => q.QuestionID == qid && q.SetID == sid);
+            QuestionSet = await _context.QuestionSets.FindAsync(id);
 
             if (QuestionSet != null)
             {
@@ -59,19 +55,7 @@ namespace Repeat
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToPage("./Edit", new { id = sid });
-        }
-
-        private async Task<string> GetUserIDAsync() => (await _userManager.GetUserAsync(User)).Id;
-        private async Task<bool> CheckOwnerAsync(int? sid)
-        {
-            string currentUserID = await GetUserIDAsync();
-            string ownerID = await _context
-                .Sets
-                .Where(p => p.ID == sid)
-                .Select(q => q.OwnerID)
-                .FirstOrDefaultAsync();
-            return currentUserID == ownerID;
+            return RedirectToPage("./Index");
         }
     }
 }

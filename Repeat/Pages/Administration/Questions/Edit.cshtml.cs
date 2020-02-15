@@ -43,6 +43,7 @@ namespace Repeat.Pages.Administration.Questions
             Question = await _context.Questions
                 .Include(o => o.Answers)
                 .Include(o => o.QuestionSets)
+                .Include(p => p.Picture)
                 .Where(o => o.OwnerID == CurrentUserID)
                 .FirstOrDefaultAsync(m => m.ID == id);
             BindDataToView();
@@ -65,7 +66,7 @@ namespace Repeat.Pages.Administration.Questions
                 await FileUpload.FormFile.CopyToAsync(memoryStream);
                 if (memoryStream.Length < 2097152)
                 {
-                    Question.Picture = memoryStream.ToArray();
+                    Question.Picture.Data = memoryStream.ToArray();
                 }
                 else
                 {

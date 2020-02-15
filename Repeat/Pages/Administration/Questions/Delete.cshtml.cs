@@ -40,6 +40,7 @@ namespace Repeat.Pages.Administration.Questions
                 .Where(m => m.OwnerID == CurrentUserID)
                 .Include(o => o.Category)
                 .Include(n => n.Answers)
+                .Include(p => p.Picture)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (Question == null)
             {

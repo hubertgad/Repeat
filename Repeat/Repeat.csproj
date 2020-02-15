@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <UserSecretsId>aspnet-Repeat-E965BE26-2D74-4A20-BC99-30E3D7BF2CAD</UserSecretsId>
+    <UserSecretsId>aspnet-Repeat-284E4A49-C636-4C7A-A75D-D657F2740F6C</UserSecretsId>
   </PropertyGroup>
 
 
@@ -13,8 +13,12 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="Pages\Administration\Categories\" />
   </ItemGroup>
 
 </Project>

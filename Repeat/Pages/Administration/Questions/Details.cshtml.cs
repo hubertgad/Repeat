@@ -37,8 +37,9 @@ namespace Repeat.Pages.Administration.Questions
             }
             this.CurrentUserID = await GetUserIDAsync();
             this.Question = await _context.Questions
-                .Include(o => o.Category)
-                .Include(n => n.Answers)
+                .Include(c => c.Category)
+                .Include(a => a.Answers)
+                .Include(p => p.Picture)
                 .FirstOrDefaultAsync(m => m.ID == id);
             Sets = new List<Set>(_context.Sets.Where(q => q.QuestionSets.Any(p => p.QuestionID == this.Question.ID)));
             if (this.Question == null)

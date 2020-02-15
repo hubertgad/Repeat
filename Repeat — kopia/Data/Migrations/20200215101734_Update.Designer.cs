@@ -10,8 +10,8 @@ using Repeat.Data;
 namespace Repeat.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200209121542_Update2")]
-    partial class Update2
+    [Migration("20200215101734_Update")]
+    partial class Update
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -267,6 +267,19 @@ namespace Repeat.Data.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("Repeat.Models.Picture", b =>
+                {
+                    b.Property<int>("ID")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("Data")
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Pictures");
+                });
+
             modelBuilder.Entity("Repeat.Models.Question", b =>
                 {
                     b.Property<int>("ID")
@@ -280,9 +293,6 @@ namespace Repeat.Data.Migrations
                     b.Property<string>("OwnerID")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("Picture")
-                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("QuestionText")
                         .IsRequired()
@@ -403,6 +413,15 @@ namespace Repeat.Data.Migrations
                     b.HasOne("Repeat.Models.Question", "Question")
                         .WithMany("Answers")
                         .HasForeignKey("QuestionID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Repeat.Models.Picture", b =>
+                {
+                    b.HasOne("Repeat.Models.Question", "Question")
+                        .WithOne("Picture")
+                        .HasForeignKey("Repeat.Models.Picture", "ID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
