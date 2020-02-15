@@ -58,6 +58,17 @@
                         selected="selected" multiple="multiple">
                 </select>
             </div>
+            <div class="form-group">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <label class="control-label">References:</label>
+                        </div>
+                    </div>
+                    <textarea asp-for="Question.Reference" class="form-control"></textarea>
+                </div>
+                <span asp-validation-for="Question.Reference" class="text-danger"></span>
+            </div>
             <input type="hidden" asp-for="Question.OwnerID" value="@Model.Question.OwnerID" />
             <input type="hidden" asp-for="Question.ID" value="@Model.Question.ID" />
             <div class="form-group">

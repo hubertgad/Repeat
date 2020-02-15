@@ -1,0 +1,27 @@
+﻿@page
+@model Repeat.Pages.Test.RunModel
+
+@{
+    ViewData["Title"] = "Run";
+    Layout = "~/Pages/Test/_Layout.cshtml";
+}
+
+
+<div class="mt-md-3 mb-md-3">
+    <h4>Question 1:</h4>
+     @Html.DisplayFor(model => model.Questions[0].QuestionText)
+</div>
+<div>
+    <form>
+        <dl class="justify-content-md-center">
+            @foreach (var answer in Model.Questions[0].Answers)
+            {
+                <dt class="d-inline"><input type="checkbox" class="custom-checkbox" /></dt>
+                <dd class="d-inline">
+                    @answer.AnswerText
+                    <br />
+                </dd>
+            }
+        </dl>
+    </form>
+</div>

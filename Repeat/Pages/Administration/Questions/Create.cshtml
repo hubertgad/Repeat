@@ -55,7 +55,18 @@
                 <label class="control-label">Belongs to sets:</label>
                 <select asp-for="SelectedSets" class="form-control" asp-items="ViewBag.SetID" multiple="multiple"></select>
             </div>
-            <input type="hidden" asp-for="Question.OwnerID" value="@Model.Question.OwnerID"/>
+            <div class="form-group">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <label class="control-label">References:</label>
+                        </div>
+                    </div>
+                    <textarea asp-for="Question.Reference" class="form-control"></textarea>
+                </div>
+                <span asp-validation-for="Question.Reference" class="text-danger"></span>
+            </div>
+            <input type="hidden" asp-for="Question.OwnerID" value="@Model.Question.OwnerID" />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

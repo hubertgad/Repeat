@@ -40,10 +40,6 @@ namespace Repeat.Pages.Administration.Categories
             await _context.SaveChangesAsync();
             return RedirectToPage("./Index");
         }
-        private async Task<string> GetUserIDAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            return user.Id;
-        }
+        private async Task<string> GetUserIDAsync() => (await _userManager.GetUserAsync(User)).Id;
     }
 }

@@ -7,20 +7,25 @@ a.navbar-brand {
   word-break: break-all;
 }
 
+.multiline {
+    white-space: pre-wrap;
+}
 
 /* My custom buttons */
 
 .btn-my {
     color: #fff;
     background-color: #1861ac;
-    border-color: #1861ac;
     margin-bottom: 1px;
+    border: 0px;
 }
     .btn-my:hover {
-        color: black;
-        background-color: ActiveBorder;
+        color: #fff;
+        background-color: #ac6c18;
         border-color: #1861ac;
         border-radius: 0px;
+        border: 0px;
+        margin-bottom: 1px;
     }
 
 .btn {

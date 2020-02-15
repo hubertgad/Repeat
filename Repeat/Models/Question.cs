@@ -16,6 +16,7 @@ namespace Repeat.Models
         public int CategoryID { get; set; }
         [Required]
         public string OwnerID { get; set; }
+        public string Reference { get; set; }
         public Picture Picture { get; set; }
         public Category Category { get; set; }
         public List<Answer> Answers { get; set; }

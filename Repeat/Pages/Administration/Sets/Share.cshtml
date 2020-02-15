@@ -50,7 +50,7 @@
             <tbody>
                 @foreach (var set in Model.Sets)
                 {
-                    @foreach (var user in set.SetUsers)
+                    @foreach (var user in set.SetUsers.Where(q => q.UserID != Model.CurrentUserID))
                     {
                         <tr>
                             <td class="col-md-4">

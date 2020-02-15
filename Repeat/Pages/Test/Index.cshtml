@@ -1,0 +1,24 @@
+﻿@page
+@model Repeat.Pages.Test.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Test/_Layout.cshtml";
+}
+
+<h4>Select your test:</h4>
+
+<table class="table">
+    <tbody>
+@foreach (var item in Model.SetUser) {
+        <tr>
+            <td class="col-md-10">
+                @Html.DisplayFor(modelItem => item.Set.Name)
+            </td>
+            <td class="col-md-2">
+                <a class="btn btn-my" asp-page="./Run" asp-route-id="@item.SetID">RUN</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

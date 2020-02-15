@@ -27,18 +27,17 @@ namespace Repeat
         public SetUser SetUser { get; set; }
         [BindProperty]
         public List<Set> Sets { get; set; }
-        private string currentUserID { get; set; }
+        public string CurrentUserID { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
             ViewData["SetID"] = new SelectList(_context.Sets, "ID", "Name");
-            ViewData["UserID"] = new SelectList(_context.Users, "Id", "UserName");
-
-            currentUserID = await GetUserIDAsync();
+            ViewData["UserID"] = new SelectList(_context.Users.Where(q => q.Id != this.CurrentUserID), "Id", "UserName");
+            CurrentUserID = await GetUserIDAsync();
             Sets = await _context
                 .Sets
                 .Include(q => q.SetUsers)
-                .Where(q => q.OwnerID == currentUserID)
+                .Where(q => q.OwnerID == CurrentUserID)
                 .ToListAsync();
             return Page();
         }
@@ -83,5 +82,6 @@ namespace Repeat
         }
 
         private async Task<string> GetUserIDAsync() => (await _userManager.GetUserAsync(User)).Id;
+
     }
 }
