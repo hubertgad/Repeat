@@ -42,7 +42,7 @@ namespace Repeat.Pages.Administration.Questions
                 .Include(n => n.Answers)
                 .Include(p => p.Picture)
                 .FirstOrDefaultAsync(m => m.ID == id);
-            if (Question == null)
+            if (Question == null || Question.OwnerID != CurrentUserID)
             {
                 return NotFound();
             }

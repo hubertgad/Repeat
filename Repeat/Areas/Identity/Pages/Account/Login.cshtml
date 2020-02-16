@@ -6,7 +6,7 @@
 }
 
 <div class="row mt-md-5">
-    <div class="col-md-4"></div>
+    <div class="col-md-2"></div>
     <div class="col-md-4">
         <section>
             <form id="account" method="post">
@@ -42,6 +42,17 @@
                         <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
                     </p>
                 </div>
+            </form>
+        </section>
+    </div>
+    <div class="col-md-4">
+        <section>
+            <h4>Log in using demo account.</h4>
+            <hr />
+            <form id="demo" method="post" class="my-center" asp-page-handler="Demo">
+                <input type="hidden" asp-for="Input.Email" value="demo@hubertgad.net" class="form-control" />
+                <input type="hidden" asp-for="Input.Password" value="Demo123$" class="form-control" />
+                <button type="submit" class="btn btn-success btn-lg mt-lg-5">USE DEMO ACCOUNT</button>
             </form>
         </section>
     </div>

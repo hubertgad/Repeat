@@ -112,13 +112,9 @@ namespace Repeat.Pages.Administration.Questions
             IEnumerable<int> selectedSetsValues = _context.Sets
                 .Where(q => q.QuestionSets.Any(p => p.QuestionID == this.Question.ID))
                 .Select(q => q.ID);
-            ViewData["CategoryID"] = new SelectList(_context.Categories, "ID", "Name");
-            ViewData["SetID"] = new MultiSelectList(_context.Sets, "ID", "Name", selectedSetsValues);
+            ViewData["CategoryID"] = new SelectList(_context.Categories.Where(q => q.OwnerID == CurrentUserID), "ID", "Name");
+            ViewData["SetID"] = new MultiSelectList(_context.Sets.Where(q => q.OwnerID == CurrentUserID), "ID", "Name", selectedSetsValues);
         }
-        private async Task<string> GetUserIDAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            return user.Id;
-        }
+        private async Task<string> GetUserIDAsync() => (await _userManager.GetUserAsync(User)).Id;
     }
 }

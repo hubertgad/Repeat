@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -32,9 +33,11 @@ namespace Repeat.Pages.Administration.Questions
         public int[] SelectedSets { get; set; }
         [BindProperty]
         public int AnswersCount { get; set; }
+        public string CurrentUserID { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? answers)
         {
+            CurrentUserID = await GetUserIDAsync();
             if (answers == null)
             {
                 AnswersCount = 4;
@@ -59,7 +62,7 @@ namespace Repeat.Pages.Administration.Questions
             {
                 this.Question.Answers.Add(new Answer());
             }
-            this.Question.OwnerID = await GetUserIDAsync();
+            this.Question.OwnerID = CurrentUserID;
 
             return Page();
         }
@@ -123,14 +126,10 @@ namespace Repeat.Pages.Administration.Questions
 
         private void BindDataToView()
         {
-            ViewData["CategoryID"] = new SelectList(_context.Categories, "ID", "Name");
-            ViewData["SetID"] = new SelectList(_context.Sets, "ID", "Name");
+            ViewData["CategoryID"] = new SelectList(_context.Categories.Where(q => q.OwnerID == CurrentUserID), "ID", "Name");
+            ViewData["SetID"] = new SelectList(_context.Sets.Where(q => q.OwnerID == CurrentUserID), "ID", "Name");
         }
 
-        private async Task<string> GetUserIDAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            return user.Id;
-        }
+        private async Task<string> GetUserIDAsync() => (await _userManager.GetUserAsync(User)).Id;
     }
 }

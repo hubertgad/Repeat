@@ -29,14 +29,15 @@ namespace Repeat.Pages.Administration.Questions
         public int SelectedCategory { get; set; }
         [BindProperty]
         public int SelectedSet { get; set; }
+        public string CurrentUserID { get; set; }
 
         public async Task OnGetAsync()
         {
+            CurrentUserID = await GetUserIDAsync();
             BindDataToView();
-            var currentUserID = await GetUserIDAsync();
             Questions = await _context
                 .Questions
-                .Where(q => q.OwnerID == currentUserID)
+                .Where(q => q.OwnerID == CurrentUserID)
                 .ToListAsync();
         }
         
@@ -54,8 +55,8 @@ namespace Repeat.Pages.Administration.Questions
         }
         private void BindDataToView()
         {
-            ViewData["CategoryID"] = new SelectList(_context.Categories, "ID", "Name");
-            ViewData["SetID"] = new SelectList(_context.Sets, "ID", "Name");
+            ViewData["CategoryID"] = new SelectList(_context.Categories.Where(q => q.OwnerID == CurrentUserID), "ID", "Name");
+            ViewData["SetID"] = new SelectList(_context.Sets.Where(q => q.OwnerID == CurrentUserID), "ID", "Name");
         }
         private async Task<List<Question>> FilterQuestionsAsync()
         {
@@ -81,10 +82,6 @@ namespace Repeat.Pages.Administration.Questions
                     .ToListAsync();
             }
         }
-        private async Task<string> GetUserIDAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            return user.Id;
-        }
+        private async Task<string> GetUserIDAsync() => (await _userManager.GetUserAsync(User)).Id;
     }
 }

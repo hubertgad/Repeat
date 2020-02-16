@@ -31,7 +31,7 @@ namespace Repeat
 
         public async Task<IActionResult> OnGetAsync()
         {
-            ViewData["SetID"] = new SelectList(_context.Sets, "ID", "Name");
+            ViewData["SetID"] = new SelectList(_context.Sets.Where(q => q.OwnerID == this.CurrentUserID), "ID", "Name");
             ViewData["UserID"] = new SelectList(_context.Users.Where(q => q.Id != this.CurrentUserID), "Id", "UserName");
             CurrentUserID = await GetUserIDAsync();
             Sets = await _context
@@ -82,6 +82,5 @@ namespace Repeat
         }
 
         private async Task<string> GetUserIDAsync() => (await _userManager.GetUserAsync(User)).Id;
-
     }
 }
