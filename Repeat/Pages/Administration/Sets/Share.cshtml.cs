@@ -75,7 +75,7 @@ namespace Repeat
             }
             else
             {
-                return RedirectToPage();
+                return NotFound();
             }
 
             return RedirectToPage();

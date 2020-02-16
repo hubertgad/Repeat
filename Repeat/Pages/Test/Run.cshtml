@@ -2,26 +2,103 @@
 @model Repeat.Pages.Test.RunModel
 
 @{
-    ViewData["Title"] = "Run";
+    ViewData["Title"] = "Test";
     Layout = "~/Pages/Test/_Layout.cshtml";
 }
 
-
-<div class="mt-md-3 mb-md-3">
-    <h4>Question 1:</h4>
-     @Html.DisplayFor(model => model.Questions[0].QuestionText)
-</div>
-<div>
-    <form>
-        <dl class="justify-content-md-center">
-            @foreach (var answer in Model.Questions[0].Answers)
-            {
-                <dt class="d-inline"><input type="checkbox" class="custom-checkbox" /></dt>
-                <dd class="d-inline">
-                    @answer.AnswerText
-                    <br />
-                </dd>
+<script>
+    var started = false;
+    function show(questionId) {
+        if (started) {
+            var question = document.getElementById(questionId);
+            if (!question) {
+                alert("no such element");
+                return;
             }
-        </dl>
-    </form>
+            var pages = document.getElementsByClassName('page');
+            for (var i = 0; i < pages.length; i++) {
+                pages[i].style.display = 'none';
+            }
+            question.style.display = 'block';
+        }
+    }
+    function start(startButton)
+    {
+        document.getElementById(startButton).style.display = 'none';
+        started = true;
+    }
+</script>
+
+<div class="row">
+    <div class="col-md-2">
+        <ul class="nav nav-pills flex-column">
+            @for (int i = 0; i < Model.Questions.Count(); i++)
+            {
+                var name = "Page" + (i);
+            <li class="nav-item">
+            <button class="nav-link btn btn-my btn-sm" onclick="show('@name');">Question No. @(i + 1)</button>
+            </li>
+            }
+         </ul>
+    </div>
+    <div class="col-md-10">
+        <div class="my-center" id="startButton" style="display:normal" runat="server">
+            <button class="btn btn-success btn-lg my-center" 
+                    onclick="start('startButton');show('Page0');">CLICK ME TO BEGIN</button>
+        </div>
+        @for (int i = 0; i < Model.Questions.Count(); i++)
+        {
+            var name = "Page" + i;
+            <div id="@{@name}" class="page" style="display:none" runat="server">
+                <h4>Question @(i + 1):</h4>
+                <hr />
+                <a class="question">
+                    @Html.DisplayFor(model => model.Questions[i].QuestionText)
+                </a>
+                <p class="picture">
+                    @if (@Model.Questions[i].Picture != null)
+                    {
+                        var base64 = Convert.ToBase64String(Model.Questions[i].Picture.Data);
+                        var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+                        <img src="@imgSrc" />
+                    }
+                </p>
+
+                <dl class="answers">
+                    @foreach (var answer in Model.Questions[i].Answers)
+                    {
+                        <dt class="d-inline">
+                            <input type="checkbox" class="answer-checkbox" />
+                        </dt>
+                        <dd class="d-inline">
+                            @answer.AnswerText
+                            <br />
+                        </dd>
+                    }
+                </dl>
+                <div class="btn-group btn-block">
+                    @{
+                        var previous = "Page" + (i - 1);
+                        var next = "Page" + (i + 1);
+                    }
+                    @if (i > 0)
+                    {
+                        <button class="nav-link btn btn-my m-md-3" onclick="show('@previous');">Previous</button>
+                    }
+                    else
+                    {
+                        <button disabled class="nav-link btn btn-my m-md-3" onclick="show('@previous');">Previous</button>
+                    }
+                    @if (i < Model.Questions.Count() - 1)
+                    {
+                        <button class="nav-link btn btn-my m-md-3" onclick="show('@next');">Next</button>
+                    }
+                    else
+                    {
+                        <button disabled class="nav-link btn btn-my m-md-3" onclick="show('@next');">Next</button>
+                    }
+                </div>
+            </div>
+        }
+    </div>
 </div>

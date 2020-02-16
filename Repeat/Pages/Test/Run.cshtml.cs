@@ -35,8 +35,8 @@ namespace Repeat.Pages.Test
 
             Questions = await _context
                 .Questions
-                .Include(q => q.QuestionSets)
                 .Include(a => a.Answers)
+                .Include(p => p.Picture)
                 .Where(m => m.QuestionSets.FirstOrDefault().SetID == id)
                 .ToListAsync();
 
@@ -47,10 +47,8 @@ namespace Repeat.Pages.Test
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public IActionResult OnPost()
         {
-            var a = 0;
-
             return RedirectToPage();
         }
 

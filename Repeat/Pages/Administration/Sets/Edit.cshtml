@@ -12,7 +12,8 @@
     <div class="col-md-12">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Set.ID" />
+            <input type="hidden" asp-for="Set.ID" value="@Model.Set.ID" />
+            <input type="hidden" asp-for="Set.OwnerID" value="@Model.CurrentUserID" />
             <div class="form-group">
                 <label asp-for="Set.Name" class="control-label"></label>
                 <input asp-for="Set.Name" class="form-control" />

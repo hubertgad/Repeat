@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Caching.Memory;
 using Repeat.Data;
 using Repeat.Models;
 
@@ -14,40 +15,64 @@ namespace Repeat.Pages.Administration.Questions
     [Authorize]
     public class CreateModel : PageModel
     {
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
+
         public CreateModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;
         }
 
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
         [BindProperty]
         public Question Question { get; set; }
         [BindProperty]
         public FileUpload FileUpload { get; set; }
         [BindProperty]
         public int[] SelectedSets { get; set; }
+        [BindProperty]
+        public int AnswersCount { get; set; }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(int? answers)
         {
+            if (answers == null)
+            {
+                AnswersCount = 4;
+            }
+            else if (answers >= 10)
+            {
+                AnswersCount = 10;
+            }
+            else if (answers <= 2)
+            {
+                AnswersCount = 2;
+            }
+            else
+            {
+                AnswersCount = (int)answers;
+            }
+            
             BindDataToView();
+            
             this.Question = new Question { Answers = new List<Answer>() };
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < AnswersCount; i++)
             {
                 this.Question.Answers.Add(new Answer());
             }
             this.Question.OwnerID = await GetUserIDAsync();
+
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
             BindDataToView();
+            
             if (!ModelState.IsValid)
             {
                 return Page();
             }
+            
             if (FileUpload.FormFile != null && FileUpload.FormFile.Length > 0)
             {
                 using var memoryStream = new MemoryStream();
@@ -64,7 +89,14 @@ namespace Repeat.Pages.Administration.Questions
             }
 
             _context.Questions.Add(this.Question);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return NotFound();
+            }
 
             foreach (var item in SelectedSets)
             {
@@ -74,15 +106,27 @@ namespace Repeat.Pages.Administration.Questions
                     SetID = item
                 });
             }
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return NotFound();
+            }
 
             return RedirectToPage("./Index");
         }
+
+        public IActionResult OnPostMore() => RedirectToPage("./Create", new { answers = ++AnswersCount });
+        public IActionResult OnPostLess() => RedirectToPage("./Create", new { answers = --AnswersCount });        
+
         private void BindDataToView()
         {
             ViewData["CategoryID"] = new SelectList(_context.Categories, "ID", "Name");
             ViewData["SetID"] = new SelectList(_context.Sets, "ID", "Name");
         }
+
         private async Task<string> GetUserIDAsync()
         {
             var user = await _userManager.GetUserAsync(User);

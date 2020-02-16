@@ -11,6 +11,30 @@
 <hr />
 <div class="row">
     <div class="col-md-12">
+        <div class="mb-md-2 btn-group">
+            <form method="post" asp-page-handler="Less">
+                <input type="hidden" asp-for="AnswersCount" value="@Model.Question.Answers.Count" />
+                @if(@Model.AnswersCount <= 2)
+                {
+                <button disabled class="btn btn-warning mr-md-2 btn-sm">Remove Answer @((char)('A' + @Model.Question.Answers.Count - 1))</button>
+                }
+                else
+                {
+                <button class="btn btn-warning mr-md-2 btn-sm">Remove Answer @((char)('A' + @Model.Question.Answers.Count - 1))</button>
+                }
+            </form>
+            <form method="post" asp-page-handler="More">
+                <input type="hidden" asp-for="AnswersCount" value="@Model.Question.Answers.Count" />
+                @if(@Model.AnswersCount >= 10)
+                {
+                <button disabled class="btn btn-success btn-sm">Add Answer @((char)('A' + @Model.Question.Answers.Count))</button>
+                }
+                else
+                {
+                <button class="btn btn-success btn-sm">Add Answer @((char)('A' + @Model.Question.Answers.Count))</button>
+                }
+            </form>
+        </div>
         <form method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
@@ -35,17 +59,17 @@
             </div>
             @for (int i = 0; i < Model.Question.Answers.Count(); i++)
             {
-                <div class="form-group">
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text">
-                                <input asp-for="Question.Answers[i].IsTrue" class="control-label">
-                            </div>
+            <div class="form-group" id="temp">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <input asp-for="Question.Answers[i].IsTrue" class="control-label">
                         </div>
-                        <textarea asp-for="Question.Answers[i].AnswerText" placeholder="Answer @((char)('A' + i))" class="form-control" aria-label="Text input with checkbox"></textarea>
                     </div>
-                    <span asp-validation-for="Question.Answers[i].AnswerText" class="text-danger"></span>
+                    <textarea asp-for="Question.Answers[i].AnswerText" placeholder="Answer @((char)('A' + i))" class="form-control" aria-label="Text input with checkbox"></textarea>
                 </div>
+                <span asp-validation-for="Question.Answers[i].AnswerText" class="text-danger"></span>
+            </div>
             }
             <div class="form-group">
                 <input asp-for="FileUpload.FormFile" class="form-control-file" />
@@ -71,13 +95,27 @@
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
+
     </div>
 </div>
-
 <div>
     <a asp-page="Index" class="btn btn-dark">Back to List</a>
 </div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    @*<script>
+        $(function () {
+            var nextId = @Model.dict.Count();
+
+            $('#add').on('click', function () {
+                var r = $('<input type="text" name="Question.Answers[' + nextId.toString() + '].IsTrue" value="' + false + '" />\r\n' +
+                    '<input type="text" name="Question.Answers[' + nextId.toString() + '].AnswerText" value="Item_' + nextId.toString() + '" />\r\n<br />');
+                $("#temp").append(r);
+
+                nextId++;
+            });
+        });
+    </script>*@
+
 }
