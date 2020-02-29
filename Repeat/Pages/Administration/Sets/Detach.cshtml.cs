@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using Repeat.Models;
 
 namespace Repeat
 {
+    [Authorize]
     public class DetachModel : PageModel
     {
         private readonly Repeat.Data.ApplicationDbContext _context;

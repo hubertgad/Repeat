@@ -57,19 +57,30 @@
                 </div>
                 <span asp-validation-for="Question.QuestionText" class="text-danger"></span>
             </div>
-            @for (int i = 0; i < Model.Question.Answers.Count(); i++)
-            {
-            <div class="form-group" id="temp">
+            <div class="form-group">
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <div class="input-group-text">
-                            <input asp-for="Question.Answers[i].IsTrue" class="control-label">
+                            <label class="control-label">Code:</label>
                         </div>
                     </div>
-                    <textarea asp-for="Question.Answers[i].AnswerText" placeholder="Answer @((char)('A' + i))" class="form-control" aria-label="Text input with checkbox"></textarea>
+                    <textarea asp-for="Question.Code" class="form-control"></textarea>
                 </div>
-                <span asp-validation-for="Question.Answers[i].AnswerText" class="text-danger"></span>
+                <span asp-validation-for="Question.Code" class="text-danger"></span>
             </div>
+            @for (int i = 0; i < Model.Question.Answers.Count(); i++)
+            {
+                <div class="form-group" id="temp">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                <input asp-for="Question.Answers[i].IsTrue" class="control-label">
+                            </div>
+                        </div>
+                        <textarea asp-for="Question.Answers[i].AnswerText" placeholder="Answer @((char)('A' + i))" class="form-control" aria-label="Text input with checkbox"></textarea>
+                    </div>
+                    <span asp-validation-for="Question.Answers[i].AnswerText" class="text-danger"></span>
+                </div>
             }
             <div class="form-group">
                 <input asp-for="FileUpload.FormFile" class="form-control-file" />
@@ -103,19 +114,4 @@
 </div>
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-
-    @*<script>
-        $(function () {
-            var nextId = @Model.dict.Count();
-
-            $('#add').on('click', function () {
-                var r = $('<input type="text" name="Question.Answers[' + nextId.toString() + '].IsTrue" value="' + false + '" />\r\n' +
-                    '<input type="text" name="Question.Answers[' + nextId.toString() + '].AnswerText" value="Item_' + nextId.toString() + '" />\r\n<br />');
-                $("#temp").append(r);
-
-                nextId++;
-            });
-        });
-    </script>*@
-
 }

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Repeat.Data;
 using Repeat.Models;
@@ -13,20 +12,16 @@ using Repeat.Models;
 namespace Repeat.Pages.Administration.Questions
 {
     [Authorize]
-    public class DeleteModel : PageModel
+    public class DeleteModel : CustomPageModel
     {
-        public DeleteModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public DeleteModel(ApplicationDbContext context, UserManager<IdentityUser> userManager) 
+            : base(context, userManager)
         {
-            _context = context;
-            _userManager = userManager;
         }
 
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
         public Question Question { get; set; }
         public Category Category { get; set; }
         public List<Set> Sets { get; set; }
-        public string CurrentUserID { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -34,24 +29,34 @@ namespace Repeat.Pages.Administration.Questions
             {
                 return NotFound();
             }
+
             this.CurrentUserID = await GetUserIDAsync();
-            Question = await _context
+
+            this.Question = await GetQuestionFromDatabaseAsync(id);
+            if (this.Question == null || this.Question.OwnerID != this.CurrentUserID)
+            {
+                return NotFound();
+            }
+
+            this.Sets = await GetSetsFromDatabase();
+
+            return Page();
+        }
+
+        private async Task<Question> GetQuestionFromDatabaseAsync(int? id)
+        {
+            return await _context
                 .Questions
                 .Where(m => m.OwnerID == CurrentUserID)
                 .Include(o => o.Category)
                 .Include(n => n.Answers)
                 .Include(p => p.Picture)
                 .FirstOrDefaultAsync(m => m.ID == id);
-            if (Question == null || Question.OwnerID != CurrentUserID)
-            {
-                return NotFound();
-            }
-            Sets = new List<Set>(_context
-                .Sets
-                .Where(q => q.QuestionSets
-                    .Any(p => p.QuestionID == this.Question.ID))
-                );
-            return Page();
+        }
+
+        private async Task<List<Set>> GetSetsFromDatabase()
+        {
+            return await _context.Sets.Where(q => q.QuestionSets.Any(p => p.QuestionID == this.Question.ID)).ToListAsync();
         }
 
         public async Task<IActionResult> OnPostAsync(int? id)
@@ -60,19 +65,37 @@ namespace Repeat.Pages.Administration.Questions
             {
                 return NotFound();
             }
-            Question = await _context.Questions.FindAsync(id);
-            if (Question != null)
+
+            var question = _context.Questions.Find(id);
+            if (question != null)
             {
-                _context.Questions.Remove(Question);
-                await _context.SaveChangesAsync();
+                await CopyDataToBeDeletedAsync(question);
+                _context.Questions.Remove(question);
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch
+                {
+                    return NotFound();
+                }
             }
+
             return RedirectToPage("./Index");
         }
 
-        private async Task<string> GetUserIDAsync()
+        private async Task CopyDataToBeDeletedAsync(Question question)
         {
-            var user = await _userManager.GetUserAsync(User);
-            return user.Id;
+            await _context.DeletedQuestions.AddAsync(new DeletedQuestion(question));
+            if (question.Picture != null)
+            {
+                await _context.DeletedPictures.AddAsync(new DeletedPicture(_context.Pictures.FirstOrDefault(q => q.ID == question.ID)));
+            }
+            foreach (var answer in _context.Answers.Where(q => q.QuestionID == question.ID))
+            {
+                await _context.DeletedAnswers.AddAsync(new DeletedAnswer(answer));
+            }
         }
     }
 }

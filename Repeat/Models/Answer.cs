@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Repeat.Models
 {
@@ -16,5 +13,17 @@ namespace Repeat.Models
         [Required]
         public bool IsTrue { get; set; }
         public Question Question { get; set; }
+
+        public Answer()
+        {
+        }
+
+        public Answer(DeletedAnswer deletedAnswer)
+        {
+            this.ID = deletedAnswer.ID;
+            this.QuestionID = deletedAnswer.DeletedQuestionID;
+            this.AnswerText = deletedAnswer.AnswerText;
+            this.IsTrue = deletedAnswer.IsTrue;
+        }
     }
 }

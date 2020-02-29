@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Repeat.Data;
@@ -13,75 +12,66 @@ using Repeat.Models;
 namespace Repeat.Pages.Administration.Questions
 {
     [Authorize]
-    public class IndexModel : PageModel
+    public class IndexModel : CustomPageModel
     {
         public IndexModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+            : base(context, userManager)
         {
-            _context = context;
-            _userManager = userManager;
         }
 
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
-        [BindProperty]
-        public List<Question> Questions { get;set; }
-        [BindProperty]
-        public int SelectedCategory { get; set; }
-        [BindProperty]
-        public int SelectedSet { get; set; }
-        public string CurrentUserID { get; set; }
+        public List<Question> Questions { get; set; }
+        [BindProperty] public int SelectedCategoryID { get; set; }
+        [BindProperty] public int SelectedSetID { get; set; }
 
         public async Task OnGetAsync()
         {
-            CurrentUserID = await GetUserIDAsync();
+            this.CurrentUserID = await GetUserIDAsync();
             BindDataToView();
-            Questions = await _context
-                .Questions
-                .Where(q => q.OwnerID == CurrentUserID)
-                .ToListAsync();
+            this.Questions = await GetQuestionsFromDatabaseAsync();
         }
-        
-        public async Task<IActionResult> OnPostCategoryAsync()
-        {
-            BindDataToView();
-            Questions = await FilterQuestionsAsync();
-            var currentUserID = await GetUserIDAsync();
-            Questions = Questions.Where(q => q.OwnerID == currentUserID).ToList();
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-            return Page();
-        }
+
         private void BindDataToView()
         {
             ViewData["CategoryID"] = new SelectList(_context.Categories.Where(q => q.OwnerID == CurrentUserID), "ID", "Name");
             ViewData["SetID"] = new SelectList(_context.Sets.Where(q => q.OwnerID == CurrentUserID), "ID", "Name");
         }
+
+        private async Task<List<Question>> GetQuestionsFromDatabaseAsync() => await _context.Questions.Where(q => q.OwnerID == CurrentUserID).ToListAsync();
+
+        public async Task<IActionResult> OnPostCategoryAsync()
+        {
+            BindDataToView();
+            this.CurrentUserID = await GetUserIDAsync();
+            this.Questions = await FilterQuestionsAsync();
+            return Page();
+        }
+
         private async Task<List<Question>> FilterQuestionsAsync()
         {
-            if (SelectedCategory < 1 && SelectedSet < 1)
+            if (SelectedCategoryID < 1 && SelectedSetID < 1)
             {
-                return await _context.Questions.ToListAsync();
+                return await GetQuestionsFromDatabaseAsync();
             }
-            else if (SelectedCategory < 1)
+            else if (SelectedCategoryID < 1)
             {
                 return await _context.Questions
-                    .Where(q => q.QuestionSets.Any(p => p.SetID == SelectedSet)).ToListAsync();
+                    .Where(q => q.QuestionSets.Any(p => p.SetID == SelectedSetID) && q.OwnerID == this.CurrentUserID)
+                    .ToListAsync();
             }
-            else if (SelectedSet < 1)
+            else if (SelectedSetID < 1)
             {
                 return await _context.Questions
-                    .Where(q => (q.CategoryID == SelectedCategory)).ToListAsync();
+                    .Where(q => q.CategoryID == SelectedCategoryID && q.OwnerID == this.CurrentUserID)
+                    .ToListAsync();
             }
             else
             {
                 return await _context.Questions
-                    .Where(q => (q.CategoryID == SelectedCategory) &&
-                           q.QuestionSets.Any(p => p.SetID == SelectedSet))
+                    .Where(q => (q.CategoryID == SelectedCategoryID) &&
+                           q.QuestionSets.Any(p => p.SetID == SelectedSetID) &&
+                           q.OwnerID == this.CurrentUserID)
                     .ToListAsync();
             }
         }
-        private async Task<string> GetUserIDAsync() => (await _userManager.GetUserAsync(User)).Id;
     }
 }

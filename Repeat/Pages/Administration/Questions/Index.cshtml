@@ -9,14 +9,13 @@
 <br />
 <h4>List of questions</h4>
 <hr />
-
 <div class="">
     <form method="post">
         <div class="input-group mb-3">
-            <select asp-for="SelectedCategory" asp-items="ViewBag.CategoryID" class="form-control custom-control-inline">
+            <select asp-for="SelectedCategoryID" asp-items="ViewBag.CategoryID" class="form-control custom-control-inline">
                 <option value="" selected disabled>-- Select category --</option>
             </select>
-            <select asp-for="SelectedSet" asp-items="ViewBag.SetID" class="form-control custom-control-inline">
+            <select asp-for="SelectedSetID" asp-items="ViewBag.SetID" class="form-control custom-control-inline">
                 <option value="" selected disabled>-- Select set --</option>
             </select>
             <div class="input-group-prepend">

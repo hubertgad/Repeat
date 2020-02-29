@@ -6,9 +6,6 @@
         @if (SignInManager.IsSignedIn(User))
         {
             <li class="nav-item">
-                <a class="btn btn-outline-primary border-0" asp-area="" asp-page="/Administration/Questions/Index">Administration</a>
-            </li>
-            <li class="nav-item">
                 <a class="btn btn-outline-primary border-0" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity.Name!</a>
             </li>
             <li class="nav-item">

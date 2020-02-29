@@ -23,8 +23,20 @@
             <label>Question:</label>
         </dt>
         <dd class="col-sm-10">
-            <a class="multiline">@Html.DisplayFor(m => m.Question.QuestionText)</a>
+            <span class="multiline">@Html.DisplayFor(m => m.Question.QuestionText)</span>
         </dd>
+        @if (Model.Question.Code != null)
+        {
+        <dt class="col-sm-2">
+            <label>Code:</label>
+        </dt>
+        <dd class="col-sm-10">
+            <pre>
+            @foreach (var line in Model.Question.Code.Split("\n"))
+            {<code>@Html.DisplayFor(model => line)<br/></code>}
+            </pre>
+        </dd>
+        }
         @if (Model.Question.Picture != null)
         {
             <dt class="col-sm-2">

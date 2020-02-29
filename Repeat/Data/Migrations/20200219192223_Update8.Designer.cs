@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repeat.Data;
 
 namespace Repeat.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200219192223_Update8")]
+    partial class Update8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -265,102 +267,24 @@ namespace Repeat.Data.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("Repeat.Models.ChoosenAnswer", b =>
+            modelBuilder.Entity("Repeat.Models.OuestionPoint", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AnswerID")
+                    b.Property<int>("QuestionIndex")
                         .HasColumnType("int");
 
-                    b.Property<bool>("GivenAnswer")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("QuestionID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("QuestionResponseID")
+                    b.Property<int>("TestID")
                         .HasColumnType("int");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("QuestionResponseID");
+                    b.HasIndex("TestID");
 
-                    b.ToTable("ChoosenAnswers");
-                });
-
-            modelBuilder.Entity("Repeat.Models.DeletedAnswer", b =>
-                {
-                    b.Property<int>("ID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("AnswerText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1000)")
-                        .HasMaxLength(1000);
-
-                    b.Property<int?>("DeletedQuestionID1")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsTrue")
-                        .HasColumnType("bit");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("DeletedQuestionID1");
-
-                    b.ToTable("DeletedAnswers");
-                });
-
-            modelBuilder.Entity("Repeat.Models.DeletedPicture", b =>
-                {
-                    b.Property<int>("ID")
-                        .HasColumnType("int");
-
-                    b.Property<byte[]>("Data")
-                        .HasColumnType("varbinary(max)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("DeletedPictures");
-                });
-
-            modelBuilder.Entity("Repeat.Models.DeletedQuestion", b =>
-                {
-                    b.Property<int>("ID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CategoryID1")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Code")
-                        .HasColumnType("nvarchar(1000)")
-                        .HasMaxLength(1000);
-
-                    b.Property<string>("OwnerID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("PictureID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("QuestionText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1000)")
-                        .HasMaxLength(1000);
-
-                    b.Property<string>("Reference")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("CategoryID1");
-
-                    b.HasIndex("PictureID");
-
-                    b.ToTable("DeletedQuestions");
+                    b.ToTable("QuestionPoints");
                 });
 
             modelBuilder.Entity("Repeat.Models.Picture", b =>
@@ -386,10 +310,6 @@ namespace Repeat.Data.Migrations
                     b.Property<int>("CategoryID")
                         .HasColumnType("int");
 
-                    b.Property<string>("Code")
-                        .HasColumnType("nvarchar(1000)")
-                        .HasMaxLength(1000);
-
                     b.Property<string>("OwnerID")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -412,26 +332,6 @@ namespace Repeat.Data.Migrations
                     b.HasIndex("TestID");
 
                     b.ToTable("Questions");
-                });
-
-            modelBuilder.Entity("Repeat.Models.QuestionResponse", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("QuestionID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TestID")
-                        .HasColumnType("int");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("TestID");
-
-                    b.ToTable("QuestionResponses");
                 });
 
             modelBuilder.Entity("Repeat.Models.QuestionSet", b =>
@@ -502,11 +402,10 @@ namespace Repeat.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserID")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("SetID");
 
                     b.ToTable("Tests");
                 });
@@ -571,40 +470,13 @@ namespace Repeat.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Repeat.Models.ChoosenAnswer", b =>
+            modelBuilder.Entity("Repeat.Models.OuestionPoint", b =>
                 {
-                    b.HasOne("Repeat.Models.QuestionResponse", null)
-                        .WithMany("ChoosenAnswers")
-                        .HasForeignKey("QuestionResponseID")
+                    b.HasOne("Repeat.Models.Test", "Test")
+                        .WithMany("QuestionPoints")
+                        .HasForeignKey("TestID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Repeat.Models.DeletedAnswer", b =>
-                {
-                    b.HasOne("Repeat.Models.DeletedQuestion", null)
-                        .WithMany("DeletedAnswers")
-                        .HasForeignKey("DeletedQuestionID1");
-                });
-
-            modelBuilder.Entity("Repeat.Models.DeletedPicture", b =>
-                {
-                    b.HasOne("Repeat.Models.DeletedQuestion", "DeletedQuestion")
-                        .WithMany()
-                        .HasForeignKey("ID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Repeat.Models.DeletedQuestion", b =>
-                {
-                    b.HasOne("Repeat.Models.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryID1");
-
-                    b.HasOne("Repeat.Models.Picture", "Picture")
-                        .WithMany()
-                        .HasForeignKey("PictureID");
                 });
 
             modelBuilder.Entity("Repeat.Models.Picture", b =>
@@ -627,15 +499,6 @@ namespace Repeat.Data.Migrations
                     b.HasOne("Repeat.Models.Test", null)
                         .WithMany("Questions")
                         .HasForeignKey("TestID");
-                });
-
-            modelBuilder.Entity("Repeat.Models.QuestionResponse", b =>
-                {
-                    b.HasOne("Repeat.Models.Test", null)
-                        .WithMany("QuestionResponses")
-                        .HasForeignKey("TestID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Repeat.Models.QuestionSet", b =>
@@ -664,15 +527,6 @@ namespace Repeat.Data.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Repeat.Models.Test", b =>
-                {
-                    b.HasOne("Repeat.Models.Set", "Set")
-                        .WithMany()
-                        .HasForeignKey("SetID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -1,13 +1,39 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
+
+pre {
+    counter-reset: line;
+}
+
+code {
+    counter-increment: line;
+}
+
+    code::before {
+        content: counter(line);
+        display: inline-block;
+        width: 2em; 
+        border-right: 1px solid #ddd;
+        padding: 0 .5em;
+        margin-right: .5em;
+        color: #888;
+        -webkit-user-select: none;
+    }
+
+
 a.navbar-brand {
   white-space: normal;
   text-align: center;
   word-break: break-all;
 }
 
+.given-answer {
+    background-color: cornflowerblue;
+}
+
 .multiline {
+    white-space: pre-wrap;
 }
 
 .my-center {

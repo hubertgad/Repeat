@@ -15,12 +15,18 @@ namespace Repeat.Data
         }
 
         public DbSet<Question> Questions { get; set; }
+        public DbSet<DeletedQuestion> DeletedQuestions { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Answer> Answers { get; set; }
+        public DbSet<DeletedAnswer> DeletedAnswers { get; set; }
         public DbSet<Set> Sets { get; set; }
         public DbSet<QuestionSet> QuestionSets { get; set; }
         public DbSet<SetUser> SetUsers { get; set; }
         public DbSet<Picture> Pictures { get; set; }
+        public DbSet<DeletedPicture> DeletedPictures { get; set; }
+        public DbSet<Test> Tests { get; set; }
+        public DbSet<QuestionResponse> QuestionResponses { get; set; }
+        public DbSet<ChoosenAnswer> ChoosenAnswers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -36,12 +42,14 @@ namespace Repeat.Data
                 .HasOne(qs => qs.Set)
                 .WithMany(s => s.QuestionSets)
                 .HasForeignKey(qs => qs.SetID);
+
             builder.Entity<SetUser>()
                 .HasKey(su => new { su.SetID, su.UserID });
             builder.Entity<SetUser>()
                 .HasOne(su => su.Set)
                 .WithMany(su => su.SetUsers)
                 .HasForeignKey(su => su.SetID);
+
         }
     }
 }

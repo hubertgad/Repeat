@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repeat.Data;
 
 namespace Repeat.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200226201311_update21")]
+    partial class update21
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -301,7 +303,7 @@ namespace Repeat.Data.Migrations
                         .HasColumnType("nvarchar(1000)")
                         .HasMaxLength(1000);
 
-                    b.Property<int?>("DeletedQuestionID1")
+                    b.Property<int?>("DeletedQuestionID")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsTrue")
@@ -309,7 +311,7 @@ namespace Repeat.Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DeletedQuestionID1");
+                    b.HasIndex("DeletedQuestionID");
 
                     b.ToTable("DeletedAnswers");
                 });
@@ -584,7 +586,7 @@ namespace Repeat.Data.Migrations
                 {
                     b.HasOne("Repeat.Models.DeletedQuestion", null)
                         .WithMany("DeletedAnswers")
-                        .HasForeignKey("DeletedQuestionID1");
+                        .HasForeignKey("DeletedQuestionID");
                 });
 
             modelBuilder.Entity("Repeat.Models.DeletedPicture", b =>

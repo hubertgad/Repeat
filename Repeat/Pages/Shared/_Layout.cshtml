@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@inject SignInManager<IdentityUser> SignInManager
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -19,10 +20,15 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="btn btn-outline-primary font-weight-bolder" asp-area="" asp-page="/Test/Index">START</a>
-                        </li>
-
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <a class="btn btn-outline-primary font-weight-bolder border-0 mr-2" asp-area="" asp-page="/TakeTest/Index">TAKE A TEST</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-outline-primary font-weight-bolder border-0" asp-area="" asp-page="/Administration/Questions/Index">ADMINISTRATION</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

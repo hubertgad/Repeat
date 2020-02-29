@@ -1,0 +1,104 @@
+﻿@page
+@model Repeat.Pages.TakeTest.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Pages/TakeTest/_Layout.cshtml";
+}
+
+    <h4>@Html.DisplayFor(model => model.Test.Set.Name) - test results:</h4>
+<hr />
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">
+            <nobr>Result:</nobr>
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Result) %
+        </dd>
+        <dt class="col-sm-2">
+            <nobr>Total Points:</nobr>
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TotalCollectedPoints) / @Html.DisplayFor(model => model.AvailablePoints)
+        </dd>
+    </dl>
+
+    @foreach (var question in Model.Questions)
+    {
+        <div class="jumbotron">
+            <h4>Question @(Model.Questions.IndexOf(question) + 1):</h4>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-2">
+                    <nobr>Question:</nobr>
+                </dt>
+                <dd class="col-sm-10">
+                    <span class="question">@Html.DisplayFor(model => question.QuestionText)</span>
+                </dd>
+            @if (question.Code != null)
+            {
+                    <dt class="col-sm-2">
+                        <nobr>Code:</nobr>
+                    </dt>
+                    <dd class="col-sm-10">
+                        <code><span class="code">@Html.DisplayFor(model => question.Code)</span></code>
+                    </dd>
+            }
+            @if (question.Picture != null)
+            {
+                <dt class="col-sm-2">
+                    <label>Picture:</label>
+                </dt>
+                <dd class="col-sm-10">
+                    @{
+                        var base64 = Convert.ToBase64String(question.Picture.Data);
+                        var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+                    }
+                    <img src="@imgSrc" />
+                </dd>
+            }
+            @for (int i = 0; i < question.Answers.Count; i++)
+            {
+                <dt class="col-sm-2">
+                    <nobr>Answer @((char)('A' + i)):</nobr>
+                </dt>
+                <dd class="col-sm-10">
+                    @if (Model.Test.QuestionResponses[Model.Questions.IndexOf(question)].ChoosenAnswers.FirstOrDefault(q => q.AnswerID == question.Answers[i].ID).GivenAnswer == true)
+                    {
+                        <div class="given-answer">
+                            <span>@Html.DisplayFor(model => question.Answers[i].AnswerText)</span>
+                            @if (question.Answers[i].IsTrue == true) { <span class="badge badge-success">True</span> }
+                            else { <span class="badge badge-danger">False</span> }
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            <span>@Html.DisplayFor(model => question.Answers[i].AnswerText)</span>
+                            @if (question.Answers[i].IsTrue == true) { <span class="badge badge-success">True</span> }
+                            else { <span class="badge badge-danger">False</span> }
+                        </div>
+                    }
+                </dd>
+            }
+            @if (question.Reference != null)
+            {
+                <dt class="col-sm-2">
+                    <label>References:</label>
+                </dt>
+                <dd class="col-sm-10">
+                    <a class="multiline">@Html.DisplayFor(model => question.Reference)</a>
+                </dd>
+            }
+            </dl>
+            <div>
+                Points: @Html.DisplayFor(model => model.QuestionPoints[Model.Questions.IndexOf(question)]) / @question.Answers.Where(q => q.IsTrue == true).ToList().Count
+            </div>
+        </div>
+    }
+</div>
+<div>
+    <a asp-page="./Index" class="btn btn-dark">Back to List</a>
+</div>
