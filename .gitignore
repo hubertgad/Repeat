@@ -6,6 +6,7 @@
 Repeat/appsettings.Development.json
 Repeat/appsettings.json
 Repeat/web.config
+Repeat/Data/Migrations/*
 
 # User-specific files
 *.rsuser
