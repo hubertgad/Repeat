@@ -192,7 +192,11 @@ namespace Repeat.Pages.Administration.Questions
                 await FileUpload.FormFile.CopyToAsync(memoryStream);
                 if (memoryStream.Length < 2097152)
                 {
-                    Question.Picture.Data = memoryStream.ToArray();
+                    if (this.Question.Picture == null)
+                    {
+                        this.Question.Picture = new Picture();
+                    }
+                    this.Question.Picture.Data = memoryStream.ToArray();
                 }
                 else
                 {

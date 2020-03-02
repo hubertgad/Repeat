@@ -37,7 +37,7 @@
 @foreach (var item in Model.Questions) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.QuestionText)
+                <span class="question">@Html.DisplayFor(modelItem => item.QuestionText)</span>
             </td>
             <td align="right">
                 <nobr>

@@ -27,7 +27,7 @@ namespace Repeat
         {
             CurrentUserID = await GetUserIDAsync();
 
-            var requestedSet = _context.SetUsers.Where(q => q.Set.ID == id && q.UserID == CurrentUserID);
+            var requestedSet = _context.SetUsers.FirstOrDefault(q => q.Set.ID == id && q.UserID == CurrentUserID);
             if (requestedSet == null)
             {
                 return NotFound();
@@ -39,7 +39,7 @@ namespace Repeat
             }
             else
             {
-                this.Test = new Test(_context.Sets.Where(q => q.ID == id).FirstOrDefault(), CurrentUserID, _context);
+                this.Test = new Test(_context.Sets.FirstOrDefault(q => q.ID == id), CurrentUserID, _context);
                 _context.Add(this.Test);
                 try
                 {

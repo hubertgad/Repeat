@@ -30,7 +30,7 @@ namespace Repeat.Pages.TakeTest
             return await _context.SetUsers
                 .Include(s => s.Set)
                 .Include(s => s.User)
-                .Where(t => t.UserID == CurrentUserID)
+                .Where(t => t.UserID == CurrentUserID && t.Set.QuestionSets.Any())
                 .ToListAsync();
         }
     }
