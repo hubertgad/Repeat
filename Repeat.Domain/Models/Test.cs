@@ -5,7 +5,7 @@ namespace Repeat.Models
 {
     public class Test
     {
-        [Key, Required]
+        //[Key, Required]
         public int ID { get; set; }
         public int SetID { get; set; }
         public Set Set { get; set; }
