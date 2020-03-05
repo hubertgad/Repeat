@@ -1,29 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Repeat.Data;
 using Repeat.Models;
+using Repeat.Pages;
 
 namespace Repeat
 {
     [Authorize]
-    public class IndexModel : PageModel
+    public class IndexModel : CustomPageModel
     {
         public IndexModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+            : base(context, userManager)
         {
-            _context = context;
-            _userManager = userManager;
         }
-
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
-        public string CurrentUserID { get; set; }
 
         public IList<Set> Set { get;set; }
 
@@ -35,11 +28,5 @@ namespace Repeat
                 .Where(o => o.OwnerID == this.CurrentUserID)
                 .ToListAsync();
         }
-        private async Task<string> GetUserIDAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            return user.Id;
-        }
-
     }
 }

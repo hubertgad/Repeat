@@ -39,8 +39,13 @@ namespace Repeat
             }
             else
             {
-                this.Test = new Test(_context.Sets.FirstOrDefault(q => q.ID == id), CurrentUserID, _context);
+                var questions = _context.Questions
+                .Include(q => q.Answers)
+                .Where(q => q.QuestionSets.Any(q => q.SetID == id)).ToList();
+
+                this.Test = new Test(_context.Sets.FirstOrDefault(q => q.ID == id), CurrentUserID, questions);
                 _context.Add(this.Test);
+
                 try
                 {
                     await _context.SaveChangesAsync();

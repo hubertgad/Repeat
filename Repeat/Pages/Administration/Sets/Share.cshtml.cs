@@ -4,42 +4,45 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Repeat.Data;
 using Repeat.Models;
+using Repeat.Pages;
 
 namespace Repeat
 {
     [Authorize]
-    public class ShareModel : PageModel
+    public class ShareModel : CustomPageModel
     {
         public ShareModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+            : base(context, userManager)
         {
-            _context = context;
-            _userManager = userManager;
         }
 
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
-        [BindProperty]
-        public SetUser SetUser { get; set; }
-        [BindProperty]
-        public List<Set> Sets { get; set; }
-        public string CurrentUserID { get; set; }
+        [BindProperty] public SetUser SetUser { get; set; }
+        [BindProperty] public List<Set> Sets { get; set; }
+        public List<IdentityUser> Users { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
             ViewData["SetID"] = new SelectList(_context.Sets.Where(q => q.OwnerID == this.CurrentUserID), "ID", "Name");
             ViewData["UserID"] = new SelectList(_context.Users.Where(q => q.Id != this.CurrentUserID), "Id", "UserName");
-            CurrentUserID = await GetUserIDAsync();
-            Sets = await _context
+
+            this.CurrentUserID = await GetUserIDAsync();
+            this.Sets = await GetSetsFromDBAsync();
+            this.Users = await _context.Users.ToListAsync();
+
+            return Page();
+        }
+
+        private async Task<List<Set>> GetSetsFromDBAsync()
+        {
+            return await _context
                 .Sets
                 .Include(q => q.SetUsers)
                 .Where(q => q.OwnerID == CurrentUserID)
                 .ToListAsync();
-            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -80,7 +83,5 @@ namespace Repeat
 
             return RedirectToPage();
         }
-
-        private async Task<string> GetUserIDAsync() => (await _userManager.GetUserAsync(User)).Id;
     }
 }

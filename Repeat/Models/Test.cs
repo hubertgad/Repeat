@@ -1,11 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Repeat.Data;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Repeat.Models
 {
@@ -24,23 +18,14 @@ namespace Repeat.Models
         public Test()
         {
         }
-        public Test(Set set, string CUID, ApplicationDbContext context)
+
+        public Test(Set set, string CUID, List<Question> questions)
         {
             this.SetID = set.ID;
             this.UserID = CUID;
             this.IsCompleted = false;
             this.CurrentQuestionIndex = 0;
-            this.Questions = context.Questions
-                .Include(q => q.Answers)
-                .Where(q => q.QuestionSets.Any(q => q.SetID == set.ID)).ToList();
-
-            //context.SaveChanges();
-            //foreach (var question in this.Questions)
-            //{
-            //    this.TestQuestions.Add(new TestQuestion { QuestionID = question.ID, TestID = this.ID });
-            //}
-            //context.SaveChanges();
-            //// #TODO: jeden savechanges na końcu (?)
+            this.Questions = questions;
             this.QuestionResponses = new List<QuestionResponse>();
             foreach (var question in Questions)
             {
@@ -50,7 +35,6 @@ namespace Repeat.Models
                     QuestionID = question.ID,
                     ChoosenAnswers = new List<ChoosenAnswer>()
                 });
-                context.SaveChanges();
                 foreach (var answer in question.Answers)
                 {
                     this.QuestionResponses[Questions.IndexOf(question)].ChoosenAnswers.Add(new ChoosenAnswer

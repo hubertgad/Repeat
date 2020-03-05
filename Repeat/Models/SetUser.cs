@@ -14,6 +14,6 @@ namespace Repeat.Models
         [Required]
         public string UserID { get; set; }
         public Set Set { get; set; }
-        public IdentityUser User { get; set; }
+        //public IdentityUser User { get; set; }
     }
 }

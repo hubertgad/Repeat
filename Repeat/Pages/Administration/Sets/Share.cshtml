@@ -15,11 +15,11 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label>Set</label>
-                <select asp-for="SetUser.SetID" class ="form-control d-inline" asp-items="ViewBag.SetID"></select>
+                <select asp-for="SetUser.SetID" class="form-control d-inline" asp-items="ViewBag.SetID"></select>
             </div>
             <div class="form-group">
                 <label>User</label>
-                <select asp-for="SetUser.UserID" class ="form-control" asp-items="ViewBag.UserID"></select>
+                <select asp-for="SetUser.UserID" class="form-control" asp-items="ViewBag.UserID"></select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Share" class="btn btn-primary" />
@@ -50,18 +50,18 @@
             <tbody>
                 @foreach (var set in Model.Sets)
                 {
-                    @foreach (var user in set.SetUsers.Where(q => q.UserID != Model.CurrentUserID))
+                    @foreach (var setUser in set.SetUsers.Where(q => q.UserID != Model.CurrentUserID))
                     {
                         <tr>
                             <td class="col-md-4">
-                                @user.Set.Name
+                                @setUser.Set.Name
                             </td>
                             <td class="col-md-4">
-                                @user.User.UserName
+                                @Model.Users.FirstOrDefault(q => q.Id == setUser.UserID)
                             </td>
                             <td class="col-md-4">
                                 <form method="post" asp-page-handler="Unshare">
-                                    <input type="hidden" asp-for="SetUser.UserID" value="@user.UserID" />
+                                    <input type="hidden" asp-for="SetUser.UserID" value="@setUser.UserID" />
                                     <input type="hidden" asp-for="SetUser.SetID" value="@set.ID" />
                                     <input type="submit" value="Unshare" class="btn btn-danger btn-sm" />
                                 </form>
