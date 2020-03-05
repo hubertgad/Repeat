@@ -15,7 +15,7 @@ namespace Repeat.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.1")
+                .HasAnnotation("ProductVersion", "3.1.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -390,6 +390,9 @@ namespace Repeat.Data.Migrations
                         .HasColumnType("nvarchar(1000)")
                         .HasMaxLength(1000);
 
+                    b.Property<bool>("IsAlive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("OwnerID")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -479,8 +482,6 @@ namespace Repeat.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("SetID", "UserID");
-
-                    b.HasIndex("UserID");
 
                     b.ToTable("SetUsers");
                 });
@@ -658,12 +659,6 @@ namespace Repeat.Data.Migrations
                     b.HasOne("Repeat.Models.Set", "Set")
                         .WithMany("SetUsers")
                         .HasForeignKey("SetID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
