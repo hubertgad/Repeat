@@ -14,6 +14,6 @@ namespace Repeat.Models
         public int QuestionID { get; set; }
         public int AnswerID { get; set; }
         public bool GivenAnswer { get; set; }
-//        public bool CorrenctAnswer { get; set; }
+//        public bool CorrectAnswer { get; set; }
     }
 }
