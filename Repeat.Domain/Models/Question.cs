@@ -16,9 +16,9 @@ namespace Repeat.Models
         public string OwnerID { get; set; }
         public string Reference { get; set; }
         public bool IsAlive { get; set; }        
-        public Picture Picture { get; set; }
-        public Category Category { get; set; }
-        public List<Answer> Answers { get; set; }
+        public virtual Picture Picture { get; set; }
+        public virtual Category Category { get; set; }
+        public virtual List<Answer> Answers { get; set; }
         public virtual ICollection<QuestionSet> QuestionSets { get; set; }
 
         public Question()
