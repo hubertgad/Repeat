@@ -10,7 +10,7 @@ namespace Repeat.Models
         public string AnswerText { get; set; }        
         [Required]
         public bool IsTrue { get; set; }        
-        public Question Question { get; set; }
+        public virtual Question Question { get; set; }
 
         public Answer()
         {
