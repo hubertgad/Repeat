@@ -6,7 +6,6 @@ namespace Repeat.Models
     {
         public int QuestionID { get; set; }
         public int SetID { get; set; }
-        
         public Question Question { get; set; }
         public Set Set { get; set; }
     }
