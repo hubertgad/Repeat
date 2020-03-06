@@ -11,7 +11,6 @@ namespace Repeat.Models
         public int ID { get; set; }
         public int TestID { get; set; }
         public int QuestionID { get; set; }
-        
         public List<ChoosenAnswer> ChoosenAnswers { get; set; }
     }
 }
