@@ -6,8 +6,7 @@ namespace Repeat.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None), ForeignKey("DeletedQuestion")]
         public int ID { get; set; }
-        public byte[] Data { get; set; }
-        
+        public byte[] Data { get; set; }        
         public DeletedQuestion DeletedQuestion { get; set; }
 
         public DeletedPicture()
