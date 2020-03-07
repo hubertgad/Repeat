@@ -6,6 +6,9 @@
 Repeat/appsettings.Development.json
 Repeat/appsettings.json
 Repeat/web.config
+Repeat/.config
+Repeat/Properties
+Repeat/ScaffoldingReadMe.txt
 Repeat.DataAccess/Migrations
 
 # User-specific files
