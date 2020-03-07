@@ -15,8 +15,4 @@
     <ProjectReference Include="..\Repeat.Domain\Repeat.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>

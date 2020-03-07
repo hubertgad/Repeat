@@ -5,11 +5,6 @@
     <UserSecretsId>aspnet-Repeat-284E4A49-C636-4C7A-A75D-D657F2740F6C</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Data\Migrations\20200217194208_Update4.cs" />
-    <Compile Remove="Data\Migrations\20200217194208_Update4.Designer.cs" />
-  </ItemGroup>
-
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.2" />

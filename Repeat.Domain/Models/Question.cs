@@ -16,17 +16,10 @@ namespace Repeat.Models
         public string OwnerID { get; set; }
         [MaxLength(1000)]
         public string Reference { get; set; }
-<<<<<<< HEAD
         public bool IsDeleted { get; set; }
         public Picture Picture { get; set; }
         public Category Category { get; set; }
         public List<Answer> Answers { get; set; }
-=======
-        public bool IsAlive { get; set; }        
-        public virtual Picture Picture { get; set; }
-        public virtual Category Category { get; set; }
-        public virtual List<Answer> Answers { get; set; }
->>>>>>> f80dc051329a8de97127786e3431dcc6ddd2e08f
         public virtual ICollection<QuestionSet> QuestionSets { get; set; }
 
         public Question()
