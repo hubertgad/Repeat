@@ -15,7 +15,7 @@ namespace Repeat.Models
         [Required]
         public string OwnerID { get; set; }
         public string Reference { get; set; }
-        public bool IsAlive { get; set; }
+        public bool IsDeleted { get; set; }
         public Picture Picture { get; set; }
         public Category Category { get; set; }
         public List<Answer> Answers { get; set; }
@@ -42,7 +42,7 @@ namespace Repeat.Models
                     this.Answers.Add(new Answer(deletedAnswer));
                 }
             }
-            this.IsAlive = true;
+            this.IsDeleted = true;
         }
     }
 }
