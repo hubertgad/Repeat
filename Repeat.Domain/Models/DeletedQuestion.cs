@@ -12,7 +12,7 @@ namespace Repeat.Models
         public string QuestionText { get; set; }
         [MaxLength(1000)]
         public string Code { get; set; }
-        [Required, Display(Name = "Category ID"), NotMapped]
+        [Display(Name = "Category ID"), NotMapped]
         public int CategoryID { get; set; }
         [Required]
         public string OwnerID { get; set; }

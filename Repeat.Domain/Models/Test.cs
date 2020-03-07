@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Repeat.Models
 {
     public class Test
     {
-        [Key, Required]
         public int ID { get; set; }
         public int SetID { get; set; }
         public Set Set { get; set; }
         public string UserID { get; set; }
         public bool IsCompleted { get; set; }
         public int CurrentQuestionIndex { get; set; }
+        [NotMapped]
         public List<Question> Questions { get; set; }
         public List<QuestionResponse> QuestionResponses { get; set; }
 

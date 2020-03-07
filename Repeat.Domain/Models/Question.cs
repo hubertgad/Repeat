@@ -10,10 +10,11 @@ namespace Repeat.Models
         public string QuestionText { get; set; }
         [MaxLength(1000)]
         public string Code { get; set; }
-        [Required, Display(Name = "Category ID")]
+        [Display(Name = "Category ID")]
         public int CategoryID { get; set; }
         [Required]
         public string OwnerID { get; set; }
+        [MaxLength(1000)]
         public string Reference { get; set; }
         public bool IsDeleted { get; set; }
         public Picture Picture { get; set; }

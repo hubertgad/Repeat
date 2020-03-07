@@ -227,7 +227,6 @@ namespace Repeat.Data.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("AnswerText")
-                        .IsRequired()
                         .HasColumnType("nvarchar(1000)")
                         .HasMaxLength(1000);
 
@@ -390,7 +389,7 @@ namespace Repeat.Data.Migrations
                         .HasColumnType("nvarchar(1000)")
                         .HasMaxLength(1000);
 
-                    b.Property<bool>("IsAlive")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("OwnerID")
@@ -403,16 +402,12 @@ namespace Repeat.Data.Migrations
                         .HasMaxLength(1000);
 
                     b.Property<string>("Reference")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("TestID")
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(1000)")
+                        .HasMaxLength(1000);
 
                     b.HasKey("ID");
 
                     b.HasIndex("CategoryID");
-
-                    b.HasIndex("TestID");
 
                     b.ToTable("Questions");
                 });
@@ -565,7 +560,7 @@ namespace Repeat.Data.Migrations
 
             modelBuilder.Entity("Repeat.Models.Answer", b =>
                 {
-                    b.HasOne("Repeat.Models.Question", "Question")
+                    b.HasOne("Repeat.Models.Question", null)
                         .WithMany("Answers")
                         .HasForeignKey("QuestionID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -624,10 +619,6 @@ namespace Repeat.Data.Migrations
                         .HasForeignKey("CategoryID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Repeat.Models.Test", null)
-                        .WithMany("Questions")
-                        .HasForeignKey("TestID");
                 });
 
             modelBuilder.Entity("Repeat.Models.QuestionResponse", b =>

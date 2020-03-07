@@ -7,12 +7,10 @@ namespace Repeat.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None), Key]
         public int ID { get; set; }
-        [Required, NotMapped]
+        [NotMapped]
         public int DeletedQuestionID { get; set; }
-        [Required]
-        [MaxLength(1000)]
+        [Required, MaxLength(1000)]
         public string AnswerText { get; set; }
-        [Required]
         public bool IsTrue { get; set; }
 
         public DeletedAnswer()

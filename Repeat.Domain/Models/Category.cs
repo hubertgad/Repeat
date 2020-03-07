@@ -6,8 +6,7 @@ namespace Repeat.Models
     public class Category
     {
         public int ID { get; set; }
-        [Required]
-        [MaxLength(50)]
+        [Required, MaxLength(50)]
         public string Name { get; set; }
         [Required]
         public string OwnerID { get; set; }

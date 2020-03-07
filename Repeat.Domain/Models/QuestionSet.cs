@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Repeat.Models
+﻿namespace Repeat.Models
 {
     public class QuestionSet
     {
