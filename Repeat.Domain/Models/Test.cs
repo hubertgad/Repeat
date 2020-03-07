@@ -5,6 +5,10 @@ namespace Repeat.Models
 {
     public class Test
     {
+<<<<<<< HEAD
+=======
+        //[Key, Required]
+>>>>>>> f80dc051329a8de97127786e3431dcc6ddd2e08f
         public int ID { get; set; }
         public int SetID { get; set; }
         public Set Set { get; set; }

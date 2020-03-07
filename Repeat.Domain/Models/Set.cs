@@ -9,7 +9,7 @@ namespace Repeat.Models
         [Required, MaxLength(50)]
         public string Name { get; set; }
         [Required]
-        public string OwnerID { get; set; }
+        public string OwnerID { get; set; }        
         public virtual ICollection<QuestionSet> QuestionSets { get; set; }
         public virtual ICollection<SetUser> SetUsers { get; set; }
     }

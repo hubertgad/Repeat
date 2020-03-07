@@ -6,7 +6,7 @@ namespace Repeat.Models
     {
         [ForeignKey("Question")]
         public int ID { get; set; }
-        public byte[] Data { get; set; }
+        public byte[] Data { get; set; }        
         public Question Question { get; set; }
 
         public Picture()
