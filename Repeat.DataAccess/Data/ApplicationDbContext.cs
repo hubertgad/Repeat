@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Repeat.Models;
 
-namespace Repeat.Data
+namespace Repeat.DataAccess.Data
 {
     public partial class ApplicationDbContext : IdentityDbContext
     {

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Repeat.Data;
+using Repeat.DataAccess.Data;
 using Repeat.Models;
 
 namespace Repeat.Pages.Administration.Categories

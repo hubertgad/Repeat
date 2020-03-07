@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Repeat.Data;
+using Repeat.DataAccess.Data;
 using System.Threading.Tasks;
 
 namespace Repeat.Pages

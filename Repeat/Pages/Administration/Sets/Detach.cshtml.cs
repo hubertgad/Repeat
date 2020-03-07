@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Repeat.DataAccess.Data;
 using Repeat.Models;
 
 namespace Repeat
@@ -10,9 +11,9 @@ namespace Repeat
     [Authorize]
     public class DetachModel : PageModel
     {
-        private readonly Repeat.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public DetachModel(Repeat.Data.ApplicationDbContext context)
+        public DetachModel(ApplicationDbContext context)
         {
             _context = context;
         }

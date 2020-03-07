@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Repeat.Data;
+using Repeat.DataAccess.Data;
 using Repeat.Models;
 using Repeat.Pages;
 
