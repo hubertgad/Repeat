@@ -1,36 +1,33 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Repeat.DataAccess.Data;
+using Repeat.DataAccess.Services;
 using Repeat.Models;
 
 namespace Repeat.Pages.Administration.Questions
 {
     [Authorize]
-    public class CreateModel : CustomPageModel
+    public class CreateModel : CustomPageModelV2
     {
-
-        public CreateModel(ApplicationDbContext context, UserManager<IdentityUser> userManager) 
-            : base(context, userManager) 
+        public CreateModel(UserManager<IdentityUser> userManager, QuestionService questionService) 
+            : base(userManager, questionService) 
         {
         }
 
         [BindProperty] public Question Question { get; set; }
         [BindProperty] public FileUpload FileUpload { get; set; }
-        [BindProperty] public int[] SelectedSets { get; set; }
+        [BindProperty] public List<int> SelectedSets { get; set; }
         [BindProperty] public int AnswersCount { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? answers)
         {
-            this.CurrentUserID = await GetUserIDAsync();
-
             ValidateAnswersCount(answers);
-            BindDataToView();
+            await BindDataToViewAsync();
             CreateNewQuestion();
 
             return Page();
@@ -56,10 +53,10 @@ namespace Repeat.Pages.Administration.Questions
             }
         }
 
-        private void BindDataToView()
+        private async Task BindDataToViewAsync()
         {
-            ViewData["CategoryID"] = new SelectList(_context.Categories.Where(q => q.OwnerID == CurrentUserID), "ID", "Name");
-            ViewData["SetID"] = new SelectList(_context.Sets.Where(q => q.OwnerID == CurrentUserID), "ID", "Name");
+            ViewData["CategoryID"] = new SelectList(await _qService.GetCategoriesAsync(this.CurrentUserID), "ID", "Name");
+            ViewData["SetID"] = new SelectList(await _qService.GetSetsAsync(this.CurrentUserID), "ID", "Name");
         }
 
         private void CreateNewQuestion()
@@ -82,22 +79,12 @@ namespace Repeat.Pages.Administration.Questions
                 return Page();
             }
 
-            await UploadPictureAsync();
+            this.Question.Picture = await UploadPictureAsync();
+            this.Question.QuestionSets = CreateListOfQuestionSets();
 
-            await UpdateQuestionStateAsync();
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch
-            {
-                return NotFound();
-            }
-
-            await UpdateSetsStateAsync();
-            try
-            {
-                await _context.SaveChangesAsync();
+                await _qService.CreateQuestionAsync(this.Question);
             }
             catch
             {
@@ -107,36 +94,37 @@ namespace Repeat.Pages.Administration.Questions
             return RedirectToPage("./Index");
         }
 
-        private async Task UpdateSetsStateAsync()
+        private List<QuestionSet> CreateListOfQuestionSets()
         {
-            foreach (var item in SelectedSets)
+            var questionSets = new List<QuestionSet>();
+            foreach (var setID in SelectedSets)
             {
-                await _context.QuestionSets.AddAsync(new QuestionSet
+                questionSets = new List<QuestionSet>
                 {
-                    QuestionID = this.Question.ID,
-                    SetID = item
-                });
+                new QuestionSet { QuestionID = this.Question.ID, SetID = setID }
+                };
             }
+            return questionSets;
         }
 
-        private async Task UpdateQuestionStateAsync() => await _context.Questions.AddAsync(this.Question);
-
-        private async Task UploadPictureAsync()
+        private async Task<Picture> UploadPictureAsync()
         {
             if (FileUpload.FormFile != null && FileUpload.FormFile.Length > 0)
             {
+                var picture = new Picture();
                 using var memoryStream = new MemoryStream();
                 await FileUpload.FormFile.CopyToAsync(memoryStream);
                 if (memoryStream.Length < 2097152)
                 {
-                    this.Question.Picture = new Picture();
-                    this.Question.Picture.Data = memoryStream.ToArray();
+                    picture.Data = memoryStream.ToArray();
+                    return picture;
                 }
                 else
                 {
                     ModelState.AddModelError("File", "The file is too large.");
                 }
             }
+            return null;
         }
 
         public IActionResult OnPostMore() => RedirectToPage(new { answers = ++AnswersCount });

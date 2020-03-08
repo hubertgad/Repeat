@@ -1,26 +1,21 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Repeat.DataAccess.Data;
+using Repeat.DataAccess.Services;
 using Repeat.Models;
 
 namespace Repeat.Pages.Administration.Questions
 {
     [Authorize]
-    public class DetailsModel : CustomPageModel
+    public class DetailsModel : CustomPageModelV2
     {
-        public DetailsModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
-            : base(context, userManager)
+        public DetailsModel(UserManager<IdentityUser> userManager, QuestionService questionService)
+            : base(userManager, questionService)
         {
         }
 
         public Question Question { get; set; }
-        public Category Category { get; set; }
-        public List<Set> Sets { get; set; }
         public FileUpload FileUpload { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
@@ -30,9 +25,7 @@ namespace Repeat.Pages.Administration.Questions
                 return NotFound();
             }
             
-            this.CurrentUserID = await GetUserIDAsync();
-            this.Question = await GetQuestionFromDatabase(id);
-            this.Sets = await GetSetsFromDatabaseAsync();
+            this.Question = await _qService.GetQuestionByIDAsync((int)id, this.CurrentUserID);
             
             if (this.Question == null)
             {
@@ -40,20 +33,6 @@ namespace Repeat.Pages.Administration.Questions
             }
 
             return Page();
-        }
-
-        private async Task<List<Set>> GetSetsFromDatabaseAsync()
-        {
-            return await _context.Sets.Where(q => q.QuestionSets.Any(p => p.QuestionID == this.Question.ID)).ToListAsync();
-        }
-
-        private async Task<Question> GetQuestionFromDatabase(int? id)
-        {
-            return await _context.Questions
-                            .Include(c => c.Category)
-                            .Include(a => a.Answers)
-                            .Include(p => p.Picture)
-                            .FirstOrDefaultAsync(m => m.ID == id);
         }
     }
 }

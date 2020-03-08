@@ -45,23 +45,23 @@
                 </div>
                 <span asp-validation-for="Question.Code" class="text-danger"></span>
             </div>
-            @for (int i = 0; i < Model.Answers.Count(); i++)
+            @for (int i = 0; i < Model.Question.Answers.Count(); i++)
             {
-                <input type="hidden" asp-for="Answers[i].ID" />
-                <input type="hidden" asp-for="Answers[i].QuestionID" />
+                <input type="hidden" asp-for="Question.Answers[i].ID" />
+                <input type="hidden" asp-for="Question.Answers[i].QuestionID" />
                 <div class="form-group">
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <div class="input-group-text">
-                                <input asp-for="Answers[i].IsTrue" class="control-label">
+                                <input asp-for="Question.Answers[i].IsTrue" class="control-label">
                             </div>
                         </div>
-                        <textarea asp-for="Answers[i].AnswerText" placeholder="Answer @((char)('A' + i))" class="form-control" aria-label="Text input with checkbox"></textarea>
+                        <textarea asp-for="Question.Answers[i].AnswerText" placeholder="Answer @((char)('A' + i))" class="form-control" aria-label="Text input with checkbox"></textarea>
                         <input type="submit" asp-page-handler="Remove" 
-                               asp-route-id="@Model.Question.ID" asp-route-aid="@Model.Answers[i].ID" 
+                               asp-route-id="@Model.Question.ID" asp-route-aid="@Model.Question.Answers[i].ID" 
                                value="Remove" class="btn btn-danger btn-sm" />
                     </div>
-                    <span asp-validation-for="Answers[i].AnswerText" class="text-danger"></span>
+                    <span asp-validation-for="Question.Answers[i].AnswerText" class="text-danger"></span>
                 </div>
             }
             <div class="form-group">
@@ -73,11 +73,7 @@
             @if (Model.Question.Picture != null)
             {
         <div>
-            @{
-                var base64 = Convert.ToBase64String(Model.Question.Picture.Data);
-                var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
-            }
-            <img src="@imgSrc" />
+            <img src="@FileUpload.ToString(Model.Question.Picture.Data)" />
             <input type="hidden" asp-for="Question.Picture.ID" />
             <label><input type="checkbox" asp-for="RemovePicture" /> Remove picture</label>
         </div>

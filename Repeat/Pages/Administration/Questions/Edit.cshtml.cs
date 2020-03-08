@@ -5,29 +5,22 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Repeat.DataAccess.Data;
+using Repeat.DataAccess.Services;
 using Repeat.Models;
 
 namespace Repeat.Pages.Administration.Questions
 {
     [Authorize]
-    public class EditModel : PageModel
+    public class EditModel : CustomPageModelV2
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
-
-        public EditModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public EditModel(UserManager<IdentityUser> userManager, QuestionService questionService)
+            : base (userManager, questionService)
         {
-            _context = context;
-            _userManager = userManager;
         }
 
-        public string CurrentUserID { get; set; }
         [BindProperty] public Question Question { get; set; }
-        [BindProperty] public List<Answer> Answers { get; set; }
         [BindProperty] public FileUpload FileUpload { get; set; }
         [BindProperty] public List<int> SelectedSets { get; set; }
         [BindProperty] public bool RemovePicture { get; set; }
@@ -39,30 +32,18 @@ namespace Repeat.Pages.Administration.Questions
                 return NotFound();
             }
 
-            this.CurrentUserID = await GetUserIDAsync();
+            this.Question = await _qService.GetQuestionByIDAsync((int)id, this.CurrentUserID);
             
-            await GetQuestionFromDatabaseAsync(id);
             if (this.Question == null)
             {
                 return NotFound();
             }
-
-            this.Answers = this.Question.Answers;
             
-            BindDataToView();
+            await BindDataToViewAsync();
+
             return Page();
         }
-
-        private async Task GetQuestionFromDatabaseAsync(int? id)
-        {
-            this.Question = await _context.Questions
-                .Include(o => o.Answers)
-                .Include(o => o.QuestionSets)
-                .Include(p => p.Picture)
-                .Where(o => o.OwnerID == this.CurrentUserID)
-                .FirstOrDefaultAsync(m => m.ID == id);
-        }
-
+        
         public async Task<IActionResult> OnPostAsync(int? id)
         {
             if (!ModelState.IsValid)
@@ -72,16 +53,14 @@ namespace Repeat.Pages.Administration.Questions
 
             await UpdatePictureStateAsync();
             UpdateQuestionSetsState();
-            UpdateQuestionState();
-            UpdateAnswersState();
 
             try
             {
-                await _context.SaveChangesAsync();
+                _qService.EditQuestion(this.Question);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!QuestionExists(this.Question.ID))
+                if (!_qService.QuestionExists(this.Question.ID))
                 {
                     return NotFound();
                 }
@@ -103,18 +82,16 @@ namespace Repeat.Pages.Administration.Questions
 
             await UpdatePictureStateAsync();
             UpdateQuestionSetsState();
-            UpdateQuestionState();
-            UpdateAnswersState();
 
-            RemoveAnswer(aid);
+            _qService.RemoveAnswer(aid);
 
             try
             {
-                await _context.SaveChangesAsync();
+                _qService.EditQuestion(this.Question);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!AnswerExists((int)aid))
+                if (!_qService.AnswerExists((int)aid))
                 {
                     return NotFound();
                 }
@@ -136,14 +113,12 @@ namespace Repeat.Pages.Administration.Questions
 
             await UpdatePictureStateAsync();
             UpdateQuestionSetsState();
-            UpdateQuestionState();
-            UpdateAnswersState();
 
-            AddNewAnswer();
+            _qService.AddNewAnswer(this.Question.ID);
 
             try
             {
-                await _context.SaveChangesAsync();
+                _qService.EditQuestion(this.Question);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -153,33 +128,26 @@ namespace Repeat.Pages.Administration.Questions
             return RedirectToPage(new { id });
         }
 
-        private void BindDataToView()
+        private async Task BindDataToViewAsync()
         {
-            IEnumerable<int> selectedSetsValues = _context.Sets
-                .Where(q => q.QuestionSets.Any(p => p.QuestionID == this.Question.ID))
-                .Select(q => q.ID);
-            ViewData["CategoryID"] = new SelectList(_context.Categories.Where(q => q.OwnerID == this.CurrentUserID), "ID", "Name");
-            ViewData["SetID"] = new MultiSelectList(_context.Sets.Where(q => q.OwnerID == this.CurrentUserID), "ID", "Name", selectedSetsValues);
-        }
-
-        private void UpdateAnswersState()
-        {
-            foreach (var answer in this.Answers)
-            {
-                _context.Attach(answer).State = EntityState.Modified;
-            }
+            IEnumerable<int> selectedSetsValues =  Question.QuestionSets.Select(q => q.SetID);
+            ViewData["CategoryID"] = new SelectList(await _qService.GetCategoriesAsync(this.CurrentUserID), "ID", "Name");
+            ViewData["SetID"] = new MultiSelectList(await _qService.GetSetsAsync(this.CurrentUserID), "ID", "Name", selectedSetsValues);
         }
 
         private void UpdateQuestionSetsState()
         {
-            _context.QuestionSets.RemoveRange(_context.QuestionSets.Where(o => o.QuestionID == this.Question.ID));
+            _qService.RemoveQuestionSetsRange(this.Question);
+            Question.QuestionSets = _qService.GetQuestionSets(this.Question);
             foreach (var item in this.SelectedSets)
             {
-                _context.QuestionSets.Add(new QuestionSet
+                var questionSet = new QuestionSet
                 {
                     QuestionID = this.Question.ID,
                     SetID = item
-                });
+                };
+                if (!Question.QuestionSets.Contains(questionSet))
+                    Question.QuestionSets.Add(questionSet);
             }
         }
 
@@ -191,10 +159,11 @@ namespace Repeat.Pages.Administration.Questions
                 await FileUpload.FormFile.CopyToAsync(memoryStream);
                 if (memoryStream.Length < 2097152)
                 {
-                    if (this.Question.Picture == null)
+                    if (this.Question.Picture != null)
                     {
-                        this.Question.Picture = new Picture();
+                        await _qService.RemovePictureAsync(this.Question);
                     }
+                    this.Question.Picture = new Picture();
                     this.Question.Picture.Data = memoryStream.ToArray();
                 }
                 else
@@ -204,27 +173,8 @@ namespace Repeat.Pages.Administration.Questions
             }
             else if (this.RemovePicture == true)
             {
-                var picture = _context.Pictures.Find(this.Question.Picture.ID);
-                _context.Pictures.Remove(picture);
-                await _context.SaveChangesAsync();
+                await _qService.RemovePictureAsync(this.Question);
             }
         }
-
-        private void UpdateQuestionState() => _context.Attach(Question).State = EntityState.Modified;
-
-        private void AddNewAnswer() => _context.Add(new Answer { QuestionID = this.Question.ID, AnswerText = "Type answer text..." });
-        
-        private void RemoveAnswer(int id)
-        {
-            var answer = _context.Answers.Find(id);
-            _context.DeletedAnswers.Add(new DeletedAnswer(answer));
-            _context.Remove(_context.Answers.Find(id));
-        }
-
-        private async Task<string> GetUserIDAsync() => (await _userManager.GetUserAsync(User)).Id;
-
-        private bool QuestionExists(int id) => _context.Questions.Any(e => e.ID == id);
-
-        private bool AnswerExists(int id) => _context.Answers.Any(e => e.ID == id);
     }
 }

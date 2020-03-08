@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 namespace Repeat
@@ -22,6 +23,12 @@ namespace Repeat
                     return null;
                 }
             }
+        }
+        public static string ToString(byte[] data)
+        {
+            var base64 = Convert.ToBase64String(data);
+            var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+            return imgSrc;
         }
     }
 }

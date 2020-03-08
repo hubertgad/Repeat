@@ -20,7 +20,7 @@ namespace Repeat.Models
         public Picture Picture { get; set; }
         public Category Category { get; set; }
         public List<Answer> Answers { get; set; }
-        public virtual ICollection<QuestionSet> QuestionSets { get; set; }
+        public virtual List<QuestionSet> QuestionSets { get; set; }
 
         public Question()
         {

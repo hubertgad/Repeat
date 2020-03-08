@@ -1,14 +1,140 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Repeat.DataAccess.Data;
+using Repeat.Models;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Repeat.DataAccess.Services
 {
     public class QuestionService
     {
-        //public QuestionService(ApplicationDbContext context)
-        //{
+        private readonly ApplicationDbContext _context;
 
-        //}
+        public QuestionService(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        public bool QuestionExists(int id) => _context.Questions.Any(e => e.ID == id);
+
+        public bool AnswerExists(int id) => _context.Answers.Any(e => e.ID == id);
+
+        public async Task CreateQuestionAsync(Question question)
+        {
+            try 
+            {
+                await _context.Questions.AddAsync(question);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<Question>> GetQuestionListAsync(string userID, int? categoryID = null, int? setID = null)
+        {
+            if (categoryID == null && setID == null)
+            {
+                return await _context
+                    .Questions
+                    .Where(q => q.OwnerID == userID && q.IsDeleted == false)
+                    .ToListAsync();
+            }
+            else if (categoryID == null)
+            {
+                return await _context.Questions
+                    .Where(q => q.QuestionSets.Any(p => p.SetID == setID) 
+                        && q.OwnerID == userID
+                        && q.IsDeleted == false)
+                    .ToListAsync();
+            }
+            else if (setID == null)
+            {
+                return await _context.Questions
+                    .Where(q => q.CategoryID == categoryID 
+                        && q.OwnerID == userID
+                        && q.IsDeleted == false)
+                    .ToListAsync();
+            }
+            else
+            {
+                return await _context.Questions
+                    .Where(q => q.CategoryID == categoryID 
+                        && q.QuestionSets.Any(p => p.SetID == setID) 
+                        && q.OwnerID == userID
+                        && q.IsDeleted == false)
+                    .ToListAsync();
+            }
+        }
+
+        public async Task<Question> GetQuestionByIDAsync(int questionID, string userID)
+        {
+            return await _context
+                .Questions
+                .Where(m => m.OwnerID == userID && m.IsDeleted == false)
+                .Include(o => o.Category)
+                .Include(n => n.Answers)
+                .Include(p => p.Picture)
+                .Include(r => r.QuestionSets).ThenInclude(q => q.Set)
+                .FirstOrDefaultAsync(m => m.ID == questionID);
+        }
+
+        public void EditQuestion(Question question)
+        {
+            _context.Attach(question).State = EntityState.Modified;
+
+            foreach (var answer in question.Answers)
+            {
+                _context.Attach(answer).State = EntityState.Modified;
+            }
+
+            foreach (var questionSet in question.QuestionSets)
+            {
+                _context.QuestionSets.Add(questionSet);
+            }
+
+            _context.SaveChanges();
+        }
+
+        public void RemoveQuestionSetsRange(Question question)
+        {
+            _context.QuestionSets.RemoveRange(_context.QuestionSets.Where(o => o.QuestionID == question.ID));
+            _context.SaveChanges();
+        }
+
+        public List<QuestionSet> GetQuestionSets(Question question)
+        {
+            return _context.QuestionSets.Where(q => q.QuestionID == question.ID).ToList();
+        }
+
+        public void AddNewAnswer(int questionID) => _context.Add(new Answer { QuestionID = questionID, AnswerText = "Type answer text..." });
+
+        public void RemoveAnswer(int answerID)
+        {
+            var answer = _context.Answers.Find(answerID);
+            _context.DeletedAnswers.Add(new DeletedAnswer(answer));
+            _context.Remove(_context.Answers.Find(answerID));
+        }
+
+        public async Task RemovePictureAsync(Question question)
+        {
+            _context.Pictures.Remove(question.Picture);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task MarkQuestionAsDeleted(Question question)
+        {
+            question.IsDeleted = true;
+            _context.Attach(question).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<Category>> GetCategoriesAsync(string userID) 
+            => await _context.Categories.Where(q => q.OwnerID == userID).ToListAsync();
+        
+        public async Task<List<Set>> GetSetsAsync(string userID) 
+            => await _context.Sets.Where(q => q.OwnerID == userID).ToListAsync();
     }
 }
