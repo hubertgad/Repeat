@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -55,8 +54,8 @@ namespace Repeat.Pages.Administration.Questions
 
         private async Task BindDataToViewAsync()
         {
-            ViewData["CategoryID"] = new SelectList(await _qService.GetCategoriesAsync(this.CurrentUserID), "ID", "Name");
-            ViewData["SetID"] = new SelectList(await _qService.GetSetsAsync(this.CurrentUserID), "ID", "Name");
+            ViewData["CategoryID"] = new SelectList(await _qService.GetCategoryListAsync(this.CurrentUserID), "ID", "Name");
+            ViewData["SetID"] = new SelectList(await _qService.GetSetListAsync(this.CurrentUserID), "ID", "Name");
         }
 
         private void CreateNewQuestion()

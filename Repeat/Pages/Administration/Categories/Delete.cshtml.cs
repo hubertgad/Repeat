@@ -1,29 +1,21 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using Repeat.DataAccess.Data;
+using Repeat.DataAccess.Services;
 using Repeat.Models;
 
 namespace Repeat.Pages.Administration.Categories
 {
     [Authorize]
-    public class DeleteModel : PageModel
+    public class DeleteModel : CustomPageModelV2
     {
-        public DeleteModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public DeleteModel(UserManager<IdentityUser> userManager, QuestionService questionService)
+            : base(userManager, questionService)
         {
-            _context = context;
-            _userManager = userManager;
         }
 
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
-        [BindProperty]
-        public Category Category { get; set; }
-        public string CurrentUserID { get; set; }
+        [BindProperty] public Category Category { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -31,15 +23,14 @@ namespace Repeat.Pages.Administration.Categories
             {
                 return NotFound();
             }
-            CurrentUserID = await GetUserIDAsync();
-            Category = await _context
-                .Categories
-                .Where(o => o.OwnerID == CurrentUserID)
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (Category == null)
+
+            this.Category = await _qService.GetCategoryByIDAsync((int)id, this.CurrentUserID);
+
+            if (this.Category == null)
             {
                 return NotFound();
             }
+
             return Page();
         }
 
@@ -49,19 +40,19 @@ namespace Repeat.Pages.Administration.Categories
             {
                 return NotFound();
             }
-            Category = await _context.Categories.FindAsync(id);
-            if (Category != null)
-            {
-                _context.Categories.Remove(Category);
-                await _context.SaveChangesAsync();
-            }
-            return RedirectToPage("./Index");
-        }
 
-        private async Task<string> GetUserIDAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            return user.Id;
+            this.Category = await _qService.GetCategoryByIDAsync((int)id, this.CurrentUserID);
+
+            try
+            {
+                await _qService.MarkCategoryAsDeleted(this.Category);
+            }
+            catch
+            {
+                NotFound();
+            }
+
+            return RedirectToPage("./Index");
         }
     }
 }

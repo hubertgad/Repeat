@@ -20,19 +20,6 @@ namespace Repeat.DataAccess.Services
 
         public bool AnswerExists(int id) => _context.Answers.Any(e => e.ID == id);
 
-        public async Task CreateQuestionAsync(Question question)
-        {
-            try 
-            {
-                await _context.Questions.AddAsync(question);
-                await _context.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
         public async Task<List<Question>> GetQuestionListAsync(string userID, int? categoryID = null, int? setID = null)
         {
             if (categoryID == null && setID == null)
@@ -45,7 +32,7 @@ namespace Repeat.DataAccess.Services
             else if (categoryID == null)
             {
                 return await _context.Questions
-                    .Where(q => q.QuestionSets.Any(p => p.SetID == setID) 
+                    .Where(q => q.QuestionSets.Any(p => p.SetID == setID)
                         && q.OwnerID == userID
                         && q.IsDeleted == false)
                     .ToListAsync();
@@ -53,7 +40,7 @@ namespace Repeat.DataAccess.Services
             else if (setID == null)
             {
                 return await _context.Questions
-                    .Where(q => q.CategoryID == categoryID 
+                    .Where(q => q.CategoryID == categoryID
                         && q.OwnerID == userID
                         && q.IsDeleted == false)
                     .ToListAsync();
@@ -61,12 +48,26 @@ namespace Repeat.DataAccess.Services
             else
             {
                 return await _context.Questions
-                    .Where(q => q.CategoryID == categoryID 
-                        && q.QuestionSets.Any(p => p.SetID == setID) 
+                    .Where(q => q.CategoryID == categoryID
+                        && q.QuestionSets.Any(p => p.SetID == setID)
                         && q.OwnerID == userID
                         && q.IsDeleted == false)
                     .ToListAsync();
             }
+        }
+
+        public async Task<List<Category>> GetCategoryListAsync(string userID)
+            => await _context
+            .Categories
+            .Where(q => q.OwnerID == userID && q.IsDeleted == false)
+            .ToListAsync();
+
+        public async Task<List<Set>> GetSetListAsync(string userID)
+            => await _context.Sets.Where(q => q.OwnerID == userID).ToListAsync();
+
+        public async Task<List<QuestionSet>> GetQuestionSetListAsync(Question question)
+        {
+            return await _context.QuestionSets.Where(q => q.QuestionID == question.ID).ToListAsync();
         }
 
         public async Task<Question> GetQuestionByIDAsync(int questionID, string userID)
@@ -79,6 +80,28 @@ namespace Repeat.DataAccess.Services
                 .Include(p => p.Picture)
                 .Include(r => r.QuestionSets).ThenInclude(q => q.Set)
                 .FirstOrDefaultAsync(m => m.ID == questionID);
+        }
+
+        public async Task<Category> GetCategoryByIDAsync(int categoryID, string userID)
+        {
+            return await _context
+                .Categories
+                .Where(m => m.OwnerID == userID && m.IsDeleted == false)
+                .FirstOrDefaultAsync(m => m.ID == categoryID);
+        }
+
+        public async Task CreateQuestionAsync(Question question)
+        {
+            question.IsDeleted = false;
+            await _context.Questions.AddAsync(question);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task CreateCategoryAsync(Category category)
+        {
+            category.IsDeleted = false;
+            await _context.Categories.AddAsync(category);
+            await _context.SaveChangesAsync();
         }
 
         public void EditQuestion(Question question)
@@ -98,15 +121,16 @@ namespace Repeat.DataAccess.Services
             _context.SaveChanges();
         }
 
+        public async Task EditCategoryAsync(Category category)
+        {
+            _context.Attach(category).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
         public void RemoveQuestionSetsRange(Question question)
         {
             _context.QuestionSets.RemoveRange(_context.QuestionSets.Where(o => o.QuestionID == question.ID));
             _context.SaveChanges();
-        }
-
-        public List<QuestionSet> GetQuestionSets(Question question)
-        {
-            return _context.QuestionSets.Where(q => q.QuestionID == question.ID).ToList();
         }
 
         public void AddNewAnswer(int questionID) => _context.Add(new Answer { QuestionID = questionID, AnswerText = "Type answer text..." });
@@ -126,15 +150,21 @@ namespace Repeat.DataAccess.Services
 
         public async Task MarkQuestionAsDeleted(Question question)
         {
-            question.IsDeleted = true;
             _context.Attach(question).State = EntityState.Modified;
+            question.IsDeleted = true;
             await _context.SaveChangesAsync();
         }
-
-        public async Task<List<Category>> GetCategoriesAsync(string userID) 
-            => await _context.Categories.Where(q => q.OwnerID == userID).ToListAsync();
         
-        public async Task<List<Set>> GetSetsAsync(string userID) 
-            => await _context.Sets.Where(q => q.OwnerID == userID).ToListAsync();
+        public async Task MarkCategoryAsDeleted(Category category)
+        {
+            foreach (var question in _context.Questions.Where(q => q.CategoryID == category.ID).ToList())
+            {
+                await MarkQuestionAsDeleted(question);
+            }
+
+            _context.Attach(category).State = EntityState.Modified;
+            category.IsDeleted = true;
+            _context.SaveChanges();
+        }
     }
 }

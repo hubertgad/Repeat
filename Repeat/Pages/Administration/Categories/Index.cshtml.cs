@@ -1,41 +1,25 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using Repeat.DataAccess.Data;
+using Repeat.DataAccess.Services;
 using Repeat.Models;
 
 namespace Repeat.Pages.Administration.Categories
 {
     [Authorize]
-    public class IndexModel : PageModel
+    public class IndexModel : CustomPageModelV2
     {
-        public IndexModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public IndexModel(UserManager<IdentityUser> userManager, QuestionService questionService)
+            : base(userManager, questionService)
         {
-            _context = context;
-            _userManager = userManager;
         }
 
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
-
-        public IList<Category> Category { get;set; }
+        public List<Category> Category { get;set; }
 
         public async Task OnGetAsync()
         {
-            var currentUserID = await GetUserIDAsync();
-            Category = await _context
-                .Categories
-                .Where(q => q.OwnerID == currentUserID)
-                .ToListAsync();
-        }
-        private async Task<string> GetUserIDAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            return user.Id;
+            this.Category = await _qService.GetCategoryListAsync(this.CurrentUserID);
         }
     }
 }

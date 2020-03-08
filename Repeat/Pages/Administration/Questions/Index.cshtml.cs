@@ -26,8 +26,8 @@ namespace Repeat.Pages.Administration.Questions
         {
             this.Questions = await _qService.GetQuestionListAsync(this.CurrentUserID, this.SelectedCategoryID, this.SelectedSetID);
 
-            ViewData["CategoryID"] = new SelectList(await _qService.GetCategoriesAsync(this.CurrentUserID), "ID", "Name");
-            ViewData["SetID"] = new SelectList(await _qService.GetSetsAsync(this.CurrentUserID), "ID", "Name");          
+            ViewData["CategoryID"] = new SelectList(await _qService.GetCategoryListAsync(this.CurrentUserID), "ID", "Name");
+            ViewData["SetID"] = new SelectList(await _qService.GetSetListAsync(this.CurrentUserID), "ID", "Name");          
         }
 
         public async Task<IActionResult> OnPostCategoryAsync()

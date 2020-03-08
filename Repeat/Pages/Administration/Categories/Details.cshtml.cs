@@ -2,27 +2,20 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using Repeat.DataAccess.Data;
+using Repeat.DataAccess.Services;
 using Repeat.Models;
 
 namespace Repeat.Pages.Administration.Categories
 {
     [Authorize]
-    public class DetailsModel : PageModel
+    public class DetailsModel : CustomPageModelV2
     {
-        public DetailsModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public DetailsModel(UserManager<IdentityUser> userManager, QuestionService questionService)
+            : base(userManager, questionService)
         {
-            _context = context;
-            _userManager = userManager;
         }
 
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
         public Category Category { get; set; }
-        public string CurrentUserID { get; set; }
-
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -30,18 +23,15 @@ namespace Repeat.Pages.Administration.Categories
             {
                 return NotFound();
             }
-            this.CurrentUserID = await GetUserIDAsync();
-            Category = await _context.Categories.FirstOrDefaultAsync(m => m.ID == id);
-            if (Category == null)
+
+            this.Category = await _qService.GetCategoryByIDAsync((int)id, this.CurrentUserID);
+
+            if (this.Category == null)
             {
                 return NotFound();
             }
+
             return Page();
-        }
-        private async Task<string> GetUserIDAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            return user.Id;
         }
     }
 }

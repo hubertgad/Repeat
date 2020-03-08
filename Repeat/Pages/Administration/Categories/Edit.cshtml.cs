@@ -1,31 +1,22 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Repeat.DataAccess.Data;
+using Repeat.DataAccess.Services;
 using Repeat.Models;
 
 namespace Repeat.Pages.Administration.Categories
 {
     [Authorize]
-    public class EditModel : PageModel
+    public class EditModel : CustomPageModelV2
     {
-        public EditModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public EditModel(UserManager<IdentityUser> userManager, QuestionService questionService)
+            : base(userManager, questionService)
         {
-            _context = context;
-            _userManager = userManager;
         }
 
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
-
-        [BindProperty]
-        public Category Category { get; set; }
-        [BindProperty]
-        public string CurrentUserID { get; set; }
+        [BindProperty] public Category Category { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -33,15 +24,14 @@ namespace Repeat.Pages.Administration.Categories
             {
                 return NotFound();
             }
-            CurrentUserID = await GetUserIDAsync();            
-            Category = await _context
-                .Categories
-                .Where(o => o.OwnerID == CurrentUserID)
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (Category == null)
+
+            this.Category = await _qService.GetCategoryByIDAsync((int)id, this.CurrentUserID);
+
+            if (this.Category == null)
             {
                 return NotFound();
             }
+
             return Page();
         }
 
@@ -52,35 +42,16 @@ namespace Repeat.Pages.Administration.Categories
                 return Page();
             }
 
-            _context.Attach(Category).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _qService.EditCategoryAsync(this.Category);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CategoryExists(Category.ID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                NotFound();
             }
 
             return RedirectToPage("./Index");
-        }
-
-        private bool CategoryExists(int id)
-        {
-            return _context.Categories.Any(e => e.ID == id);
-        }
-        private async Task<string> GetUserIDAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            return user.Id;
         }
     }
 }

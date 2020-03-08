@@ -52,7 +52,7 @@ namespace Repeat.Pages.Administration.Questions
             }
 
             await UpdatePictureStateAsync();
-            UpdateQuestionSetsState();
+            await UpdateQuestionSetsStateAsync();
 
             try
             {
@@ -81,7 +81,7 @@ namespace Repeat.Pages.Administration.Questions
             }
 
             await UpdatePictureStateAsync();
-            UpdateQuestionSetsState();
+            await UpdateQuestionSetsStateAsync();
 
             _qService.RemoveAnswer(aid);
 
@@ -112,7 +112,7 @@ namespace Repeat.Pages.Administration.Questions
             }
 
             await UpdatePictureStateAsync();
-            UpdateQuestionSetsState();
+            await UpdateQuestionSetsStateAsync();
 
             _qService.AddNewAnswer(this.Question.ID);
 
@@ -131,14 +131,14 @@ namespace Repeat.Pages.Administration.Questions
         private async Task BindDataToViewAsync()
         {
             IEnumerable<int> selectedSetsValues =  Question.QuestionSets.Select(q => q.SetID);
-            ViewData["CategoryID"] = new SelectList(await _qService.GetCategoriesAsync(this.CurrentUserID), "ID", "Name");
-            ViewData["SetID"] = new MultiSelectList(await _qService.GetSetsAsync(this.CurrentUserID), "ID", "Name", selectedSetsValues);
+            ViewData["CategoryID"] = new SelectList(await _qService.GetCategoryListAsync(this.CurrentUserID), "ID", "Name");
+            ViewData["SetID"] = new MultiSelectList(await _qService.GetSetListAsync(this.CurrentUserID), "ID", "Name", selectedSetsValues);
         }
 
-        private void UpdateQuestionSetsState()
+        private async Task UpdateQuestionSetsStateAsync()
         {
             _qService.RemoveQuestionSetsRange(this.Question);
-            Question.QuestionSets = _qService.GetQuestionSets(this.Question);
+            Question.QuestionSets = await _qService.GetQuestionSetListAsync(this.Question);
             foreach (var item in this.SelectedSets)
             {
                 var questionSet = new QuestionSet

@@ -23,6 +23,7 @@
         <label class="text-danger font-weight-bold">This operation deletes all questions in this category!</label>
         <br />
         <input type="hidden" asp-for="Category.ID" />
+        <input type="hidden" asp-for="Category.IsDeleted" value="true"/>
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-page="Index" class="btn btn-dark">Back to List</a>
     </form>
