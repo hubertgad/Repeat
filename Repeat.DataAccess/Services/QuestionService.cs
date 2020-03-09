@@ -133,6 +133,7 @@ namespace Repeat.DataAccess.Services
             {
                 return await _context
                     .Sets
+                    .Include(q => q.QuestionSets)
                     .FirstOrDefaultAsync(q => q.ID == setID &&
                         (q.OwnerID == userID || q.Shares.Any(p => p.UserID == userID)));
             }
@@ -168,6 +169,13 @@ namespace Repeat.DataAccess.Services
                     .FirstOrDefaultAsync(m => m.ID == testID && m.IsCompleted == true && m.UserID == userID);
                 return test;
             }
+        }
+
+        public async Task<QuestionSet> GetQuestionSetByIDAsync(int questionID, int setID)
+        {
+            return await _context
+                .QuestionSets
+                .FirstOrDefaultAsync(q => q.QuestionID == questionID && q.SetID == setID);
         }
 
         public async Task CreateQuestionAsync(Question question)

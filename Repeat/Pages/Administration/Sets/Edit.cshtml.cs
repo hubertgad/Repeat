@@ -58,11 +58,6 @@ namespace Repeat
 
         public async Task<IActionResult> OnPostDetachAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
             try
             {
                 await _qService.RemoveQuestionFromSetAsync(this.QuestionSet);
