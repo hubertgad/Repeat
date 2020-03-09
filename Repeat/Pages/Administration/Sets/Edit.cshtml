@@ -27,22 +27,23 @@
 </div>
 <h6>Questions in this set:</h6>
 <table class="table">
-    @for (int i = 0; i < Model.Questions.Count(); i++)
+    @foreach (var questionSet in Model.Set.QuestionSets)
     {
         <tr>
             <td class="text-left">
                 <nobr>
-                    <a class="small font-weight-bold">Question @(i + 1):</a>
+                    <a class="small font-weight-bold">Question @(Model.Set.QuestionSets.IndexOf(questionSet) + 1):</a>
                 </nobr>
             </td>
             <td class="text-left">
-                <label>@Model.Questions[i].QuestionText</label>
+                <label>@questionSet.Question.QuestionText</label>
             </td>
             <td class="text-right">
-                <a class="btn btn-danger btn-sm"
-                   asp-page="./Detach" 
-                   asp-route-sid="@Model.Set.ID" 
-                   asp-route-qid="@Model.Questions[i].ID">Remove</a>
+                <form method="post" asp-page-handler="Detach">
+                    <input type="hidden" asp-for="@Model.QuestionSet.QuestionID" value="@questionSet.QuestionID" />
+                    <input type="hidden" asp-for="@Model.QuestionSet.SetID" value="@questionSet.SetID" />
+                    <input type="submit" value="Remove" class="btn btn-danger btn-sm" />
+                </form>
             </td>
         </tr>
     }

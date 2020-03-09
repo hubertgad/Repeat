@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Repeat.DataAccess.Data;
 using Repeat.Models;
 using System.Collections.Generic;
@@ -19,6 +20,10 @@ namespace Repeat.DataAccess.Services
         public bool QuestionExists(int id) => _context.Questions.Any(e => e.ID == id);
 
         public bool AnswerExists(int id) => _context.Answers.Any(e => e.ID == id);
+
+        public bool SetExists(int id) => _context.Sets.Any(e => e.ID == id);
+
+        public bool ShareExists(Share share) => _context.Shares.Any(e => e == share);
 
         public async Task<List<Question>> GetQuestionListAsync(string userID, int? categoryID = null, int? setID = null)
         {
@@ -63,12 +68,15 @@ namespace Repeat.DataAccess.Services
             .ToListAsync();
 
         public async Task<List<Set>> GetSetListAsync(string userID)
-            => await _context.Sets.Where(q => q.OwnerID == userID).ToListAsync();
+            => await _context.Sets.Include(q => q.Shares).Where(q => q.OwnerID == userID).ToListAsync();
 
         public async Task<List<QuestionSet>> GetQuestionSetListAsync(Question question)
         {
             return await _context.QuestionSets.Where(q => q.QuestionID == question.ID).ToListAsync();
         }
+
+        public async Task<List<IdentityUser>> GetUserListAsync(string userID) 
+            => await _context.Users.Where(q => q.Id != userID).ToListAsync();
 
         public async Task<Question> GetQuestionByIDAsync(int questionID, string userID)
         {
@@ -90,6 +98,22 @@ namespace Repeat.DataAccess.Services
                 .FirstOrDefaultAsync(m => m.ID == categoryID);
         }
 
+        public async Task<Set> GetSetByIDAsync(int setID, string userID)
+        {
+            return await _context
+                .Sets
+                .Where(m => m.OwnerID == userID)
+                .Include(o => o.QuestionSets).ThenInclude(q => q.Question)
+                .FirstOrDefaultAsync(m => m.ID == setID);
+        }
+
+        public async Task<QuestionSet> GetQuestionSetAsync(int setID, int questionID)
+        {
+            return await _context
+                .QuestionSets
+                .FirstOrDefaultAsync(q => q.SetID == setID && q.QuestionID == questionID);
+        }
+
         public async Task CreateQuestionAsync(Question question)
         {
             question.IsDeleted = false;
@@ -101,6 +125,22 @@ namespace Repeat.DataAccess.Services
         {
             category.IsDeleted = false;
             await _context.Categories.AddAsync(category);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task CreateSetAsync(Set set)
+        {
+            await _context.Sets.AddAsync(set);
+            foreach (var share in set.Shares)
+            {
+                await _context.Shares.AddAsync(share);
+            }
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task CreateShareAsync(Share share)
+        {
+            await _context.Shares.AddAsync(share);
             await _context.SaveChangesAsync();
         }
 
@@ -127,6 +167,12 @@ namespace Repeat.DataAccess.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task EditSetAsync(Set set)
+        {
+            _context.Attach(set).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
         public void RemoveQuestionSetsRange(Question question)
         {
             _context.QuestionSets.RemoveRange(_context.QuestionSets.Where(o => o.QuestionID == question.ID));
@@ -145,6 +191,24 @@ namespace Repeat.DataAccess.Services
         public async Task RemovePictureAsync(Question question)
         {
             _context.Pictures.Remove(question.Picture);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveSetAsync(Set set)
+        {
+            _context.Sets.Remove(set);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveQuestionFromSetAsync(QuestionSet questionSet)
+        {
+            _context.QuestionSets.Remove(questionSet);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveShareAsync(Share share)
+        {
+            _context.Shares.Remove(share);
             await _context.SaveChangesAsync();
         }
 

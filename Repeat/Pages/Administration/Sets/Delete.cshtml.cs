@@ -1,26 +1,23 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Repeat.DataAccess.Data;
+using Repeat.DataAccess.Services;
 using Repeat.Models;
 using Repeat.Pages;
 
 namespace Repeat
 {
     [Authorize]
-    public class DeleteModel : CustomPageModel
+    public class DeleteModel : CustomPageModelV2
     {
-        public DeleteModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
-            : base(context, userManager)
+        public DeleteModel(UserManager<IdentityUser> userManager, QuestionService questionService)
+            : base(userManager, questionService)
         {
         }
 
         [BindProperty] public Set Set { get; set; }
-        public List<Question> Questions { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -29,19 +26,9 @@ namespace Repeat
                 return NotFound();
             }
 
-            this.CurrentUserID = await GetUserIDAsync();
+            this.Set = await _qService.GetSetByIDAsync((int)id, this.CurrentUserID);
 
-            Set = await _context
-                .Sets
-                .Where(o => o.OwnerID == CurrentUserID)
-                .FirstOrDefaultAsync(m => m.ID == id);
-
-            this.Questions = await _context
-                .Questions
-                .Where(o => o.QuestionSets.Any(p => p.SetID == this.Set.ID))
-                .ToListAsync();
-
-            if (Set == null)
+            if (this.Set == null)
             {
                 return NotFound();
             }
@@ -56,12 +43,11 @@ namespace Repeat
                 return NotFound();
             }
 
-            Set = await _context.Sets.FindAsync(id);
+            this.Set = await _qService.GetSetByIDAsync((int)id, this.CurrentUserID);
 
             if (Set != null)
             {
-                _context.Sets.Remove(Set);
-                await _context.SaveChangesAsync();
+                await _qService.RemoveSetAsync(this.Set);
             }
 
             return RedirectToPage("./Index");

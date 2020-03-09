@@ -18,7 +18,7 @@ namespace Repeat.DataAccess.Data
         public DbSet<DeletedAnswer> DeletedAnswers { get; set; }
         public DbSet<Set> Sets { get; set; }
         public DbSet<QuestionSet> QuestionSets { get; set; }
-        public DbSet<SetUser> SetUsers { get; set; }
+        public DbSet<Share> Shares { get; set; }
         public DbSet<Picture> Pictures { get; set; }
         public DbSet<DeletedPicture> DeletedPictures { get; set; }
         public DbSet<Test> Tests { get; set; }
@@ -40,11 +40,11 @@ namespace Repeat.DataAccess.Data
                 .WithMany(s => s.QuestionSets)
                 .HasForeignKey(qs => qs.SetID);
 
-            builder.Entity<SetUser>()
+            builder.Entity<Share>()
                 .HasKey(su => new { su.SetID, su.UserID });
-            builder.Entity<SetUser>()
+            builder.Entity<Share>()
                 .HasOne(su => su.Set)
-                .WithMany(su => su.SetUsers)
+                .WithMany(su => su.Shares)
                 .HasForeignKey(su => su.SetID);
 
         }

@@ -1,27 +1,23 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Repeat.DataAccess.Data;
+using Repeat.DataAccess.Services;
 using Repeat.Models;
 using Repeat.Pages;
 
 namespace Repeat
 {
     [Authorize]
-    public class EditModel : CustomPageModel
+    public class EditModel : CustomPageModelV2
     {
-        public EditModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
-            : base(context, userManager)
+        public EditModel(UserManager<IdentityUser> userManager, QuestionService questionService)
+            : base(userManager, questionService)
         {
         }
 
         [BindProperty] public Set Set { get; set; }
-        [BindProperty] public int QuestionID { get; set; }
-        [BindProperty] public List<Question> Questions { get; set; }
         [BindProperty] public QuestionSet QuestionSet { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
@@ -31,24 +27,16 @@ namespace Repeat
                 return NotFound();
             }
 
-            this.CurrentUserID = await GetUserIDAsync();
+            this.Set = await _qService.GetSetByIDAsync((int)id, this.CurrentUserID);
 
-            Set = await _context
-                .Sets
-                .Include(q => q.QuestionSets)
-                .FirstOrDefaultAsync(m => m.ID == id);
-
-            this.Questions = await _context
-                .Questions
-                .Where(o => o.QuestionSets.Any(p => p.SetID == this.Set.ID))
-                .ToListAsync();
-
-            if (Set == null)
+            if (this.Set == null)
             {
                 return NotFound();
             }
+
             return Page();
         }
+
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -56,30 +44,35 @@ namespace Repeat
                 return Page();
             }
 
-            _context.Attach(Set).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _qService.EditSetAsync(this.Set);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!SetExists(Set.ID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
             return RedirectToPage("./Index");
         }
-        
-        private bool SetExists(int id)
+
+        public async Task<IActionResult> OnPostDetachAsync()
         {
-            return _context.Sets.Any(e => e.ID == id);
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
+            try
+            {
+                await _qService.RemoveQuestionFromSetAsync(this.QuestionSet);
+            }
+            catch
+            {
+                NotFound();
+            }
+
+            return RedirectToPage("./Index");
         }
     }
 }

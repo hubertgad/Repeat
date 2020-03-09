@@ -1,30 +1,24 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Repeat.DataAccess.Data;
+using Repeat.DataAccess.Services;
 using Repeat.Models;
 using Repeat.Pages;
 
 namespace Repeat
 {
     [Authorize]
-    public class CreateModel : CustomPageModel
+    public class CreateModel : CustomPageModelV2
     {
-        public CreateModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
-            : base(context, userManager)
+        public CreateModel(UserManager<IdentityUser> userManager, QuestionService questionService)
+            : base(userManager, questionService)
         {
         }
 
         [BindProperty] public Set Set { get; set; }
-
-        public async Task<IActionResult> OnGetAsync()
-        {
-            CurrentUserID = await GetUserIDAsync();
-
-            return Page();
-        }
-
+        
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -32,17 +26,16 @@ namespace Repeat
                 return Page();
             }
 
-            _context.Sets.Add(Set);
+            this.Set.Shares = new List<Share>
+            {
+                new Share
+                {
+                    SetID = this.Set.ID,
+                    UserID = this.CurrentUserID
+                }
+            };
 
-            await _context.SaveChangesAsync();
-
-            _context.SetUsers.Add(new SetUser 
-            { 
-                SetID = this.Set.ID, 
-                UserID = await GetUserIDAsync() 
-            });
-
-            await _context.SaveChangesAsync();
+            await _qService.CreateSetAsync(this.Set);
 
             return RedirectToPage("./Index");
         }

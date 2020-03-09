@@ -27,7 +27,7 @@ namespace Repeat
         {
             CurrentUserID = await GetUserIDAsync();
 
-            var requestedSet = _context.SetUsers.FirstOrDefault(q => q.Set.ID == id && q.UserID == CurrentUserID);
+            var requestedSet = _context.Shares.FirstOrDefault(q => q.Set.ID == id && q.UserID == CurrentUserID);
             if (requestedSet == null)
             {
                 return NotFound();

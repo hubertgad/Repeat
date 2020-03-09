@@ -10,7 +10,7 @@ namespace Repeat.Models
         public string Name { get; set; }
         [Required]
         public string OwnerID { get; set; }        
-        public virtual ICollection<QuestionSet> QuestionSets { get; set; }
-        public virtual ICollection<SetUser> SetUsers { get; set; }
+        public virtual List<QuestionSet> QuestionSets { get; set; }
+        public virtual List<Share> Shares { get; set; }
     }
 }

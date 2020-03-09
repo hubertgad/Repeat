@@ -17,7 +17,7 @@ namespace Repeat.Pages.TakeTest
         {
         }
 
-        public IList<SetUser> SetUser { get;set; }
+        public IList<Share> SetUser { get;set; }
 
         public async Task OnGetAsync()
         {
@@ -25,9 +25,9 @@ namespace Repeat.Pages.TakeTest
             this.SetUser = await GetSetUsersFromDatabaseAsync();
         }
 
-        private async Task<IList<SetUser>> GetSetUsersFromDatabaseAsync()
+        private async Task<IList<Share>> GetSetUsersFromDatabaseAsync()
         {
-            return await _context.SetUsers
+            return await _context.Shares
                 .Include(s => s.Set)
                 //.Include(s => s.User)
                 .Where(t => t.UserID == CurrentUserID && t.Set.QuestionSets.Any())
