@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Repeat.Models;
+using Repeat.Domain.Models;
 using Repeat.DataAccess.Services;
 
 namespace Repeat.Pages.Administration.Questions

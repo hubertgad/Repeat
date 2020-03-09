@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Repeat.Models;
- 
+using Repeat.Domain.Models;
+
 namespace Repeat.DataAccess.Data
 {
     public partial class ApplicationDbContext : IdentityDbContext

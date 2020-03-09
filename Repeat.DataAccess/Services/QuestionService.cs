@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Repeat.DataAccess.Data;
-using Repeat.Models;
+using Repeat.Domain.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,7 +30,6 @@ namespace Repeat.DataAccess.Services
             {
                 questions = await _context
                     .Questions
-                    .Include(q => q.Answers)
                     .Where(q => q.OwnerID == userID && q.IsDeleted == false)
                     .ToListAsync();
             }
@@ -38,7 +37,6 @@ namespace Repeat.DataAccess.Services
             {
                 questions = await _context
                     .Questions
-                    .Include(q => q.Answers)
                     .Where(q => q.QuestionSets.Any(p => p.SetID == setID)
                         && q.OwnerID == userID
                         && q.IsDeleted == false)
@@ -48,7 +46,6 @@ namespace Repeat.DataAccess.Services
             {
                 questions = await _context
                     .Questions
-                    .Include(q => q.Answers)
                     .Where(q => q.CategoryID == categoryID
                         && q.OwnerID == userID
                         && q.IsDeleted == false)
@@ -58,7 +55,6 @@ namespace Repeat.DataAccess.Services
             {
                 questions = await _context
                     .Questions
-                    .Include(q => q.Answers)
                     .Where(q => q.CategoryID == categoryID
                         && q.QuestionSets.Any(p => p.SetID == setID)
                         && q.OwnerID == userID
@@ -67,7 +63,10 @@ namespace Repeat.DataAccess.Services
             }
             foreach (var question in questions)
             {
-                question.Answers = question.Answers.Where(q => q.IsDeleted == false).ToList();
+                question.Answers = _context
+                    .Answers
+                    .Where(q => q.QuestionID == question.ID && q.IsDeleted == false)
+                    .ToList();
             }
             return questions;
         }
@@ -111,13 +110,12 @@ namespace Repeat.DataAccess.Services
                 .Questions
                 .Where(m => m.OwnerID == userID && m.IsDeleted == false)
                 .Include(o => o.Category)
-                .Include(n => n.Answers)
                 .Include(p => p.Picture)
                 .Include(r => r.QuestionSets).ThenInclude(q => q.Set)
-                .FirstOrDefaultAsync(m => m.ID == questionID);
-            
-            question.Answers = question.Answers.Where(q => q.IsDeleted == false).ToList();
-            
+                .FirstOrDefaultAsync(m => m.ID == questionID);            
+            question.Answers = _context
+                .Answers
+                .Where(q => q.QuestionID == questionID && q.IsDeleted == false).ToList();            
             return question;
         }
 
@@ -211,17 +209,14 @@ namespace Repeat.DataAccess.Services
         public void EditQuestion(Question question)
         {
             _context.Attach(question).State = EntityState.Modified;
-
             foreach (var answer in question.Answers)
             {
                 _context.Attach(answer).State = EntityState.Modified;
             }
-
             foreach (var questionSet in question.QuestionSets)
             {
                 _context.QuestionSets.Add(questionSet);
             }
-
             _context.SaveChanges();
         }
 
@@ -241,7 +236,6 @@ namespace Repeat.DataAccess.Services
         {
             _context.Attach(test).State = EntityState.Modified;
             _context.Entry(test).Property(q => q.CurrentQuestionIndex).IsModified = true;
-
             await _context.SaveChangesAsync();
         }
 
@@ -259,7 +253,8 @@ namespace Repeat.DataAccess.Services
             _context.SaveChanges();
         }
 
-        public void AddNewAnswer(int questionID) => _context.Add(new Answer { QuestionID = questionID, AnswerText = "Type answer text..." });
+        public void AddNewAnswer(int questionID) 
+            => _context.Add(new Answer { QuestionID = questionID, AnswerText = "Type answer text..." });
 
         public async Task RemovePictureAsync(Question question)
         {
@@ -298,7 +293,6 @@ namespace Repeat.DataAccess.Services
             {
                 await MarkQuestionAsDeleted(question);
             }
-
             _context.Attach(category).State = EntityState.Modified;
             category.IsDeleted = true;
             _context.SaveChanges();

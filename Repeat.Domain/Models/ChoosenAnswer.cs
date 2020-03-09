@@ -1,8 +1,9 @@
-﻿namespace Repeat.Models
+﻿using Repeat.Domain.SeedWork;
+
+namespace Repeat.Domain.Models
 {
-    public class ChoosenAnswer
+    public class ChoosenAnswer : Entity
     {
-        public int ID { get; set; }
         public int QuestionResponseID { get; set; }
         public int QuestionID { get; set; }
         public int AnswerID { get; set; }

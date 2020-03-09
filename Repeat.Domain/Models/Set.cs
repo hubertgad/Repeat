@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using Repeat.Domain.SeedWork;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Repeat.Models
+namespace Repeat.Domain.Models
 {
-    public class Set
+    public class Set : Entity
     {
-        public int ID { get; set; }
         [Required, MaxLength(50)]
         public string Name { get; set; }
         [Required]

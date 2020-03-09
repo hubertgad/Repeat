@@ -1,4 +1,4 @@
-﻿namespace Repeat.Models
+﻿namespace Repeat.Domain.Models
 {
     public class QuestionSet
     {

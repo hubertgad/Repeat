@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using Repeat.Domain.SeedWork;
+using System.Collections.Generic;
 
-namespace Repeat.Models
+namespace Repeat.Domain.Models
 {
-    public class Test
+    public class Test : Entity
     {
-        public int ID { get; set; }
         public int SetID { get; set; }
         public Set Set { get; set; }
         public string UserID { get; set; }

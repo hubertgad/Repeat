@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Repeat.DataAccess.Services;
-using Repeat.Models;
+using Repeat.Domain.Models;
 using Repeat.Pages;
 
 namespace Repeat

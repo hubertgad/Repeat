@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Repeat.DataAccess.Services;
-using Repeat.Models;
+using Repeat.Domain.Models;
 
 namespace Repeat.Pages.Administration.Categories
 {

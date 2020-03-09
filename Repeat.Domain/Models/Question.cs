@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using Repeat.Domain.SeedWork;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Repeat.Models
+namespace Repeat.Domain.Models
 {
-    public class Question
+    public class Question : Entity
     {
-        public int ID { get; set; }
         [Required, MaxLength(1000), Display(Name = "Question Text")]
         public string QuestionText { get; set; }
         [MaxLength(1000)]

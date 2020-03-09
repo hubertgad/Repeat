@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Repeat.Models
+namespace Repeat.Domain.Models
 {
     public class Picture
     {
