@@ -21,8 +21,6 @@ namespace Repeat.DataAccess.Services
 
         public bool AnswerExists(int id) => _context.Answers.Any(e => e.ID == id);
 
-        public bool SetExists(int id) => _context.Sets.Any(e => e.ID == id);
-
         public bool ShareExists(Share share) => _context.Shares.Any(e => e == share);
 
         public async Task<List<Question>> GetQuestionListAsync(string userID, int? categoryID = null, int? setID = null)
@@ -172,18 +170,6 @@ namespace Repeat.DataAccess.Services
                     .FirstOrDefaultAsync(m => m.ID == testID && m.IsCompleted == true && m.UserID == userID);
                 return test;
             }
-        }
-
-        public async Task<Answer> GetAnswerByIDAsync(int answerID, bool? includeDeleted = true)
-        {
-            return await _context.Answers.FirstOrDefaultAsync(q => q.ID == answerID);
-        }
-
-        public async Task<QuestionSet> GetQuestionSetAsync(int setID, int questionID)
-        {
-            return await _context
-                .QuestionSets
-                .FirstOrDefaultAsync(q => q.SetID == setID && q.QuestionID == questionID);
         }
 
         public async Task CreateQuestionAsync(Question question)
