@@ -8,7 +8,7 @@ using Repeat.Models;
 namespace Repeat.Pages.Administration.Categories
 {
     [Authorize]
-    public class DeleteModel : CustomPageModelV2
+    public class DeleteModel : CustomPageModel
     {
         public DeleteModel(UserManager<IdentityUser> userManager, QuestionService questionService)
             : base(userManager, questionService)

@@ -61,22 +61,23 @@
         }
         else
         {
-            <input type="submit" class="nav-link btn btn-my m-md-3" asp-route-id="@Model.Test.SetID"
-                    asp-page-handler="Previous" value="Previous" />
+            <input type="submit" class="nav-link btn btn-my m-md-3" 
+                   asp-route-id="@Model.Test.SetID" asp-route-options="Previous"
+                   value="Previous" />
         }
-        @if (Model.Test.CurrentQuestionIndex == Model.Test.Questions.Count - 1)
+        @if (Model.Test.CurrentQuestionIndex == Model.Test.TestQuestions.Count - 1)
         {
-            <input type="submit" class="nav-link btn btn-success m-md-3" asp-route-id="@Model.Test.ID"
-                    asp-page-handler="Finish" value="Finish test"/>
+            <input type="submit" class="nav-link btn btn-success m-md-3" asp-route-id="@Model.Test.ID" 
+                    asp-route-options="Finish" value="Finish test"/>
         }
-        @if (Model.Test.CurrentQuestionIndex == Model.Test.Questions.Count - 1)
+        @if (Model.Test.CurrentQuestionIndex == Model.Test.TestQuestions.Count - 1)
         {
             <button disabled class="nav-link btn btn-my m-md-3">Next</button>
         }
         else
         {
             <input type="submit" class="nav-link btn btn-my m-md-3" asp-route-id="@Model.Test.SetID"
-                    asp-page-handler="Next" value="Next" />
+                    asp-route-options="Next" value="Next" />
         }
     </div>
     </form>

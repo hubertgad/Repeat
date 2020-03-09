@@ -10,13 +10,14 @@
 
 <table class="table">
     <tbody>
-@foreach (var item in Model.SetUser) {
+@foreach (var set in Model.Sets)
+    {
         <tr>
             <td class="col-md-10">
-                @Html.DisplayFor(modelItem => item.Set.Name)
+                @Html.DisplayFor(modelItem => set.Name)
             </td>
             <td class="col-md-2">
-                <a class="btn btn-my" asp-page="./Run" asp-route-id="@item.SetID">RUN</a>
+                <a class="btn btn-my" asp-page="./Run" asp-route-id="@set.ID">RUN</a>
             </td>
         </tr>
 }

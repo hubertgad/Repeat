@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Repeat.Models;
-
+ 
 namespace Repeat.DataAccess.Data
 {
     public partial class ApplicationDbContext : IdentityDbContext
@@ -12,18 +12,16 @@ namespace Repeat.DataAccess.Data
         }
 
         public DbSet<Question> Questions { get; set; }
-        public DbSet<DeletedQuestion> DeletedQuestions { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Answer> Answers { get; set; }
-        public DbSet<DeletedAnswer> DeletedAnswers { get; set; }
         public DbSet<Set> Sets { get; set; }
         public DbSet<QuestionSet> QuestionSets { get; set; }
         public DbSet<Share> Shares { get; set; }
         public DbSet<Picture> Pictures { get; set; }
-        public DbSet<DeletedPicture> DeletedPictures { get; set; }
         public DbSet<Test> Tests { get; set; }
         public DbSet<QuestionResponse> QuestionResponses { get; set; }
         public DbSet<ChoosenAnswer> ChoosenAnswers { get; set; }
+        public DbSet<TestQuestion> TestQuestions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -47,6 +45,12 @@ namespace Repeat.DataAccess.Data
                 .WithMany(su => su.Shares)
                 .HasForeignKey(su => su.SetID);
 
+            builder.Entity<TestQuestion>()
+                .HasKey(tq => new { tq.TestID, tq.QuestionID });
+            builder.Entity<TestQuestion>()
+                .HasOne(tq => tq.Test)
+                .WithMany(tq => tq.TestQuestions)
+                .HasForeignKey(tq => tq.TestID);
         }
     }
 }

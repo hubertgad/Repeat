@@ -9,7 +9,7 @@ using Repeat.Pages;
 namespace Repeat
 {
     [Authorize]
-    public class IndexModel : CustomPageModelV2
+    public class IndexModel : CustomPageModel
     {
         public IndexModel(UserManager<IdentityUser> userManager, QuestionService questionService)
             : base(userManager, questionService)

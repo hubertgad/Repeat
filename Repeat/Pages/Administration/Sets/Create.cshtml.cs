@@ -10,7 +10,7 @@ using Repeat.Pages;
 namespace Repeat
 {
     [Authorize]
-    public class CreateModel : CustomPageModelV2
+    public class CreateModel : CustomPageModel
     {
         public CreateModel(UserManager<IdentityUser> userManager, QuestionService questionService)
             : base(userManager, questionService)

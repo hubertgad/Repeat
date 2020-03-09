@@ -8,7 +8,7 @@ using Repeat.Models;
 namespace Repeat.Pages.Administration.Questions
 {
     [Authorize]
-    public class DetailsModel : CustomPageModelV2
+    public class DetailsModel : CustomPageModel
     {
         public DetailsModel(UserManager<IdentityUser> userManager, QuestionService questionService)
             : base(userManager, questionService)

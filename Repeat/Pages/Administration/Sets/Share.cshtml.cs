@@ -11,7 +11,7 @@ using Repeat.Pages;
 namespace Repeat
 {
     [Authorize]
-    public class ShareModel : CustomPageModelV2
+    public class ShareModel : CustomPageModel
     {
         public ShareModel(UserManager<IdentityUser> userManager, QuestionService questionService)
             : base(userManager, questionService)

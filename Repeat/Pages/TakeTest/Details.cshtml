@@ -59,7 +59,7 @@
                     <img src="@imgSrc" />
                 </dd>
             }
-            @for (int i = 0; i < question.Answers.Count; i++)
+            @for (int i = 0; i < Model.Test.QuestionResponses[Model.Questions.IndexOf(question)].ChoosenAnswers.Count; i++)
             {
                 <dt class="col-sm-2">
                     <nobr>Answer @((char)('A' + i)):</nobr>

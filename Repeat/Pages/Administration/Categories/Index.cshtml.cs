@@ -8,7 +8,7 @@ using Repeat.Models;
 namespace Repeat.Pages.Administration.Categories
 {
     [Authorize]
-    public class IndexModel : CustomPageModelV2
+    public class IndexModel : CustomPageModel
     {
         public IndexModel(UserManager<IdentityUser> userManager, QuestionService questionService)
             : base(userManager, questionService)

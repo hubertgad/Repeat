@@ -10,7 +10,7 @@ using Repeat.DataAccess.Services;
 namespace Repeat.Pages.Administration.Questions
 {
     [Authorize]
-    public class IndexModel : CustomPageModelV2
+    public class IndexModel : CustomPageModel
     {
 
         public IndexModel(UserManager<IdentityUser> userManager, QuestionService questionService)

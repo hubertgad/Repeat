@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Repeat.Models
 {
@@ -11,8 +10,7 @@ namespace Repeat.Models
         public string UserID { get; set; }
         public bool IsCompleted { get; set; }
         public int CurrentQuestionIndex { get; set; }
-        [NotMapped]
-        public List<Question> Questions { get; set; }
+        public List<TestQuestion> TestQuestions { get; set; }
         public List<QuestionResponse> QuestionResponses { get; set; }
 
         public Test()
@@ -25,10 +23,16 @@ namespace Repeat.Models
             this.UserID = CUID;
             this.IsCompleted = false;
             this.CurrentQuestionIndex = 0;
-            this.Questions = questions;
             this.QuestionResponses = new List<QuestionResponse>();
-            foreach (var question in Questions)
+            this.TestQuestions = new List<TestQuestion>();
+            foreach (var question in questions)
             {
+                this.TestQuestions.Add(new TestQuestion
+                {
+                    TestID = this.ID,
+                    QuestionID = question.ID,
+                    Index = questions.IndexOf(question)
+                });
                 QuestionResponses.Add(new QuestionResponse
                 {
                     TestID = this.ID,
@@ -37,9 +41,9 @@ namespace Repeat.Models
                 });
                 foreach (var answer in question.Answers)
                 {
-                    this.QuestionResponses[Questions.IndexOf(question)].ChoosenAnswers.Add(new ChoosenAnswer
+                    this.QuestionResponses[questions.IndexOf(question)].ChoosenAnswers.Add(new ChoosenAnswer
                     {
-                        QuestionResponseID = this.QuestionResponses[Questions.IndexOf(question)].ID,
+                        QuestionResponseID = this.QuestionResponses[questions.IndexOf(question)].ID,
                         QuestionID = question.ID,
                         AnswerID = answer.ID,
                     }); ;

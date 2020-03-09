@@ -13,7 +13,7 @@ using Repeat.Models;
 namespace Repeat.Pages.Administration.Questions
 {
     [Authorize]
-    public class EditModel : CustomPageModelV2
+    public class EditModel : CustomPageModel
     {
         public EditModel(UserManager<IdentityUser> userManager, QuestionService questionService)
             : base (userManager, questionService)
@@ -80,10 +80,10 @@ namespace Repeat.Pages.Administration.Questions
                 return Page();
             }
 
+            Question.Answers.FirstOrDefault(q => q.ID == aid).IsDeleted = true;
+            
             await UpdatePictureStateAsync();
             await UpdateQuestionSetsStateAsync();
-
-            _qService.RemoveAnswer(aid);
 
             try
             {
@@ -111,11 +111,11 @@ namespace Repeat.Pages.Administration.Questions
                 return Page();
             }
 
-            await UpdatePictureStateAsync();
-            await UpdateQuestionSetsStateAsync();
-
             _qService.AddNewAnswer(this.Question.ID);
 
+            await UpdatePictureStateAsync();
+            await UpdateQuestionSetsStateAsync();
+            
             try
             {
                 _qService.EditQuestion(this.Question);

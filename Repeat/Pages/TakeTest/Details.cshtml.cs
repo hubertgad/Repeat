@@ -5,8 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Repeat.DataAccess.Data;
+using Repeat.DataAccess.Services;
 using Repeat.Models;
 
 namespace Repeat.Pages.TakeTest
@@ -14,8 +13,8 @@ namespace Repeat.Pages.TakeTest
     [Authorize]
     public class DetailsModel : CustomPageModel
     {
-        public DetailsModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
-            : base(context, userManager)
+        public DetailsModel(UserManager<IdentityUser> userManager, QuestionService questionService)
+            : base(userManager, questionService)
         {
         }
 
@@ -25,6 +24,7 @@ namespace Repeat.Pages.TakeTest
         public int TotalCollectedPoints { get; set; }
         public int AvailablePoints { get; set; }
         public double Result { get; set; }
+
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -32,59 +32,20 @@ namespace Repeat.Pages.TakeTest
                 return NotFound();
             }
 
-            this.CurrentUserID = await GetUserIDAsync();
-            this.Test = await GetTestFromDatabaseAsync(id);
+            this.Test = await _qService.GetTestByIDAsync(this.CurrentUserID, null, (int)id);
             
-            if (Test == null || !RequestIsValid())
+            if (this.Test == null || !RequestIsValid())
             {
                 return NotFound();
             }
 
-            this.Questions = await GetQuestionsFromDatabaseAsync();
+            this.Questions = Test.TestQuestions.Select(q => q.Question).ToList();
             this.QuestionPoints = CalculatePoints();
             this.TotalCollectedPoints = this.QuestionPoints.Sum();
             this.AvailablePoints = CalculateAvailablePoints();
             this.Result = Math.Round((double)this.TotalCollectedPoints / this.AvailablePoints * 100, 2);
 
             return Page();
-        }
-
-        private async Task<List<Question>> GetQuestionsFromDatabaseAsync()
-        {
-            var questions = new List<Question>();
-            foreach (var questionResponse in this.Test.QuestionResponses)
-            {
-                var question = await _context.Questions.Include(q => q.Answers).FirstOrDefaultAsync(q => q.ID == questionResponse.QuestionID);
-                if (question == null)
-                {
-                    question = new Question(await _context.DeletedQuestions.FirstOrDefaultAsync(q => q.ID == questionResponse.QuestionID));
-                    if (question != null)
-                    {
-                        question.Answers = new List<Answer>();
-                        foreach (var answer in questionResponse.ChoosenAnswers)
-                        {
-                            var deletedAnswer = _context.DeletedAnswers.FirstOrDefault(q => q.ID == answer.AnswerID);
-                            if (deletedAnswer != null)
-                            {
-                                question.Answers.Add(new Answer(deletedAnswer));
-                            }
-                        }
-                    }
-                }
-                questions.Add(question);
-            }
-            return questions;
-        }
-
-        private async Task<Test> GetTestFromDatabaseAsync(int? id)
-        {
-            return await _context
-                .Tests
-                .Include(q => q.Questions).ThenInclude(q => q.Answers)
-                .Include(q => q.Questions).ThenInclude(q => q.Picture)
-                .Include(q => q.QuestionResponses).ThenInclude(q => q.ChoosenAnswers)
-                .Include(q => q.Set)
-                .FirstOrDefaultAsync(m => m.ID == id);
         }
 
         private List<int> CalculatePoints()
@@ -102,10 +63,6 @@ namespace Repeat.Pages.TakeTest
                             .FirstOrDefault(q => q.ID == choosenAnswer.QuestionID)
                             .Answers
                             .FirstOrDefault(q => q.ID == choosenAnswer.AnswerID);
-                        if (answer == null)
-                        {
-                            answer = new Answer(_context.DeletedAnswers.FirstOrDefault(q => q.ID == choosenAnswer.AnswerID));
-                        }
 
                         if (answer.IsTrue == true)
                         {

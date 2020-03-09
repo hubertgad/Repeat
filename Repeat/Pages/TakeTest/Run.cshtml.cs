@@ -1,11 +1,10 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Repeat.DataAccess.Data;
+using Repeat.DataAccess.Services;
 using Repeat.Models;
 using Repeat.Pages;
 
@@ -14,8 +13,8 @@ namespace Repeat
     [Authorize]
     public class RunModel : CustomPageModel
     {
-        public RunModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
-            : base(context, userManager)
+        public RunModel(UserManager<IdentityUser> userManager, QuestionService questionService)
+            : base(userManager, questionService)
         {
         }
 
@@ -25,150 +24,89 @@ namespace Repeat
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            CurrentUserID = await GetUserIDAsync();
 
-            var requestedSet = _context.Shares.FirstOrDefault(q => q.Set.ID == id && q.UserID == CurrentUserID);
+            var requestedSet = await _qService.GetSetByIDAsync((int)id, this.CurrentUserID, true);
+
             if (requestedSet == null)
             {
                 return NotFound();
             }
 
-            if (StartedTest(id) != null)
+            var startedTest = await _qService.GetTestByIDAsync(this.CurrentUserID, (int)id);
+            if (startedTest != null)
             {
-                this.Test = StartedTest(id);
+                this.Test = startedTest;
             }
             else
             {
-                var questions = _context.Questions
-                .Include(q => q.Answers)
-                .Where(q => q.QuestionSets.Any(q => q.SetID == id)).ToList();
+                var set = await _qService.GetSetByIDAsync((int)id, this.CurrentUserID, true);
+                var questions = await _qService.GetQuestionListAsync(this.CurrentUserID, null, (int)id);
 
-                this.Test = new Test(_context.Sets.FirstOrDefault(q => q.ID == id), CurrentUserID, questions);
-                _context.Add(this.Test);
+                this.Test = new Test(set, this.CurrentUserID, questions);
 
                 try
                 {
-                    await _context.SaveChangesAsync();
+                    await _qService.CreateTestAsync(this.Test);
                 }
-                catch (Exception)
+                catch
                 {
                     return NotFound();
                 }
             }
 
             this.CurrentQuestion = GetCurrentQuestion();
-            this.QuestionResponse = await GetQuestionResponseFromDBAsync();
+            this.QuestionResponse = this.Test.QuestionResponses[this.Test.CurrentQuestionIndex];
 
             return Page();
         }
 
         private Question GetCurrentQuestion()
         {
-            Question currentQuestion;
-            try
-            {
-                currentQuestion = Test.Questions[Test.CurrentQuestionIndex];
-            }
-            catch
-            {
-                currentQuestion = Test.Questions[0];
-            }
-            return currentQuestion;
+            return Test
+                    .TestQuestions
+                    .Where(q => q.Index == Test.CurrentQuestionIndex)
+                    .Select(q => q.Question)
+                    .FirstOrDefault();
         }
-
-        private async Task<QuestionResponse> GetQuestionResponseFromDBAsync()
-        {
-            return await _context
-                .QuestionResponses.Where(q => q.TestID == this.Test.ID && q.QuestionID == this.CurrentQuestion.ID)
-                .Include(q => q.ChoosenAnswers)
-                .FirstOrDefaultAsync();
-        }
-
-        public async Task<IActionResult> OnPostPreviousAsync(int? id)
+        
+        public async Task<IActionResult> OnPostAsync(int? id, string options)
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            _context.Entry(Test).Property(q => q.CurrentQuestionIndex).IsModified = true;
-            this.Test.CurrentQuestionIndex--;
-            foreach (var choosenAnswer in QuestionResponse.ChoosenAnswers)
+            switch (options)
             {
-                _context.Attach(choosenAnswer).State = EntityState.Modified;
+                case "Next":
+                    this.Test.CurrentQuestionIndex++;
+                    break;
+                case "Previous":
+                    this.Test.CurrentQuestionIndex--;
+                    break;
+                case "Finish":
+                    this.Test.IsCompleted = true;
+                    break;
             }
 
             try
             {
-                await _context.SaveChangesAsync();
+                _qService.EditQuestionResponseAsync(this.QuestionResponse);
+                await _qService.EditTestAsync(this.Test);
             }
             catch (DbUpdateConcurrencyException)
             {
                 return NotFound();
             }
 
-            return RedirectToPage(new { id });
-        }
-
-        public async Task<IActionResult> OnPostNextAsync(int? id)
-        {
-            if (!ModelState.IsValid)
+            if (options == "Finish")
             {
-                return Page();
+                return RedirectToPage("./Details", new { id });
             }
-
-            _context.Entry(Test).Property(q => q.CurrentQuestionIndex).IsModified = true;
-            this.Test.CurrentQuestionIndex++;
-            foreach (var choosenAnswer in QuestionResponse.ChoosenAnswers)
+            else
             {
-                _context.Attach(choosenAnswer).State = EntityState.Modified;
+                return RedirectToPage(new { id });
             }
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return NotFound();
-            }
-
-            return RedirectToPage(new { id });
-        }
-
-        public async Task<IActionResult> OnPostFinishAsync(int? id)
-        {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            _context.Entry(Test).Property(q => q.IsCompleted).IsModified = true;
-            this.Test.IsCompleted = true;
-            foreach (var choosenAnswer in QuestionResponse.ChoosenAnswers)
-            {
-                _context.Attach(choosenAnswer).State = EntityState.Modified;
-            }
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return NotFound();
-            }
-
-            return RedirectToPage("./Details", new { id });
-        }
-
-        private Test StartedTest(int? id)
-        {
-            return _context.Tests
-                .Include(q => q.Questions).ThenInclude(q => q.Answers)
-                .Include(q => q.Questions).ThenInclude(q => q.Picture)
-                .Where(q => q.SetID == id && q.UserID == CurrentUserID)
-                .FirstOrDefault(o => o.IsCompleted == false);
         }
     }
 }

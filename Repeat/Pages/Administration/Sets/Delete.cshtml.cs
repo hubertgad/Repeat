@@ -10,7 +10,7 @@ using Repeat.Pages;
 namespace Repeat
 {
     [Authorize]
-    public class DeleteModel : CustomPageModelV2
+    public class DeleteModel : CustomPageModel
     {
         public DeleteModel(UserManager<IdentityUser> userManager, QuestionService questionService)
             : base(userManager, questionService)
