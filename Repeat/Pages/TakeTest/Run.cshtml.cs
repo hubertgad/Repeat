@@ -40,9 +40,9 @@ namespace Repeat
             else
             {
                 var set = await _qService.GetSetByIDAsync((int)id, this.CurrentUserID, true);
-                var questions = await _qService.GetQuestionListAsync(this.CurrentUserID, null, (int)id);
+                var questions = await _qService.GetQuestionListAsync(this.CurrentUserID, null, (int)id, true);
 
-                this.Test = new Test(set, this.CurrentUserID, questions);
+                this.Test = await _qService.AddNewTestAsync(set, this.CurrentUserID, questions);
 
                 try
                 {

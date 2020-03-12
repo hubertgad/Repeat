@@ -2,7 +2,7 @@
 for details on configuring this project to bundle and minify static web assets. */
 
 
-pre {
+.counter {
     counter-reset: line;
 }
 
@@ -21,7 +21,6 @@ code {
         -webkit-user-select: none;
     }
 
-
 a.navbar-brand {
   white-space: normal;
   text-align: center;
@@ -29,7 +28,7 @@ a.navbar-brand {
 }
 
 .given-answer {
-    background-color: cornflowerblue;
+    background-color: bisque;
 }
 
 .multiline {

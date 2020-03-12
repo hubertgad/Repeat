@@ -11,9 +11,24 @@
 <hr />
 <div class="col-md-12">
     <div>
-        <span class="question">@Html.DisplayFor(model => model.CurrentQuestion.QuestionText)
-        </span>
+        @foreach (var part in Model.SplitTextByPattern(Model.CurrentQuestion.QuestionText))
+        {
+            if (part.Contains(@"<code>") && (part.Contains(@"</code>")))
+            {
+                <span>
+                    @foreach (var line in part.Replace("<code>", "").Replace("</code>", "").Split("\n"))
+                    {
+                        <code class="multiline">@Html.DisplayFor(x => line)<br /></code>
+                    }
+                </span>
+            }
+            else
+            {
+                <span class="multiline">@Html.DisplayFor(x => part)</span>
+            }
+        }
     </div>
+    <br />
     <div>
         @if (@Model.CurrentQuestion.Picture != null)
         {
@@ -27,7 +42,7 @@
     <div>
         @if (Model.CurrentQuestion.Code != null)
         {
-        <pre>
+            <pre>
             @foreach (var line in Model.CurrentQuestion.Code.Split("\n"))
             {<code>@Html.DisplayFor(model => line)<br /></code>}
         </pre>
@@ -42,44 +57,61 @@
         <input type="hidden" asp-for="Test.CurrentQuestionIndex" />
         @for (int i = 0; i < Model.CurrentQuestion.Answers.Count; i++)
         {
-            <div>
+            <div class="input-group">
                 <input type="hidden" asp-for="QuestionResponse.ChoosenAnswers[i].ID" />
                 <input type="hidden" asp-for="QuestionResponse.ChoosenAnswers[i].QuestionResponseID" />
                 <input type="hidden" asp-for="QuestionResponse.ChoosenAnswers[i].QuestionID" value="@Model.CurrentQuestion.ID" />
                 <input type="hidden" asp-for="QuestionResponse.ChoosenAnswers[i].AnswerID" value="@Model.CurrentQuestion.Answers[i].ID" />
-                <label>
-                    <input type="checkbox"
-                           asp-for="QuestionResponse.ChoosenAnswers[i].GivenAnswer" />
-                    @Html.DisplayFor(a => Model.CurrentQuestion.Answers[i].AnswerText)
-                </label>
+                <div class="d-inline">
+                    <input type="checkbox" class="align-content-center"
+                            asp-for="QuestionResponse.ChoosenAnswers[i].GivenAnswer" />
+                </div>
+                <div class="d-inline">
+                    @foreach (var part in Model.SplitTextByPattern(Model.CurrentQuestion.Answers[i].AnswerText))
+                    {
+                        if (part.Contains(@"<code>") && (part.Contains(@"</code>")))
+                        {
+                            <span>
+                                @foreach (var line in part.Replace("<code>", "").Replace("</code>", "").Split("\n"))
+                                {
+                                    <code class="multiline">@Html.DisplayFor(x => line)<br /></code>
+                                }
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="multiline">@Html.DisplayFor(x => part)</span>
+                        }
+                    }
+                </div>
             </div>
         }
-    <div class="btn-group">
-        @if (Model.Test.CurrentQuestionIndex == 0)
-        {
-            <button disabled class="nav-link btn btn-my m-md-3">Previous</button>
-        }
-        else
-        {
-            <input type="submit" class="nav-link btn btn-my m-md-3" 
-                   asp-route-id="@Model.Test.SetID" asp-route-options="Previous"
-                   value="Previous" />
-        }
-        @if (Model.Test.CurrentQuestionIndex == Model.Test.TestQuestions.Count - 1)
-        {
-            <input type="submit" class="nav-link btn btn-success m-md-3" asp-route-id="@Model.Test.ID" 
-                    asp-route-options="Finish" value="Finish test"/>
-        }
-        @if (Model.Test.CurrentQuestionIndex == Model.Test.TestQuestions.Count - 1)
-        {
-            <button disabled class="nav-link btn btn-my m-md-3">Next</button>
-        }
-        else
-        {
-            <input type="submit" class="nav-link btn btn-my m-md-3" asp-route-id="@Model.Test.SetID"
-                    asp-route-options="Next" value="Next" />
-        }
-    </div>
+        <div class="btn-group">
+            @if (Model.Test.CurrentQuestionIndex == 0)
+            {
+                <button disabled class="nav-link btn btn-my m-md-3">Previous</button>
+            }
+            else
+            {
+                <input type="submit" class="nav-link btn btn-my m-md-3"
+                       asp-route-id="@Model.Test.SetID" asp-route-options="Previous"
+                       value="Previous" />
+            }
+            @if (Model.Test.CurrentQuestionIndex == Model.Test.TestQuestions.Count - 1)
+            {
+                <input type="submit" class="nav-link btn btn-success m-md-3" asp-route-id="@Model.Test.ID"
+                       asp-route-options="Finish" value="Finish test" />
+            }
+            @if (Model.Test.CurrentQuestionIndex == Model.Test.TestQuestions.Count - 1)
+            {
+                <button disabled class="nav-link btn btn-my m-md-3">Next</button>
+            }
+            else
+            {
+                <input type="submit" class="nav-link btn btn-my m-md-3" asp-route-id="@Model.Test.SetID"
+                       asp-route-options="Next" value="Next" />
+            }
+        </div>
     </form>
 </div>
 

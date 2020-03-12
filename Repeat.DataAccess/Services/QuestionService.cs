@@ -23,10 +23,18 @@ namespace Repeat.DataAccess.Services
 
         public bool ShareExists(Share share) => _context.Shares.Any(e => e == share);
 
-        public async Task<List<Question>> GetQuestionListAsync(string userID, int? categoryID = null, int? setID = null)
+        public async Task<List<Question>> GetQuestionListAsync(string userID, int? categoryID, int? setID, bool shared = false)
         {
             List<Question> questions;
-            if (categoryID == null && setID == null)
+            if (setID != null && shared == true)
+            {
+                questions = await _context
+                    .Questions
+                    .Include(q => q.QuestionSets)
+                    .Where(q => q.QuestionSets.Any(w => w.SetID == setID) && q.IsDeleted == false)
+                    .ToListAsync();
+            }
+            else if (categoryID == null && setID == null)
             {
                 questions = await _context
                     .Questions
@@ -101,7 +109,7 @@ namespace Repeat.DataAccess.Services
             return await _context.QuestionSets.Where(q => q.QuestionID == question.ID).ToListAsync();
         }
 
-        public async Task<List<IdentityUser>> GetUserListAsync(string userID) 
+        public async Task<List<IdentityUser>> GetUserListAsync(string userID)
             => await _context.Users.Where(q => q.Id != userID).ToListAsync();
 
         public async Task<Question> GetQuestionByIDAsync(int questionID, string userID)
@@ -112,10 +120,10 @@ namespace Repeat.DataAccess.Services
                 .Include(o => o.Category)
                 .Include(p => p.Picture)
                 .Include(r => r.QuestionSets).ThenInclude(q => q.Set)
-                .FirstOrDefaultAsync(m => m.ID == questionID);            
+                .FirstOrDefaultAsync(m => m.ID == questionID);
             question.Answers = _context
                 .Answers
-                .Where(q => q.QuestionID == questionID && q.IsDeleted == false).ToList();            
+                .Where(q => q.QuestionID == questionID && q.IsDeleted == false).ToList();
             return question;
         }
 
@@ -137,8 +145,8 @@ namespace Repeat.DataAccess.Services
                     .FirstOrDefaultAsync(q => q.ID == setID &&
                         (q.OwnerID == userID || q.Shares.Any(p => p.UserID == userID)));
             }
-            else 
-            { 
+            else
+            {
                 return await _context
                     .Sets
                     .Where(m => m.OwnerID == userID)
@@ -261,8 +269,15 @@ namespace Repeat.DataAccess.Services
             _context.SaveChanges();
         }
 
-        public void AddNewAnswer(int questionID) 
+        public void AddNewAnswer(int questionID)
             => _context.Add(new Answer { QuestionID = questionID, AnswerText = "Type answer text..." });
+
+        public async Task<Test> AddNewTestAsync(Set set, string userID, List<Question> questions)
+        {
+            var test = new Test(set, userID, questions);
+            await _context.Tests.AddAsync(test);
+            return test;
+        }
 
         public async Task RemovePictureAsync(Question question)
         {

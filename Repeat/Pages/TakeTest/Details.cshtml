@@ -32,7 +32,23 @@
             <hr />
             <dl class="row">
                 <dd class="col-sm-12 mb-3">
-                    <span class="question">@Html.DisplayFor(model => question.QuestionText)</span>
+                    @foreach (var part in Model.SplitTextByPattern(question.QuestionText))
+                    {
+                        if (part.Contains(@"<code>") && (part.Contains(@"</code>")))
+                        {
+                            <span>
+                                @foreach (var line in part.Replace("<code>", "").Replace("</code>", "").Split("\n"))
+                                {
+                                    <code class="multiline">@Html.DisplayFor(x => line)<br /></code>
+
+                                }
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="multiline">@Html.DisplayFor(x => part)</span>
+                        }
+                    }
                 </dd>
             @if (question.Code != null)
             {
@@ -41,7 +57,7 @@
                     </dt>
                     <dd class="col-sm-10">
                         <pre>
-                            @foreach (var line in question.Code.Split("\n"))
+                            @foreach (var line in question.Code.Split("\n", StringSplitOptions.None))
                             {<code>@Html.DisplayFor(model => line)<br /></code>}
                         </pre>
                     </dd>
@@ -62,23 +78,57 @@
             @for (int i = 0; i < Model.Test.QuestionResponses[Model.Questions.IndexOf(question)].ChoosenAnswers.Count; i++)
             {
                 <dt class="col-sm-2">
-                    <nobr>Answer @((char)('A' + i)):</nobr>
+                    <nobr>
+                        Answer @((char)('A' + i)):
+                        @if (question.Answers[i].IsTrue == true)
+                        {<span class="badge badge-success">True</span> }
+                        else
+                        { <span class="badge badge-danger">False</span>}
+                    </nobr>
                 </dt>
                 <dd class="col-sm-10">
                     @if (Model.Test.QuestionResponses[Model.Questions.IndexOf(question)].ChoosenAnswers.FirstOrDefault(q => q.AnswerID == question.Answers[i].ID).GivenAnswer == true)
                     {
-                        <div class="given-answer">
-                            <span>@Html.DisplayFor(model => question.Answers[i].AnswerText)</span>
-                            @if (question.Answers[i].IsTrue == true) { <span class="badge badge-success">True</span> }
-                            else { <span class="badge badge-danger">False</span> }
-                        </div>
+                    <div class="given-answer">
+                        @foreach (var part in Model.SplitTextByPattern(question.Answers[i].AnswerText))
+                        {
+                            if (part.Contains(@"<code>") && (part.Contains(@"</code>")))
+                            {
+                                <span>
+                                    @foreach (var line in part.Replace("<code>", "").Replace("</code>", "").Split("\n"))
+                                    {
+                                        <code class="multiline">@Html.DisplayFor(x => line)<br /></code>
+
+                                    }
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="multiline">@Html.DisplayFor(x => part)</span>
+                            }
+                        }
+                    </div>
                     }
                     else
                     {
                         <div>
-                            <span>@Html.DisplayFor(model => question.Answers[i].AnswerText)</span>
-                            @if (question.Answers[i].IsTrue == true) { <span class="badge badge-success">True</span> }
-                            else { <span class="badge badge-danger">False</span> }
+                            @foreach (var part in Model.SplitTextByPattern(question.Answers[i].AnswerText))
+                            {
+                                if (part.Contains(@"<code>") && (part.Contains(@"</code>")))
+                                {
+                                    <span>
+                                        @foreach (var line in part.Replace("<code>", "").Replace("</code>", "").Split("\n"))
+                                        {
+                                            <code class="multiline">@Html.DisplayFor(x => line)<br /></code>
+
+                                        }
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="multiline">@Html.DisplayFor(x => part)</span>
+                                }
+                            }
                         </div>
                     }
                 </dd>
