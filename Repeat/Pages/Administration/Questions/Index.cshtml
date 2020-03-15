@@ -41,11 +41,10 @@
                 {
                     if (part.Contains(@"<code>") && (part.Contains(@"</code>")))
                     {
-                        <span>
+                        <span class="code">
                             @foreach (var line in part.Replace("<code>", "").Replace("</code>", "").Split("\n"))
                             {
                                 <code class="multiline">@Html.DisplayFor(x => line)<br /></code>
-
                             }
                         </span>
                     }

@@ -15,7 +15,7 @@
         {
             if (part.Contains(@"<code>") && (part.Contains(@"</code>")))
             {
-                <span>
+                <span class="code">
                     @foreach (var line in part.Replace("<code>", "").Replace("</code>", "").Split("\n"))
                     {
                         <code class="multiline">@Html.DisplayFor(x => line)<br /></code>
@@ -37,15 +37,6 @@
             <img class="embed-responsive-item" src="@imgSrc" />
             <span class="multiline">
             </span>
-        }
-    </div>
-    <div>
-        @if (Model.CurrentQuestion.Code != null)
-        {
-            <pre>
-            @foreach (var line in Model.CurrentQuestion.Code.Split("\n"))
-            {<code>@Html.DisplayFor(model => line)<br /></code>}
-        </pre>
         }
     </div>
     <form method="post">

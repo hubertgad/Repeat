@@ -32,7 +32,7 @@ namespace Repeat
                 return NotFound();
             }
 
-            var startedTest = await _qService.GetTestByIDAsync(this.CurrentUserID, (int)id);
+            var startedTest = await _qService.GetTestByIDAsync(this.CurrentUserID, id);
             if (startedTest != null)
             {
                 this.Test = startedTest;

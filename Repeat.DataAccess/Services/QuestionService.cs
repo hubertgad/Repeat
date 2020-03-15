@@ -188,14 +188,12 @@ namespace Repeat.DataAccess.Services
 
         public async Task CreateQuestionAsync(Question question)
         {
-            question.IsDeleted = false;
             await _context.Questions.AddAsync(question);
             await _context.SaveChangesAsync();
         }
 
         public async Task CreateCategoryAsync(Category category)
         {
-            category.IsDeleted = false;
             await _context.Categories.AddAsync(category);
             await _context.SaveChangesAsync();
         }

@@ -6,10 +6,8 @@ namespace Repeat.Domain.Models
 {
     public class Question : Entity
     {
-        [Required, MaxLength(1000), Display(Name = "Question Text")]
+        [Required, MaxLength(5000), Display(Name = "Question Text")]
         public string QuestionText { get; set; }
-        [MaxLength(1000)]
-        public string Code { get; set; }
         [Display(Name = "Category ID")]
         public int CategoryID { get; set; }
         [Required]

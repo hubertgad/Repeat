@@ -8,12 +8,14 @@ for details on configuring this project to bundle and minify static web assets. 
 
 code {
     counter-increment: line;
+    font-size: small;
+    overflow: scroll !important;
 }
 
     code::before {
         content: counter(line);
         display: inline-block;
-        width: 2em; 
+        width: 2.5em; 
         border-right: 1px solid #ddd;
         padding: 0 .5em;
         margin-right: .5em;
