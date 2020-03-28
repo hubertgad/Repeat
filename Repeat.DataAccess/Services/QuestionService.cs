@@ -63,7 +63,9 @@ namespace Repeat.DataAccess.Services
                 }
             }
 
-            foreach (var question in query)
+            var questions = await query.ToListAsync();
+
+            foreach (var question in questions)
             {
                 question.Answers = 
                     await _context.Answers
@@ -71,13 +73,11 @@ namespace Repeat.DataAccess.Services
                     .ToListAsync();
             }
 
-            return await query.ToListAsync();
+            return questions;
         }
 
         public async Task<List<Category>> GetCategoryListAsync(string userID)
-            => await _context.Categories
-            .Where(q => q.OwnerID == userID && q.IsDeleted == false)
-            .ToListAsync();
+            => await _context.Categories.Where(q => q.OwnerID == userID && q.IsDeleted == false).ToListAsync();
 
         public async Task<List<Set>> GetSetListAsync(string userID, bool includeShared = false)
         {
@@ -104,16 +104,15 @@ namespace Repeat.DataAccess.Services
                 .Include(r => r.QuestionSets).ThenInclude(q => q.Set)
                 .FirstOrDefaultAsync(m => m.ID == questionID);
 
-            question.Answers = _context.Answers
-                .Where(q => q.QuestionID == questionID && q.IsDeleted == false).ToList();
+            question.Answers = await _context.Answers
+                .Where(q => q.QuestionID == questionID && q.IsDeleted == false).ToListAsync();
 
             return question;
         }
 
         public async Task<Category> GetCategoryByIDAsync(int categoryID, string userID)
         {
-            return 
-                await _context.Categories
+            return await _context.Categories
                 .Where(m => m.OwnerID == userID && m.IsDeleted == false)
                 .FirstOrDefaultAsync(m => m.ID == categoryID);
         }
