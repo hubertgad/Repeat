@@ -81,26 +81,17 @@ namespace Repeat.DataAccess.Services
 
         public async Task<List<Set>> GetSetListAsync(string userID, bool includeShared = false)
         {
+            var query = _context.Sets.Include(q => q.Shares).Where(q => q.OwnerID == userID);
+
             if (includeShared == true)
             {
-                return await _context.Sets
-                    .Include(q => q.Shares)
-                    .Include(q => q.QuestionSets).ThenInclude(q => q.Question).ThenInclude(q => q.Category)
-                    .Where(q => q.OwnerID == userID || q.Shares.Any(p => p.UserID == userID))
-                    .ToListAsync();
+                    query = query.Include(q => q.QuestionSets).ThenInclude(q => q.Question).ThenInclude(q => q.Category)
+                    .Where(q => q.Shares.Any(p => p.UserID == userID));
             }
-            else
-            {
-                return await _context.Sets
-                    .Include(q => q.Shares)
-                    .Where(q => q.OwnerID == userID)
-                    .ToListAsync();
-            }
+
+            return await query.ToListAsync();
         }
-
-        public async Task<List<QuestionSet>> GetQuestionSetListAsync(Question question)
-            => await _context.QuestionSets.Where(q => q.QuestionID == question.ID).ToListAsync();
-
+        
         public async Task<List<IdentityUser>> GetUserListAsync(string userID)
             => await _context.Users.Where(q => q.Id != userID).ToListAsync();
 
@@ -112,8 +103,10 @@ namespace Repeat.DataAccess.Services
                 .Include(p => p.Picture)
                 .Include(r => r.QuestionSets).ThenInclude(q => q.Set)
                 .FirstOrDefaultAsync(m => m.ID == questionID);
+
             question.Answers = _context.Answers
                 .Where(q => q.QuestionID == questionID && q.IsDeleted == false).ToList();
+
             return question;
         }
 
@@ -127,53 +120,37 @@ namespace Repeat.DataAccess.Services
 
         public async Task<Set> GetSetByIDAsync(int setID, string userID, bool includeShared = false)
         {
+            var query = _context.Sets.Include(o => o.QuestionSets).ThenInclude(q => q.Question)
+                .Where(m => m.ID == setID);
+
             if (includeShared == true)
             {
-                return 
-                    await _context.Sets
-                    .Include(q => q.QuestionSets)
-                    .FirstOrDefaultAsync(q => q.ID == setID &&
-                        (q.OwnerID == userID || q.Shares.Any(p => p.UserID == userID)));
+                return await query
+                    .FirstOrDefaultAsync(q => q.OwnerID == userID || q.Shares.Any(p => p.UserID == userID));
             }
             else
             {
-                return 
-                    await _context.Sets
-                    .Where(m => m.OwnerID == userID)
-                    .Include(o => o.QuestionSets).ThenInclude(q => q.Question)
-                    .FirstOrDefaultAsync(m => m.ID == setID);
+                return await query.FirstOrDefaultAsync(m => m.OwnerID == userID);
             }
         }
 
         public async Task<Test> GetTestByIDAsync(string userID, int? setID = null, int? testID = null)
         {
-            if (setID != null && testID == null)
-            {
-                return await _context
-                    .Tests
+            var query = _context.Tests
                     .Include(q => q.TestQuestions).ThenInclude(q => q.Question).ThenInclude(q => q.Answers)
                     .Include(q => q.TestQuestions).ThenInclude(q => q.Question).ThenInclude(q => q.Picture)
-                    .Include(q => q.QuestionResponses).ThenInclude(p => p.ChoosenAnswers)
+                    .Include(q => q.QuestionResponses).ThenInclude(p => p.ChoosenAnswers);
+
+            if (setID != null && testID == null)
+            {
+                return await query
                     .FirstOrDefaultAsync(q => q.SetID == setID && q.UserID == userID && q.IsCompleted == false);
             }
             else
             {
-                var test = await _context
-                    .Tests
-                    .Include(q => q.TestQuestions).ThenInclude(p => p.Question).ThenInclude(w => w.Answers)
-                    .Include(q => q.TestQuestions).ThenInclude(p => p.Question).ThenInclude(w => w.Picture)
-                    .Include(q => q.QuestionResponses).ThenInclude(q => q.ChoosenAnswers)
-                    .Include(q => q.Set)
+                return await query.Include(q => q.Set)
                     .FirstOrDefaultAsync(m => m.ID == testID && m.IsCompleted == true && m.UserID == userID);
-                return test;
             }
-        }
-
-        public async Task<QuestionSet> GetQuestionSetByIDAsync(int questionID, int setID)
-        {
-            return 
-                await _context.QuestionSets
-                .FirstOrDefaultAsync(q => q.QuestionID == questionID && q.SetID == setID);
         }
     }
 }
