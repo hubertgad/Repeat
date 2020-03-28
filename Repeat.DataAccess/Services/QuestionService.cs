@@ -35,63 +35,43 @@ namespace Repeat.DataAccess.Services
             _context.Remove(t);
             await _context.SaveChangesAsync();
         }
-         
+
         public bool ElementExists<T>(T t) where T : class, IEntity => _context.Set<T>().Any(e => e == t);
 
         public async Task<List<Question>> GetQuestionListAsync(string userID, int? categoryID, int? setID, bool shared = false)
         {
-            List<Question> questions;
+            var query = _context.Questions.Include(q => q.QuestionSets).Where(q => q.IsDeleted == false);
+
             if (setID != null && shared == true)
             {
-                questions = await _context
-                    .Questions
-                    .Include(q => q.QuestionSets)
-                    .Where(q => q.QuestionSets.Any(w => w.SetID == setID) && q.IsDeleted == false)
-                    .ToListAsync();
-            }
-            else if (categoryID == null && setID == null)
-            {
-                questions = await _context
-                    .Questions
-                    .Where(q => q.OwnerID == userID && q.IsDeleted == false)
-                    .ToListAsync();
-            }
-            else if (categoryID == null)
-            {
-                questions = await _context
-                    .Questions
-                    .Where(q => q.QuestionSets.Any(p => p.SetID == setID)
-                        && q.OwnerID == userID
-                        && q.IsDeleted == false)
-                    .ToListAsync();
-            }
-            else if (setID == null)
-            {
-                questions = await _context
-                    .Questions
-                    .Where(q => q.CategoryID == categoryID
-                        && q.OwnerID == userID
-                        && q.IsDeleted == false)
-                    .ToListAsync();
+                query = query.Where(q => q.QuestionSets.Any(w => w.SetID == setID));
             }
             else
             {
-                questions = await _context
-                    .Questions
-                    .Where(q => q.CategoryID == categoryID
-                        && q.QuestionSets.Any(p => p.SetID == setID)
-                        && q.OwnerID == userID
-                        && q.IsDeleted == false)
-                    .ToListAsync();
+                query = query.Where(q => q.OwnerID == userID);
+                if (categoryID == null && setID != null)
+                {
+                    query = query.Where(q => q.QuestionSets.Any(p => p.SetID == setID));
+                }
+                else if (categoryID != null)
+                {
+                    query = query.Where(q => q.CategoryID == categoryID);
+                    if (setID != null)
+                    {
+                        query = query.Where(q => q.QuestionSets.Any(p => p.SetID == setID));
+                    }
+                }
             }
-            foreach (var question in questions)
+
+            foreach (var question in query)
             {
-                question.Answers = await _context
-                    .Answers
+                question.Answers = 
+                    await _context.Answers
                     .Where(q => q.QuestionID == question.ID && q.IsDeleted == false)
                     .ToListAsync();
             }
-            return questions;
+
+            return await query.ToListAsync();
         }
 
         public async Task<List<Category>> GetCategoryListAsync(string userID)
