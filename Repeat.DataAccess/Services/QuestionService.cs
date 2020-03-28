@@ -71,10 +71,10 @@ namespace Repeat.DataAccess.Services
             }
             foreach (var question in questions)
             {
-                question.Answers = _context
+                question.Answers = await _context
                     .Answers
                     .Where(q => q.QuestionID == question.ID && q.IsDeleted == false)
-                    .ToList();
+                    .ToListAsync();
             }
             return questions;
         }
