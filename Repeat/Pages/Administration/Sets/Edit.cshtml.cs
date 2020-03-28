@@ -46,7 +46,7 @@ namespace Repeat
 
             try
             {
-                await _qService.EditSetAsync(this.Set);
+                await _qService.UpdateAsync(this.Set);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -60,7 +60,7 @@ namespace Repeat
         {
             try
             {
-                await _qService.RemoveQuestionFromSetAsync(this.QuestionSet);
+                await _qService.RemoveAsync(this.QuestionSet);
             }
             catch
             {

@@ -1,6 +1,8 @@
-﻿namespace Repeat.Domain.Models
+﻿using Repeat.Domain.SeedWork;
+
+namespace Repeat.Domain.Models
 {
-    public class QuestionSet
+    public class QuestionSet : IEntity
     {
         public int QuestionID { get; set; }
         public int SetID { get; set; }

@@ -41,12 +41,11 @@ namespace Repeat
             {
                 var set = await _qService.GetSetByIDAsync((int)id, this.CurrentUserID, true);
                 var questions = await _qService.GetQuestionListAsync(this.CurrentUserID, null, (int)id, true);
-
-                this.Test = await _qService.AddNewTestAsync(set, this.CurrentUserID, questions);
+                this.Test = new Test(set, this.CurrentUserID, questions);
 
                 try
                 {
-                    await _qService.CreateTestAsync(this.Test);
+                    await _qService.AddAsync(this.Test);
                 }
                 catch
                 {
@@ -91,8 +90,7 @@ namespace Repeat
 
             try
             {
-                _qService.EditQuestionResponseAsync(this.QuestionResponse);
-                await _qService.EditTestAsync(this.Test);
+                await _qService.UpdateAsync(this.Test);
             }
             catch (DbUpdateConcurrencyException)
             {

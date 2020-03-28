@@ -35,7 +35,7 @@ namespace Repeat
                 }
             };
 
-            await _qService.CreateSetAsync(this.Set);
+            await _qService.AddAsync(this.Set);
 
             return RedirectToPage("./Index");
         }

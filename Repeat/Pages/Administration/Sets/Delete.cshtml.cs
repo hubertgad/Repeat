@@ -47,7 +47,7 @@ namespace Repeat
 
             if (Set != null)
             {
-                await _qService.RemoveSetAsync(this.Set);
+                await _qService.RemoveAsync(this.Set);
             }
 
             return RedirectToPage("./Index");

@@ -83,7 +83,7 @@ namespace Repeat.Pages.Administration.Questions
 
             try
             {
-                await _qService.CreateQuestionAsync(this.Question);
+                await _qService.AddAsync(this.Question);
             }
             catch
             {

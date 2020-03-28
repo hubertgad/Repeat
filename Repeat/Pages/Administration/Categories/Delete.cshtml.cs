@@ -42,10 +42,17 @@ namespace Repeat.Pages.Administration.Categories
             }
 
             this.Category = await _qService.GetCategoryByIDAsync((int)id, this.CurrentUserID);
+            
+            this.Category.IsDeleted = true;
+
+            foreach (var question in this.Category.Questions)
+            {
+                question.IsDeleted = true;
+            }
 
             try
             {
-                await _qService.MarkCategoryAsDeleted(this.Category);
+                await _qService.UpdateAsync(this.Category);
             }
             catch
             {

@@ -44,7 +44,7 @@ namespace Repeat.Pages.Administration.Categories
 
             try
             {
-                await _qService.EditCategoryAsync(this.Category);
+                await _qService.UpdateAsync(this.Category);
             }
             catch (DbUpdateConcurrencyException)
             {

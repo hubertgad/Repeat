@@ -40,9 +40,9 @@ namespace Repeat
                 return Page();
             }
 
-            if (!_qService.ShareExists(this.Share))
+            if (!_qService.ElementExists(this.Share))
             {
-                await _qService.CreateShareAsync(this.Share);
+                await _qService.AddAsync(this.Share);
             }
             else
             {
@@ -58,9 +58,9 @@ namespace Repeat
                 return Page();
             }
 
-            if (_qService.ShareExists(this.Share))
+            if (_qService.ElementExists(this.Share))
             {
-                await _qService.RemoveShareAsync(this.Share);
+                await _qService.RemoveAsync(this.Share);
             }
             else
             {

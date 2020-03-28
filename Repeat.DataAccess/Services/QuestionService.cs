@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Repeat.DataAccess.Data;
 using Repeat.Domain.Models;
+using Repeat.Domain.SeedWork;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,11 +18,25 @@ namespace Repeat.DataAccess.Services
             _context = context;
         }
 
-        public bool QuestionExists(int id) => _context.Questions.Any(e => e.ID == id);
+        public async Task AddAsync<T>(T t) where T : IEntity
+        {
+            await _context.AddAsync(t);
+            await _context.SaveChangesAsync();
+        }
 
-        public bool AnswerExists(int id) => _context.Answers.Any(e => e.ID == id);
+        public async Task UpdateAsync<T>(T t) where T : IEntity
+        {
+            _context.Update(t);
+            await _context.SaveChangesAsync();
+        }
 
-        public bool ShareExists(Share share) => _context.Shares.Any(e => e == share);
+        public async Task RemoveAsync<T>(T t) where T : IEntity
+        {
+            _context.Remove(t);
+            await _context.SaveChangesAsync();
+        }
+         
+        public bool ElementExists<T>(T t) where T : class, IEntity => _context.Set<T>().Any(e => e == t);
 
         public async Task<List<Question>> GetQuestionListAsync(string userID, int? categoryID, int? setID, bool shared = false)
         {
@@ -80,8 +95,7 @@ namespace Repeat.DataAccess.Services
         }
 
         public async Task<List<Category>> GetCategoryListAsync(string userID)
-            => await _context
-            .Categories
+            => await _context.Categories
             .Where(q => q.OwnerID == userID && q.IsDeleted == false)
             .ToListAsync();
 
@@ -105,32 +119,28 @@ namespace Repeat.DataAccess.Services
         }
 
         public async Task<List<QuestionSet>> GetQuestionSetListAsync(Question question)
-        {
-            return await _context.QuestionSets.Where(q => q.QuestionID == question.ID).ToListAsync();
-        }
+            => await _context.QuestionSets.Where(q => q.QuestionID == question.ID).ToListAsync();
 
         public async Task<List<IdentityUser>> GetUserListAsync(string userID)
             => await _context.Users.Where(q => q.Id != userID).ToListAsync();
 
         public async Task<Question> GetQuestionByIDAsync(int questionID, string userID)
         {
-            var question = await _context
-                .Questions
+            var question = await _context.Questions
                 .Where(m => m.OwnerID == userID && m.IsDeleted == false)
                 .Include(o => o.Category)
                 .Include(p => p.Picture)
                 .Include(r => r.QuestionSets).ThenInclude(q => q.Set)
                 .FirstOrDefaultAsync(m => m.ID == questionID);
-            question.Answers = _context
-                .Answers
+            question.Answers = _context.Answers
                 .Where(q => q.QuestionID == questionID && q.IsDeleted == false).ToList();
             return question;
         }
 
         public async Task<Category> GetCategoryByIDAsync(int categoryID, string userID)
         {
-            return await _context
-                .Categories
+            return 
+                await _context.Categories
                 .Where(m => m.OwnerID == userID && m.IsDeleted == false)
                 .FirstOrDefaultAsync(m => m.ID == categoryID);
         }
@@ -139,16 +149,16 @@ namespace Repeat.DataAccess.Services
         {
             if (includeShared == true)
             {
-                return await _context
-                    .Sets
+                return 
+                    await _context.Sets
                     .Include(q => q.QuestionSets)
                     .FirstOrDefaultAsync(q => q.ID == setID &&
                         (q.OwnerID == userID || q.Shares.Any(p => p.UserID == userID)));
             }
             else
             {
-                return await _context
-                    .Sets
+                return 
+                    await _context.Sets
                     .Where(m => m.OwnerID == userID)
                     .Include(o => o.QuestionSets).ThenInclude(q => q.Question)
                     .FirstOrDefaultAsync(m => m.ID == setID);
@@ -181,142 +191,9 @@ namespace Repeat.DataAccess.Services
 
         public async Task<QuestionSet> GetQuestionSetByIDAsync(int questionID, int setID)
         {
-            return await _context
-                .QuestionSets
+            return 
+                await _context.QuestionSets
                 .FirstOrDefaultAsync(q => q.QuestionID == questionID && q.SetID == setID);
-        }
-
-        public async Task CreateQuestionAsync(Question question)
-        {
-            await _context.Questions.AddAsync(question);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task CreateCategoryAsync(Category category)
-        {
-            await _context.Categories.AddAsync(category);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task CreateSetAsync(Set set)
-        {
-            await _context.Sets.AddAsync(set);
-            foreach (var share in set.Shares)
-            {
-                await _context.Shares.AddAsync(share);
-            }
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task CreateShareAsync(Share share)
-        {
-            await _context.Shares.AddAsync(share);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task CreateTestAsync(Test test)
-        {
-            await _context.Tests.AddAsync(test);
-            await _context.SaveChangesAsync();
-        }
-
-        public void EditQuestion(Question question)
-        {
-            _context.Attach(question).State = EntityState.Modified;
-            foreach (var answer in question.Answers)
-            {
-                _context.Attach(answer).State = EntityState.Modified;
-            }
-            foreach (var questionSet in question.QuestionSets)
-            {
-                _context.QuestionSets.Add(questionSet);
-            }
-            _context.SaveChanges();
-        }
-
-        public async Task EditCategoryAsync(Category category)
-        {
-            _context.Attach(category).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task EditSetAsync(Set set)
-        {
-            _context.Attach(set).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task EditTestAsync(Test test)
-        {
-            _context.Attach(test).State = EntityState.Modified;
-            _context.Entry(test).Property(q => q.CurrentQuestionIndex).IsModified = true;
-            await _context.SaveChangesAsync();
-        }
-
-        public void EditQuestionResponseAsync(QuestionResponse questionResponse)
-        {
-            foreach (var choosenAnswer in questionResponse.ChoosenAnswers)
-            {
-                _context.Attach(choosenAnswer).State = EntityState.Modified;
-            }
-        }
-
-        public void RemoveQuestionSetsRange(Question question)
-        {
-            _context.QuestionSets.RemoveRange(_context.QuestionSets.Where(o => o.QuestionID == question.ID));
-            _context.SaveChanges();
-        }
-
-        public void AddNewAnswer(int questionID)
-            => _context.Add(new Answer { QuestionID = questionID, AnswerText = "Type answer text..." });
-
-        public async Task<Test> AddNewTestAsync(Set set, string userID, List<Question> questions)
-        {
-            var test = new Test(set, userID, questions);
-            await _context.Tests.AddAsync(test);
-            return test;
-        }
-
-        public async Task RemovePictureAsync(Question question)
-        {
-            _context.Pictures.Remove(question.Picture);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task RemoveSetAsync(Set set)
-        {
-            _context.Sets.Remove(set);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task RemoveQuestionFromSetAsync(QuestionSet questionSet)
-        {
-            _context.QuestionSets.Remove(questionSet);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task RemoveShareAsync(Share share)
-        {
-            _context.Shares.Remove(share);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task MarkQuestionAsDeleted(Question question)
-        {
-            _context.Attach(question).State = EntityState.Modified;
-            question.IsDeleted = true;
-            await _context.SaveChangesAsync();
-        }
-        
-        public async Task MarkCategoryAsDeleted(Category category)
-        {
-            foreach (var question in _context.Questions.Where(q => q.CategoryID == category.ID).ToList())
-            {
-                await MarkQuestionAsDeleted(question);
-            }
-            _context.Attach(category).State = EntityState.Modified;
-            category.IsDeleted = true;
-            _context.SaveChanges();
         }
     }
 }

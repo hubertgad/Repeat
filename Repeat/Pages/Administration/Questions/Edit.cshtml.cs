@@ -51,16 +51,17 @@ namespace Repeat.Pages.Administration.Questions
                 return Page();
             }
 
+            this.Question = await _qService.GetQuestionByIDAsync((int)id, this.CurrentUserID);
             await UpdatePictureStateAsync();
-            await UpdateQuestionSetsStateAsync();
+            UpdateQuestionSetsState();
 
             try
             {
-                _qService.EditQuestion(this.Question);
+                await _qService.UpdateAsync(this.Question);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_qService.QuestionExists(this.Question.ID))
+                if (!_qService.ElementExists(this.Question))
                 {
                     return NotFound();
                 }
@@ -80,25 +81,19 @@ namespace Repeat.Pages.Administration.Questions
                 return Page();
             }
 
+            this.Question = await _qService.GetQuestionByIDAsync((int)id, this.CurrentUserID);
             Question.Answers.FirstOrDefault(q => q.ID == aid).IsDeleted = true;
-            
+
             await UpdatePictureStateAsync();
-            await UpdateQuestionSetsStateAsync();
+            UpdateQuestionSetsState();
 
             try
             {
-                _qService.EditQuestion(this.Question);
+                await _qService.UpdateAsync(this.Question);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_qService.AnswerExists((int)aid))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
             return RedirectToPage(new { id });
@@ -111,14 +106,17 @@ namespace Repeat.Pages.Administration.Questions
                 return Page();
             }
 
-            _qService.AddNewAnswer(this.Question.ID);
+            this.Question = await _qService.GetQuestionByIDAsync((int)id, this.CurrentUserID);
+
+            var answer = new Answer { QuestionID = this.Question.ID, AnswerText = "Type answer text..." };
+            await _qService.AddAsync(answer);
 
             await UpdatePictureStateAsync();
-            await UpdateQuestionSetsStateAsync();
+            UpdateQuestionSetsState();
             
             try
             {
-                _qService.EditQuestion(this.Question);
+                await _qService.UpdateAsync(this.Question);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -135,19 +133,16 @@ namespace Repeat.Pages.Administration.Questions
             ViewData["SetID"] = new MultiSelectList(await _qService.GetSetListAsync(this.CurrentUserID), "ID", "Name", selectedSetsValues);
         }
 
-        private async Task UpdateQuestionSetsStateAsync()
+        private void UpdateQuestionSetsState()
         {
-            _qService.RemoveQuestionSetsRange(this.Question);
-            Question.QuestionSets = await _qService.GetQuestionSetListAsync(this.Question);
-            foreach (var item in this.SelectedSets)
+            this.Question.QuestionSets = new List<QuestionSet>();
+            foreach (var setID in this.SelectedSets)
             {
-                var questionSet = new QuestionSet
+                Question.QuestionSets.Add(new QuestionSet
                 {
                     QuestionID = this.Question.ID,
-                    SetID = item
-                };
-                if (!Question.QuestionSets.Contains(questionSet))
-                    Question.QuestionSets.Add(questionSet);
+                    SetID = setID
+                });
             }
         }
 
@@ -159,10 +154,6 @@ namespace Repeat.Pages.Administration.Questions
                 await FileUpload.FormFile.CopyToAsync(memoryStream);
                 if (memoryStream.Length < 2097152)
                 {
-                    if (this.Question.Picture != null)
-                    {
-                        await _qService.RemovePictureAsync(this.Question);
-                    }
                     this.Question.Picture = new Picture();
                     this.Question.Picture.Data = memoryStream.ToArray();
                 }
@@ -173,7 +164,7 @@ namespace Repeat.Pages.Administration.Questions
             }
             else if (this.RemovePicture == true)
             {
-                await _qService.RemovePictureAsync(this.Question);
+                this.Question.Picture = null;
             }
         }
     }

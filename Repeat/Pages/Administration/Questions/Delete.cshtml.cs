@@ -42,10 +42,11 @@ namespace Repeat.Pages.Administration.Questions
             }
 
             this.Question = await _qService.GetQuestionByIDAsync((int)id, this.CurrentUserID);
+            this.Question.IsDeleted = true;
 
             try
             {
-                await _qService.MarkQuestionAsDeleted(this.Question);
+                await _qService.UpdateAsync(this.Question);
             }
             catch
             {

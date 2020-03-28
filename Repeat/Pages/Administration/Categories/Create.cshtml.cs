@@ -24,7 +24,7 @@ namespace Repeat.Pages.Administration.Categories
                 return Page();
             }
 
-            await _qService.CreateCategoryAsync(this.Category);
+            await _qService.AddAsync(this.Category);
             
             return RedirectToPage("./Index");
         }

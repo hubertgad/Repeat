@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Repeat.Domain.SeedWork;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Repeat.Domain.Models
 {
-    public class Picture
+    public class Picture : IEntity
     {
         [ForeignKey("Question")]
         public int ID { get; set; }
