@@ -27,12 +27,14 @@
 </div>
 <h6>Questions in this set:</h6>
 <table class="table">
+    @{ int i = 0; }
     @foreach (var questionSet in Model.Set.QuestionSets)
     {
+        i++;
         <tr>
             <td class="text-left">
                 <nobr>
-                    <a class="small font-weight-bold">Question @(Model.Set.QuestionSets.IndexOf(questionSet) + 1):</a>
+                    <a class="small font-weight-bold">Question @i:</a>
                 </nobr>
             </td>
             <td class="text-left">

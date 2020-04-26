@@ -15,11 +15,11 @@ namespace Repeat.Pages.Administration.Categories
         {
         }
 
-        public List<Category> Category { get;set; }
+        public List<Category> Categories { get;set; }
 
         public async Task OnGetAsync()
         {
-            this.Category = await _qService.GetCategoryListAsync(this.CurrentUserID);
+            this.Categories = await _qService.GetCategoryListAsync(this.CurrentUserID);
         }
     }
 }

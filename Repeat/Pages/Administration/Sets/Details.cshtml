@@ -23,13 +23,15 @@
     <h6>Questions in this set:</h6>
     <hr />
     <dl class="row">
-        @for (int i = 0; i < Model.Set.QuestionSets.Count(); i++)
+        @{ int i = 0; }
+        @foreach (var questionSet in Model.Set.QuestionSets)
         {
+            i++;
             <dt class="col-sm-3">
-                <label>Question @(i + 1):</label>
+                <label>Question @i:</label>
             </dt>
             <dd class="col-sm-9">
-                <label>@Model.Set.QuestionSets[i].Question.QuestionText</label>
+                <label>@questionSet.Question.QuestionText</label>
             </dd>
         }
     </dl>

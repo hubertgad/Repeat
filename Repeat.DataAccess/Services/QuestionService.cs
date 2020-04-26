@@ -65,9 +65,9 @@ namespace Repeat.DataAccess.Services
 
             var questions = await query.ToListAsync();
 
-            foreach (var question in questions)
+            foreach(var question in questions)
             {
-                question.Answers = 
+                question.Answers =
                     await _context.Answers
                     .Where(q => q.QuestionID == question.ID && q.IsDeleted == false)
                     .ToListAsync();
@@ -81,17 +81,22 @@ namespace Repeat.DataAccess.Services
 
         public async Task<List<Set>> GetSetListAsync(string userID, bool includeShared = false)
         {
-            var query = _context.Sets.Include(q => q.Shares).Where(q => q.OwnerID == userID);
+            var query = _context.Sets.Include(q => q.Shares)
+                .Where(q => q.OwnerID == userID || q.Shares.Any(p => p.UserID == userID));
 
             if (includeShared == true)
             {
-                    query = query.Include(q => q.QuestionSets).ThenInclude(q => q.Question).ThenInclude(q => q.Category)
-                    .Where(q => q.Shares.Any(p => p.UserID == userID));
+                query = query.Where(q => q.QuestionSets.Any())
+                    .Include(q => q.QuestionSets).ThenInclude(q => q.Question).ThenInclude(q => q.Category);
+            }
+            if (includeShared == false)
+            {
+                query = query.Where(q => q.OwnerID == userID);
             }
 
             return await query.ToListAsync();
         }
-        
+
         public async Task<List<IdentityUser>> GetUserListAsync(string userID)
             => await _context.Users.Where(q => q.Id != userID).ToListAsync();
 

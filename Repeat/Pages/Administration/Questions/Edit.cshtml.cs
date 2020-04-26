@@ -135,7 +135,7 @@ namespace Repeat.Pages.Administration.Questions
 
         private void UpdateQuestionSetsState()
         {
-            this.Question.QuestionSets = new List<QuestionSet>();
+            this.Question.QuestionSets = new HashSet<QuestionSet>();
             foreach (var setID in this.SelectedSets)
             {
                 Question.QuestionSets.Add(new QuestionSet

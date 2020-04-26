@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -78,7 +77,7 @@ namespace Repeat.Pages.Administration.Questions
                 return Page();
             }
 
-            this.Question.Picture = await UploadPictureAsync();
+            this.Question.Picture = UploadPicture();
             this.Question.QuestionSets = CreateListOfQuestionSets();
 
             try
@@ -93,12 +92,12 @@ namespace Repeat.Pages.Administration.Questions
             return RedirectToPage("./Index");
         }
 
-        private List<QuestionSet> CreateListOfQuestionSets()
+        private HashSet<QuestionSet> CreateListOfQuestionSets()
         {
-            var questionSets = new List<QuestionSet>();
+            var questionSets = new HashSet<QuestionSet>();
             foreach (var setID in SelectedSets)
             {
-                questionSets = new List<QuestionSet>
+                questionSets = new HashSet<QuestionSet>
                 {
                 new QuestionSet { QuestionID = this.Question.ID, SetID = setID }
                 };
@@ -106,24 +105,17 @@ namespace Repeat.Pages.Administration.Questions
             return questionSets;
         }
 
-        private async Task<Picture> UploadPictureAsync()
+        private Picture UploadPicture()
         {
-            if (FileUpload.FormFile != null && FileUpload.FormFile.Length > 0)
+            if (FileUpload.ToByteArray(this.FileUpload) != null)
             {
-                var picture = new Picture();
-                using var memoryStream = new MemoryStream();
-                await FileUpload.FormFile.CopyToAsync(memoryStream);
-                if (memoryStream.Length < 2097152)
-                {
-                    picture.Data = memoryStream.ToArray();
-                    return picture;
-                }
-                else
-                {
-                    ModelState.AddModelError("File", "The file is too large.");
-                }
+                return new Picture { Data = FileUpload.ToByteArray(this.FileUpload) };
             }
-            return null;
+            else
+            {
+                ModelState.AddModelError("File", "The file is too large.");
+                return null;
+            }
         }
 
         public IActionResult OnPostMore() => RedirectToPage(new { answers = ++AnswersCount });

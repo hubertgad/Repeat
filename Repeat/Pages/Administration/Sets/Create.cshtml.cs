@@ -26,7 +26,7 @@ namespace Repeat
                 return Page();
             }
 
-            this.Set.Shares = new List<Share>
+            this.Set.Shares = new HashSet<Share>
             {
                 new Share
                 {

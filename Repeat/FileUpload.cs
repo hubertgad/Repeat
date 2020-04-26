@@ -11,18 +11,18 @@ namespace Repeat
 
         public static byte[] ToByteArray(FileUpload FileUpload)
         {
-            using (var memoryStream = new MemoryStream())
+            if (FileUpload.FormFile != null && FileUpload.FormFile.Length > 0)
             {
-                FileUpload.FormFile.CopyToAsync(memoryStream);
-                if (memoryStream.Length < 2097152)
+                using (var memoryStream = new MemoryStream())
                 {
-                    return memoryStream.ToArray();
-                }
-                else
-                {
-                    return null;
+                    FileUpload.FormFile.CopyToAsync(memoryStream);
+                    if (memoryStream.Length < 2097152)
+                    {
+                        return memoryStream.ToArray();
+                    }
                 }
             }
+            return null;
         }
         public static string ToString(byte[] data)
         {

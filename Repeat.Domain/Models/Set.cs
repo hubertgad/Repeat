@@ -10,7 +10,7 @@ namespace Repeat.Domain.Models
         public string Name { get; set; }
         [Required]
         public string OwnerID { get; set; }
-        public virtual List<QuestionSet> QuestionSets { get; set; }
-        public virtual List<Share> Shares { get; set; }
+        public virtual HashSet<QuestionSet> QuestionSets { get; set; }
+        public virtual HashSet<Share> Shares { get; set; }
     }
 }
