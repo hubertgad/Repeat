@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Repeat.DataAccess.Services;
 using Repeat.Domain.Models;
 
@@ -16,7 +16,7 @@ namespace Repeat.Pages.Administration.Questions
     public class EditModel : CustomPageModel
     {
         public EditModel(UserManager<IdentityUser> userManager, QuestionService questionService)
-            : base (userManager, questionService)
+            : base(userManager, questionService)
         {
         }
 
@@ -25,7 +25,7 @@ namespace Repeat.Pages.Administration.Questions
         [BindProperty] public List<int> SelectedSets { get; set; }
         [BindProperty] public bool RemovePicture { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int? id, int? answers)
         {
             if (id == null)
             {
@@ -33,139 +33,87 @@ namespace Repeat.Pages.Administration.Questions
             }
 
             this.Question = await _qService.GetQuestionByIDAsync((int)id, this.CurrentUserID);
-            
+
+            while (answers > this.Question.Answers.Count && answers < 11)
+            {
+                Question.Answers.Add(new Answer { QuestionID = this.Question.ID });
+            }
+
             if (this.Question == null)
             {
                 return NotFound();
             }
-            
+
             await BindDataToViewAsync();
 
             return Page();
         }
-        
-        public async Task<IActionResult> OnPostAsync(int? id)
+
+        public async Task<IActionResult> OnPostAsync(Question question)
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            if (!ModelState.IsValid) return Page();
 
-            this.Question = await _qService.GetQuestionByIDAsync((int)id, this.CurrentUserID);
-            await UpdatePictureStateAsync();
-            UpdateQuestionSetsState();
+            var success = await UpdateQuestionAsync(question);
+            if (success == false) return NotFound();
 
-            try
-            {
-                await _qService.UpdateAsync(this.Question);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_qService.ElementExists(this.Question))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return RedirectToPage($"./Details", new { id });
+            return RedirectToPage($"./Details", new { question.ID });
         }
 
-        public async Task<IActionResult> OnPostRemoveAsync(int? id, int aid)
+        public async Task<IActionResult> OnPostRemoveAsync(Question question, int? answerId)
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            if (!ModelState.IsValid) return Page();
 
-            this.Question = await _qService.GetQuestionByIDAsync((int)id, this.CurrentUserID);
-            Question.Answers.FirstOrDefault(q => q.ID == aid).IsDeleted = true;
+            question.Answers[(int)answerId].IsDeleted = true;
 
-            await UpdatePictureStateAsync();
-            UpdateQuestionSetsState();
+            var success = await UpdateQuestionAsync(question);
+            if (success == false) return NotFound();
 
-            try
-            {
-                await _qService.UpdateAsync(this.Question);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return NotFound();
-            }
+            question.Answers.Remove(question.Answers[(int)answerId]);
 
-            return RedirectToPage(new { id });
+            return RedirectToPage(new { id = question.ID, answers = question.Answers.Count });
         }
 
-        public async Task<IActionResult> OnPostAddAsync(int? id)
+        public async Task<IActionResult> OnPostAddAsync(Question question)
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            if (!ModelState.IsValid) return Page();
 
-            this.Question = await _qService.GetQuestionByIDAsync((int)id, this.CurrentUserID);
+            var success = await UpdateQuestionAsync(question);
+            if (success == false) return NotFound();
 
-            var answer = new Answer { QuestionID = this.Question.ID, AnswerText = "Type answer text..." };
-            await _qService.AddAsync(answer);
-
-            await UpdatePictureStateAsync();
-            UpdateQuestionSetsState();
-            
-            try
-            {
-                await _qService.UpdateAsync(this.Question);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return NotFound();
-            }
-            
-            return RedirectToPage(new { id });
+            return RedirectToPage(new { id = question.ID, answers = question.Answers.Count + 1 });
         }
 
         private async Task BindDataToViewAsync()
         {
-            IEnumerable<int> selectedSetsValues =  Question.QuestionSets.Select(q => q.SetID);
+            IEnumerable<int> selectedSetsValues = Question.QuestionSets.Select(q => q.SetID);
             ViewData["CategoryID"] = new SelectList(await _qService.GetCategoryListAsync(this.CurrentUserID), "ID", "Name");
             ViewData["SetID"] = new MultiSelectList(await _qService.GetSetListAsync(this.CurrentUserID), "ID", "Name", selectedSetsValues);
         }
 
-        private void UpdateQuestionSetsState()
+        private async Task<bool> UpdateQuestionAsync(Question question)
         {
-            this.Question.QuestionSets = new HashSet<QuestionSet>();
+            try
+            {
+                question = UpdateQuestionSetsState(question);
+                question = await FileUpload.UpdatePictureStateAsync(question);
+                await _qService.UpdateQuestionAsync(question, RemovePicture);
+                return true;
+            }
+            catch { return false; }
+        }
+
+        private Question UpdateQuestionSetsState(Question question)
+        {
+            question.QuestionSets = new HashSet<QuestionSet>();
             foreach (var setID in this.SelectedSets)
             {
-                Question.QuestionSets.Add(new QuestionSet
+                question.QuestionSets.Add(new QuestionSet
                 {
-                    QuestionID = this.Question.ID,
+                    QuestionID = question.ID,
                     SetID = setID
                 });
             }
-        }
-
-        private async Task UpdatePictureStateAsync()
-        {
-            if (FileUpload.FormFile != null && FileUpload.FormFile.Length > 0)
-            {
-                using var memoryStream = new MemoryStream();
-                await FileUpload.FormFile.CopyToAsync(memoryStream);
-                if (memoryStream.Length < 2097152)
-                {
-                    this.Question.Picture = new Picture();
-                    this.Question.Picture.Data = memoryStream.ToArray();
-                }
-                else
-                {
-                    ModelState.AddModelError("File", "The file is too large.");
-                }
-            }
-            else if (this.RemovePicture == true)
-            {
-                this.Question.Picture = null;
-            }
+            return question;
         }
     }
 }

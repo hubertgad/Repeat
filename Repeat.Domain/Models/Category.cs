@@ -11,6 +11,6 @@ namespace Repeat.Domain.Models
         [Required]
         public string OwnerID { get; set; }
         public bool IsDeleted { get; set; }
-        public ICollection<Question> Questions { get; set; }
+        public IList<Question> Questions { get; set; }
     }
 }

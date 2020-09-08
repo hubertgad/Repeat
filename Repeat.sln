@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repeat", "Repeat\Repeat.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repeat.Domain", "Repeat.Domain\Repeat.Domain.csproj", "{A9926DC0-B8E6-4308-8641-F1B2F6C17F24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repeat.DataAccess", "Repeat.DataAccess\Repeat.DataAccess.csproj", "{EA38AC89-F084-43A7-9FE9-C88B8C29B518}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repeat.DataAccess", "Repeat.DataAccess\Repeat.DataAccess.csproj", "{EA38AC89-F084-43A7-9FE9-C88B8C29B518}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A82DAAB0-C661-4087-BFCB-CEBE9578382E}"
+	ProjectSection(SolutionItems) = preProject
+		.a11yrc = .a11yrc
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

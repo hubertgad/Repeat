@@ -46,8 +46,8 @@
                             </div>
                         </div>
                         <textarea asp-for="Question.Answers[i].AnswerText" placeholder="Answer @((char)('A' + i))" class="form-control" aria-label="Text input with checkbox"></textarea>
-                        <input type="submit" asp-page-handler="Remove" 
-                               asp-route-id="@Model.Question.ID" asp-route-aid="@Model.Question.Answers[i].ID" 
+                        <input type="submit" asp-page-handler="Remove"
+                               asp-route-question="@Model.Question" asp-route-answerId="@i"
                                value="Remove" class="btn btn-danger btn-sm" />
                     </div>
                     <span asp-validation-for="Question.Answers[i].AnswerText" class="text-danger"></span>
@@ -55,17 +55,17 @@
             }
             <div class="form-group">
                 <div class="input-group mb-3">
-                    <input type="submit" asp-page-handler="Add" asp-route-id="@Model.Question.ID"
+                    <input type="submit" asp-page-handler="Add" asp-route-question="@Model.Question"
                            value="Add new answer" class="btn btn-success btn-sm" />
                 </div>
             </div>
-            @if (Model.Question.Picture != null)
+            @if (Model.Question.Picture != null && Model.Question.Picture.Data != null)
             {
-        <div>
-            <img src="@FileUpload.ToString(Model.Question.Picture.Data)" />
-            <input type="hidden" asp-for="Question.Picture.ID" />
-            <label><input type="checkbox" asp-for="RemovePicture" /> Remove picture</label>
-        </div>
+                <div>
+                    <img src="@FileUpload.ToString(Model.Question.Picture.Data)" />
+                    <input type="hidden" asp-for="Question.Picture.ID" />
+                    <label><input type="checkbox" asp-for="RemovePicture" /> Remove picture</label>
+                </div>
             }
             <div class="form-group">
                 <input asp-for="FileUpload.FormFile" class="form-control-file" />
@@ -101,5 +101,5 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

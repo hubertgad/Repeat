@@ -1,4 +1,5 @@
 ﻿using Repeat.Domain.SeedWork;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Repeat.Domain.Models

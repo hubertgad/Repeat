@@ -17,7 +17,7 @@ namespace Repeat.Domain.Models
         public bool IsDeleted { get; set; }
         public Picture Picture { get; set; }
         public Category Category { get; set; }
-        public List<Answer> Answers { get; set; }
+        public IList<Answer> Answers { get; set; }
         public virtual HashSet<QuestionSet> QuestionSets { get; set; }
     }
 }

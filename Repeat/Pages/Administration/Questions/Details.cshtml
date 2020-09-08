@@ -28,10 +28,10 @@
                 if (part.Contains(@"<code>") && (part.Contains(@"</code>")))
                 {
                     <span class="code">
-                    @foreach (var line in part.Replace("<code>", "").Replace("</code>", "").Split("\n"))
-                    {
-                        <code class="multiline">@Html.DisplayFor(x => line)<br /></code>
-                    }
+                        @foreach (var line in part.Replace("<code>", "").Replace("</code>", "").Split("\n"))
+                        {
+                            <code class="multiline">@Html.DisplayFor(x => line)<br /></code>
+                        }
                     </span>
                 }
                 else
@@ -40,7 +40,8 @@
                 }
             }
         </dd>
-        @if (Model.Question.Picture != null)
+        @if (Model.Question.Picture != null
+                      && Model.Question.Picture.Data != null)
         {
             <dt class="col-sm-2">
                 <label>Picture:</label>

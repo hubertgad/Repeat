@@ -3,7 +3,6 @@
 
 @{
     ViewData["Title"] = "Run";
-    Layout = "~/Pages/TakeTest/_Layout.cshtml";
 }
 
 
@@ -51,8 +50,8 @@
             <div class="input-group">
                 <input type="hidden" asp-for="QuestionResponse.ChoosenAnswers[i].ID" />
                 <input type="hidden" asp-for="QuestionResponse.ChoosenAnswers[i].QuestionResponseID" />
-                <input type="hidden" asp-for="QuestionResponse.ChoosenAnswers[i].QuestionID" value="@Model.CurrentQuestion.ID" />
-                <input type="hidden" asp-for="QuestionResponse.ChoosenAnswers[i].AnswerID" value="@Model.CurrentQuestion.Answers[i].ID" />
+                <input type="hidden" asp-for="QuestionResponse.ChoosenAnswers[i].QuestionID" />
+                <input type="hidden" asp-for="QuestionResponse.ChoosenAnswers[i].AnswerID" />
                 <div class="d-inline">
                     <input type="checkbox" class="align-content-center"
                             asp-for="QuestionResponse.ChoosenAnswers[i].GivenAnswer" />

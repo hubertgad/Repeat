@@ -1,5 +1,4 @@
-﻿@inject SignInManager<IdentityUser> SignInManager
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -7,34 +6,27 @@
     <title>@ViewData["Title"] - Repeat</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-nav mb-3">
             <div class="container">
-                <a class="btn btn-primary border-0 btn-lg mr-2" asp-area="" asp-page="/Index">REPEAT</a>
+                <a class="navbar-brand" asp-area="" asp-page="/Index">
+                    <img src="~/images/repeatLogo.png" height="50" class="d-inline-block align-top" alt="Repeat" />
+                </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <partial name="_LoginPartial" />
-                    <ul class="navbar-nav flex-grow-1">
-                        @if (SignInManager.IsSignedIn(User))
-                        {
-                            <li class="nav-item">
-                                <a class="btn btn-outline-primary font-weight-bolder border-0 mr-2" asp-area="" asp-page="/TakeTest/Index">TAKE A TEST</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="btn btn-outline-primary font-weight-bolder border-0" asp-area="" asp-page="/Administration/Questions/Index">ADMINISTRATION</a>
-                            </li>
-                        }
-                    </ul>
+                    <partial name="_MenuPartial" />
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container main-box">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

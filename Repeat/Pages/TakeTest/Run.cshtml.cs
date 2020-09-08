@@ -32,7 +32,7 @@ namespace Repeat
                 return NotFound();
             }
 
-            var startedTest = await _qService.GetTestByIDAsync(this.CurrentUserID, id);
+            var startedTest = await _qService.GetTestByIDAsync(this.CurrentUserID, id, null);
             if (startedTest != null)
             {
                 this.Test = startedTest;
@@ -55,14 +55,13 @@ namespace Repeat
 
             this.CurrentQuestion = GetCurrentQuestion();
             this.QuestionResponse = this.Test.QuestionResponses[this.Test.CurrentQuestionIndex];
-
+            
             return Page();
         }
 
         private Question GetCurrentQuestion()
         {
-            return Test
-                    .TestQuestions
+            return this.Test.TestQuestions
                     .Where(q => q.Index == Test.CurrentQuestionIndex)
                     .Select(q => q.Question)
                     .FirstOrDefault();
@@ -70,23 +69,16 @@ namespace Repeat
         
         public async Task<IActionResult> OnPostAsync(int? id, string options)
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            if (!ModelState.IsValid) return Page();
 
-            switch (options)
+#pragma warning disable CS8509
+            object _ = options switch
             {
-                case "Next":
-                    this.Test.CurrentQuestionIndex++;
-                    break;
-                case "Previous":
-                    this.Test.CurrentQuestionIndex--;
-                    break;
-                case "Finish":
-                    this.Test.IsCompleted = true;
-                    break;
-            }
+                "Next" => this.Test.CurrentQuestionIndex++,
+                "Previous" => this.Test.CurrentQuestionIndex--,
+                "Finish" => this.Test.IsCompleted = true,
+            };
+#pragma warning restore CS8509
 
             try
             {
@@ -97,14 +89,8 @@ namespace Repeat
                 return NotFound();
             }
 
-            if (options == "Finish")
-            {
-                return RedirectToPage("./Details", new { id });
-            }
-            else
-            {
-                return RedirectToPage(new { id });
-            }
+            if (this.Test.IsCompleted)  return RedirectToPage("./Details", new { id }); 
+            else                        return RedirectToPage(new { id });
         }
     }
 }

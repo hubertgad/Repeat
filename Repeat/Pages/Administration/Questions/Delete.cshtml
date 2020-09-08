@@ -24,7 +24,8 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Question.QuestionText)
         </dd>
-        @if (Model.Question.Picture != null)
+        @if (Model.Question.Picture != null
+          && Model.Question.Picture.Data != null)
         {
             <dt class="col-sm-2">
                 <label>Picture:</label>

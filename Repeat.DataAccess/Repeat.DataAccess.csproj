@@ -9,6 +9,8 @@
     <Compile Remove="Migrations\20200308213832_Update29.Designer.cs" />
     <Compile Remove="Migrations\20200309175438_Update31.cs" />
     <Compile Remove="Migrations\20200309175438_Update31.Designer.cs" />
+    <Compile Remove="Migrations\20200429173236_Update36.cs" />
+    <Compile Remove="Migrations\20200429173236_Update36.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,6 +18,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>

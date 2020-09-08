@@ -1,10 +1,16 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
+:root {
+    --first: #004dff;
+    --second: #bf3838;
+}
 
 .counter {
     counter-reset: line;
 }
+
+
 
 code {
     counter-increment: line;
@@ -79,18 +85,28 @@ a.navbar-brand {
     background-color: #eee;
 }
 
+.bg-nav {
+    background-color: white;
+}
+
+.main-box {
+    padding: 1em;
+    background: rgba(255, 255, 255, 0.8);
+    border: var(--second) solid 3.5px;
+    margin-bottom: 1em;
+}
+
 /* My custom buttons */
 
 .btn-my {
-    color: #fff;
-    background-color: #1861ac;
+    color: #ffffff;
+    background-color: var(--first);
     margin-bottom: 1px;
     border: 0px;
 }
     .btn-my:hover {
-        color: #fff;
-        background-color: #ac6c18;
-        border-color: #1861ac;
+        color: #ffffff;
+        background-color: var(--second);
         border-radius: 0px;
         border: 0px;
         margin-bottom: 1px;
@@ -102,23 +118,68 @@ a.navbar-brand {
     border-radius: 0 !important;
 }
 
+.btn-nav {
+    margin: 0 1px 0 1px;
+    display: flex;
+    justify-content: center;
+    
+    align-items: center;
+    font-weight: bold;
+    text-transform: uppercase;
+    height: 50px;
+}
+    .btn-nav:hover {
+        background-color: var(--second);
+        color: #FFFFFF;
+        font-weight: bold;
+    }
+
+.active {
+    color: #ffffff;
+    background-color: var(--first);
+}
+
 
 /* Provide sufficient contrast against white background */
 a {
-  color: #0366d6;
+    color: var(--first);
+    font-weight: 600;
 }
+    a:hover {
+        color: var(--second);
+        font-weight: 600;
+        text-decoration: none;
+    }
 
 .btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+    color: #ffffff;
+    background-color: var(--first);
+    margin-bottom: 1px;
+    border: 0px;
 }
 
+    .btn-primary:hover {
+        color: #ffffff;
+        background-color: var(--second);
+        border-radius: 0px;
+        border: 0px;
+        margin-bottom: 1px;
+    }
+
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+    color: #ffffff;
+    background-color: var(--first);
+    margin-bottom: 1px;
+    border: 0px;
 }
+
+    .nav-pills .nav-link.active, .nav-pills .show > .nav-link:hover {
+        color: #ffffff;
+        background-color: var(--second);
+        border-radius: 0px;
+        border: 0px;
+        margin-bottom: 1px;
+    }
 
 /* Sticky footer styles
 -------------------------------------------------- */
@@ -132,10 +193,10 @@ html {
 }
 
 .border-top {
-  border-top: 1px solid #e5e5e5;
+    border-top: 1px inset var(--second) !important;
 }
 .border-bottom {
-  border-bottom: 1px solid #e5e5e5;
+    border-bottom: 1px solid #ffffff;
 }
 
 .box-shadow {
@@ -155,8 +216,9 @@ html {
 }
 
 body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+    background-color: black;
 }
 .footer {
   position: absolute;
