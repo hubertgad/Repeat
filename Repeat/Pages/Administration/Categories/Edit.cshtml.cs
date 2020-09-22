@@ -1,31 +1,28 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Repeat.DataAccess.Services;
+using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
 
 namespace Repeat.Pages.Administration.Categories
 {
     [Authorize]
-    public class EditModel : CustomPageModel
+    public class EditModel : PageModel
     {
-        public EditModel(UserManager<IdentityUser> userManager, QuestionService questionService)
-            : base(userManager, questionService)
+        private readonly ICategoryService _categoryService;
+
+        public EditModel(ICategoryService categoryService)
         {
+            _categoryService = categoryService;
         }
 
         [BindProperty] public Category Category { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            this.Category = await _qService.GetCategoryByIDAsync((int)id, this.CurrentUserID);
+            this.Category = await _categoryService.GetCategoryByIdAsync(id);
 
             if (this.Category == null)
             {
@@ -44,7 +41,7 @@ namespace Repeat.Pages.Administration.Categories
 
             try
             {
-                await _qService.UpdateAsync(this.Category);
+                await _categoryService.UpdateCategoryAsync(this.Category);
             }
             catch (DbUpdateConcurrencyException)
             {

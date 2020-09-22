@@ -1,22 +1,23 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Repeat.DataAccess.Services;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
 
 namespace Repeat.Pages.Administration.Questions
 {
     [Authorize]
-    public class DetailsModel : CustomPageModel
+    public class DetailsModel : PageModel
     {
-        public DetailsModel(UserManager<IdentityUser> userManager, QuestionService questionService)
-            : base(userManager, questionService)
+        private readonly IQuestionService _questionService;
+        
+        public DetailsModel(IQuestionService questionService)
         {
+            _questionService = questionService;
         }
 
         public Question Question { get; set; }
-        public FileUpload FileUpload { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -25,7 +26,7 @@ namespace Repeat.Pages.Administration.Questions
                 return NotFound();
             }
             
-            this.Question = await _qService.GetQuestionByIDAsync((int)id, this.CurrentUserID);
+            this.Question = await _questionService.GetQuestionByIdAsync(id);
             
             if (this.Question == null)
             {

@@ -1,0 +1,20 @@
+﻿@model string
+
+@foreach (var part in Model.SplitForCodeLines())
+{
+    if (part.Contains(@"<code>") && (part.Contains(@"</code>")))
+    {
+        <div class="code-box">
+            <span class="code">
+                @foreach (var line in part.Replace("<code>", "").Replace("</code>", "").Split("\n"))
+                {
+                    <code class="multiline nowrap">@Html.DisplayFor(x => line)<br /></code>
+                }
+            </span>
+        </div>
+    }
+    else
+    {
+        <span class="multiline">@Html.DisplayFor(x => part)</span>
+    }
+}

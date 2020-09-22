@@ -20,7 +20,7 @@
     <h6>Questions in this set:</h6>
     <hr />
     <dl class="row">
-        @{int i = 0;};
+        @{int i = 0;}
         @foreach (var questionSet in Model.Set.QuestionSets)
         {
             i++;
@@ -28,7 +28,7 @@
                 <label>Question @(i + 1):</label>
             </dt>
             <dd class="col-sm-9">
-                <label>@questionSet.Question.QuestionText</label>
+                <partial name="Questions/_TextPartial" model="@questionSet.Question.QuestionText" />
             </dd>
         }
     </dl>

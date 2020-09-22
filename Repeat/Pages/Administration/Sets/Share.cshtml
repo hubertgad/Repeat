@@ -15,11 +15,11 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label>Set</label>
-                <select asp-for="Share.SetID" class="form-control d-inline" asp-items="ViewBag.SetID"></select>
+                <select asp-for="SetId" class="form-control d-inline" asp-items="ViewBag.SetID"></select>
             </div>
             <div class="form-group">
                 <label>User</label>
-                <select asp-for="Share.UserID" class="form-control" asp-items="ViewBag.UserID"></select>
+                <input asp-for="UserName" class="form-control" />
             </div>
             <div class="form-group">
                 <input type="submit" value="Share" class="btn btn-primary" />
@@ -50,18 +50,18 @@
             <tbody>
                 @foreach (var set in Model.Sets)
                 {
-                    @foreach (var setUser in set.Shares.Where(q => q.UserID != Model.CurrentUserID))
+                    @foreach (var share in set.Shares)
                     {
                         <tr>
                             <td class="col-md-4">
-                                @setUser.Set.Name
+                                @share.Set.Name
                             </td>
                             <td class="col-md-4">
-                                @Model.Users.FirstOrDefault(q => q.Id == setUser.UserID)
+                                @share.User.UserName
                             </td>
                             <td class="col-md-4">
                                 <form method="post" asp-page-handler="Unshare">
-                                    <input type="hidden" asp-for="Share.UserID" value="@setUser.UserID" />
+                                    <input type="hidden" asp-for="Share.UserID" value="@share.UserID" />
                                     <input type="hidden" asp-for="Share.SetID" value="@set.ID" />
                                     <input type="submit" value="Unshare" class="btn btn-danger btn-sm" />
                                 </form>

@@ -1,20 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Repeat.DataAccess.Services;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
-using Repeat.Pages;
 
 namespace Repeat
 {
     [Authorize]
-    public class CreateModel : CustomPageModel
+    public class CreateModel : PageModel
     {
-        public CreateModel(UserManager<IdentityUser> userManager, QuestionService questionService)
-            : base(userManager, questionService)
+        private readonly ISetService _setService;
+        public CreateModel(ISetService setService)
         {
+            _setService = setService;
         }
 
         [BindProperty] public Set Set { get; set; }
@@ -26,16 +25,7 @@ namespace Repeat
                 return Page();
             }
 
-            this.Set.Shares = new HashSet<Share>
-            {
-                new Share
-                {
-                    SetID = this.Set.ID,
-                    UserID = this.CurrentUserID
-                }
-            };
-
-            await _qService.AddAsync(this.Set);
+            await _setService.AddSetAsync(this.Set);
 
             return RedirectToPage("./Index");
         }

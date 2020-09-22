@@ -9,6 +9,5 @@ namespace Repeat.Domain.Models
         [Required, MaxLength(1000)]
         public string AnswerText { get; set; }
         public bool IsTrue { get; set; }
-        public bool IsDeleted { get; set; }
     }
 }

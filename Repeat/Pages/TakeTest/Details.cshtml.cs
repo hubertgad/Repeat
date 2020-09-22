@@ -3,19 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Repeat.DataAccess.Services;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
 
 namespace Repeat.Pages.TakeTest
 {
     [Authorize]
-    public class DetailsModel : CustomPageModel
+    public class DetailsModel : PageModel
     {
-        public DetailsModel(UserManager<IdentityUser> userManager, QuestionService questionService)
-            : base(userManager, questionService)
+        private readonly ITestService _testService;
+
+        public DetailsModel(ITestService testService)
         {
+            _testService = testService;
         }
 
         public Test Test { get; set; }
@@ -32,9 +34,9 @@ namespace Repeat.Pages.TakeTest
                 return NotFound();
             }
 
-            this.Test = await _qService.GetTestByIDAsync(this.CurrentUserID, null, (int)id);
+            this.Test = await _testService.GetClosedTestBySetIdAsync(id);
             
-            if (this.Test == null || !RequestIsValid())
+            if (this.Test == null)
             {
                 return NotFound();
             }
@@ -51,10 +53,10 @@ namespace Repeat.Pages.TakeTest
         private List<int> CalculatePoints()
         {
             var points = new List<int>();
-            for (int i = 0; i < this.Test.QuestionResponses.Count; i++)
+            for (int i = 0; i < this.Test.TestQuestions.Count; i++)
             {
                 points.Add(0);
-                foreach (var choosenAnswer in this.Test.QuestionResponses[i].ChoosenAnswers)
+                foreach (var choosenAnswer in this.Test.TestQuestions[i].ChoosenAnswers)
                 {
                     if (choosenAnswer.GivenAnswer == true)
                     {
@@ -93,18 +95,6 @@ namespace Repeat.Pages.TakeTest
                 }
             }
             return maxPoints;
-        }
-
-        private bool RequestIsValid()
-        {
-            if (Test.UserID == this.CurrentUserID && Test.IsCompleted == true)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
     }
 }

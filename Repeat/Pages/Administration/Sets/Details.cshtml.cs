@@ -1,19 +1,21 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Repeat.DataAccess.Services;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
-using Repeat.Pages;
 
 namespace Repeat
 {
     [Authorize]
-    public class DetailsModel : CustomPageModel
+    public class DetailsModel : PageModel
     {
-        public DetailsModel(UserManager<IdentityUser> userManager, QuestionService questionService)
-            : base(userManager, questionService)
+        private readonly ISetService _setService;
+        public readonly string userId;
+        public DetailsModel(ISetService setService, ICurrentUserService userService)
         {
+            _setService = setService;
+            userId = userService.UserId;
         }
 
         public Set Set { get; set; }
@@ -25,7 +27,7 @@ namespace Repeat
                 return NotFound();
             }
 
-            this.Set = await _qService.GetSetByIDAsync((int)id, this.CurrentUserID);
+            this.Set = await _setService.GetSetByIdAsync(id);
 
             if (this.Set == null)
             {

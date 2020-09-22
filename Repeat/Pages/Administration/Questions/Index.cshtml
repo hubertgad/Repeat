@@ -9,6 +9,7 @@
 <br />
 <h4>List of questions</h4>
 <hr />
+
 <div class="">
     <form method="post">
         <div class="input-group mb-3">
@@ -19,49 +20,23 @@
                 <option value="" selected disabled>-- Select set --</option>
             </select>
             <div class="input-group-prepend">
-                <input type="submit" value="Submit" asp-page-handler="Category" class="btn btn-primary" />
+                <input type="submit" value="Submit" asp-page-handler="Filter" class="btn btn-primary" />
             </div>
         </div>
     </form>
 </div>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Questions[0].QuestionText)
-            </th>
-            <th align="right"></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var question in Model.Questions) {
-        <tr>
-            <td>
-                @foreach (var part in Model.SplitTextByPattern(question.QuestionText))
-                {
-                    if (part.Contains(@"<code>") && (part.Contains(@"</code>")))
-                    {
-                        <span class="code">
-                            @foreach (var line in part.Replace("<code>", "").Replace("</code>", "").Split("\n"))
-                            {
-                                <code class="multiline">@Html.DisplayFor(x => line)<br /></code>
-                            }
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="multiline">@Html.DisplayFor(x => part)</span>
-                    }
-                }
-            </td>
-            <td align="right">
-                <nobr>
-                    <a asp-page="./Edit" asp-route-id="@question.ID">Edit</a> |
-                    <a asp-page="./Details" asp-route-id="@question.ID">Details</a> |
-                    <a asp-page="./Delete" asp-route-id="@question.ID">Delete</a>
-                </nobr>
-            </td>
-        </tr>
+ 
+@await Html.PartialAsync("Questions/_IndexHeaderPartial", "Question text")
+
+@foreach (var question in Model.Questions)
+{
+    <div class="row">
+        <div class="col-9 col-md-10 align-self-center">
+            <partial name="Questions/_TextPartial" model="question.QuestionText" />
+        </div>
+        <div class="col-3 col-md-2">
+            <partial name="Questions/_IndexActionsPartial" model="question.ID" />
+        </div>
+    </div>
+    <hr />
 }
-    </tbody>
-</table>

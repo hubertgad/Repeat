@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
 
 namespace Repeat.DataAccess.Data
 {
-    public partial class ApplicationDbContext : IdentityDbContext
+    public partial class ApplicationDbContext : IdentityDbContext, IApplicationDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -19,7 +20,6 @@ namespace Repeat.DataAccess.Data
         public DbSet<Share> Shares { get; set; }
         public DbSet<Picture> Pictures { get; set; }
         public DbSet<Test> Tests { get; set; }
-        public DbSet<QuestionResponse> QuestionResponses { get; set; }
         public DbSet<ChoosenAnswer> ChoosenAnswers { get; set; }
         public DbSet<TestQuestion> TestQuestions { get; set; }
 
@@ -51,6 +51,13 @@ namespace Repeat.DataAccess.Data
                 .HasOne(tq => tq.Test)
                 .WithMany(tq => tq.TestQuestions)
                 .HasForeignKey(tq => tq.TestID);
+
+            builder.Entity<TestQuestion>()
+                .HasMany(q => q.ChoosenAnswers)
+                .WithOne(q => q.TestQuestion)
+                .HasForeignKey(q => new { q.TestID, q.QuestionID })
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

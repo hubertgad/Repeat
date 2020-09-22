@@ -1,67 +1,81 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Repeat.DataAccess.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
-using Repeat.Domain.SeedWork;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Repeat.DataAccess.Services
 {
-    public class QuestionService
+    public class QuestionService : IQuestionService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
+        private readonly string _userId;
 
-        public QuestionService(ApplicationDbContext context)
+        public QuestionService(IApplicationDbContext context, ICurrentUserService currentUserService)
         {
             _context = context;
+            _userId = currentUserService.UserId;
         }
 
-        public async Task AddAsync<T>(T t) where T : IEntity
+        public async Task AddQuestionAsync(Question model)
         {
-            await _context.AddAsync(t);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task UpdateAsync<T>(T t) where T : IEntity
-        {
-            _context.Update(t);
+            model.OwnerID = _userId;
+            await _context.Questions.AddAsync(model);
             await _context.SaveChangesAsync();
         }
 
         public async Task UpdateQuestionAsync(Question model, bool removePicture)
         {
+            model.OwnerID = _userId;
+
             var currentQuestionSets = _context.QuestionSets.Where(q => q.QuestionID == model.ID).ToList();
-            _context.RemoveRange(currentQuestionSets.Except(model.QuestionSets));
-            _context.AddRange(model.QuestionSets.Except(currentQuestionSets));
+            _context.QuestionSets.RemoveRange(currentQuestionSets.Except(model.QuestionSets));
+            _context.QuestionSets.AddRange(model.QuestionSets.Except(currentQuestionSets));
             
+            var answersToRemove = _context.Answers.Where(q => q.QuestionID == model.ID).ToList().Except(model.Answers);
+            _context.Answers.RemoveRange(answersToRemove);
+
             if (removePicture == true)
             {
-                _context.Remove(model.Picture);
+                _context.Pictures.Remove(model.Picture);
             }
 
-            _context.Update(model);
+            _context.Questions.Update(model);
 
             await _context.SaveChangesAsync();
         }
 
-        public async Task RemoveAsync<T>(T t) where T : IEntity
+        public async Task RemoveQuestionAsync(Question model)
         {
-            _context.Remove(t);
+            _context.QuestionSets.RemoveRange(_context.QuestionSets.Where(q => q.QuestionID == model.ID));
+            _context.TestQuestions.RemoveRange(_context.TestQuestions.Where(q => q.QuestionID == model.ID));
+            _context.ChoosenAnswers.RemoveRange(_context.ChoosenAnswers.Where(q => q.QuestionID == model.ID));
+            _context.Answers.RemoveRange(_context.Answers.Where(q => q.QuestionID == model.ID));
+            _context.Questions.Remove(model);
             await _context.SaveChangesAsync();
         }
 
-        public bool ElementExists<T>(T t) where T : class, IEntity => _context.Set<T>().Any(e => e == t);
-
-        public async Task<List<Question>> GetQuestionListAsync(string userID, int? catID, int? setID, bool shared = false)
+        public async Task<Question> GetQuestionByIdAsync(int? id)
         {
-            IQueryable<Question> query = _context.Questions.Include(q => q.QuestionSets).Where(q => q.IsDeleted == false);
+            Question question = await _context.Questions
+                .Where(m => m.OwnerID == _userId)
+                .Include(o => o.Category)
+                .Include(p => p.Picture)
+                .Include(r => r.QuestionSets).ThenInclude(q => q.Set)
+                .FirstOrDefaultAsync(m => m.ID == id);
 
-            if (shared == false) query = query.Where(q => q.OwnerID == userID);
+            question.Answers = await _context.Answers
+                .Where(q => q.QuestionID == id).ToListAsync();
+
+            return question;
+        }
+
+        public async Task<List<Question>> GetQuestionListAsync(int? catID, int? setID)
+        {
+            IQueryable<Question> query = _context.Questions
+                .Include(q => q.QuestionSets)
+                .Where(q => q.OwnerID == _userId);
             if (setID != null) query = query.Where(q => q.QuestionSets.Any(p => p.SetID == setID));
             if (catID != null) query = query.Where(q => q.CategoryID == catID);
 
@@ -71,85 +85,25 @@ namespace Repeat.DataAccess.Services
             {
                 question.Answers =
                     await _context.Answers
-                    .Where(q => q.QuestionID == question.ID && q.IsDeleted == false)
+                    .Where(q => q.QuestionID == question.ID)
                     .ToListAsync();
             }
 
             return questions;
         }
 
-        public async Task<List<Category>> GetCategoryListAsync(string userID)
-            => await _context.Categories.Where(q => q.OwnerID == userID && q.IsDeleted == false).ToListAsync();
-
-        public async Task<List<Set>> GetSetListAsync(string userID, bool includeShared = false)
+        public Task<List<Set>> GetSetListAsync()
         {
-            IQueryable<Set> query = _context.Sets.Include(q => q.Shares)
-                .Where(q => q.OwnerID == userID || q.Shares.Any(p => p.UserID == userID));
-
-            if (includeShared == false) query = query.Where(q => q.OwnerID == userID);
-            else
-            {
-                query = query.Where(q => q.QuestionSets.Any())
-                    .Include(q => q.QuestionSets).ThenInclude(q => q.Question).ThenInclude(q => q.Category);
-            }
-
-            return await query.ToListAsync();
+            return _context.Sets
+                .Include(q => q.Shares)
+                .Where(q => q.OwnerID == _userId)
+                .Include(q => q.QuestionSets)
+                    .ThenInclude(q => q.Question)
+                    .ThenInclude(q => q.Category)
+                .ToListAsync();
         }
 
-        public async Task<List<IdentityUser>> GetUserListAsync(string userID)
-            => await _context.Users.Where(q => q.Id != userID).ToListAsync();
-
-        public async Task<Question> GetQuestionByIDAsync(int questionID, string userID)
-        {
-            Question question = await _context.Questions
-                .Where(m => m.OwnerID == userID && m.IsDeleted == false)
-                .Include(o => o.Category)
-                .Include(p => p.Picture)
-                .Include(r => r.QuestionSets).ThenInclude(q => q.Set)
-                .FirstOrDefaultAsync(m => m.ID == questionID);
-
-            question.Answers = await _context.Answers
-                .Where(q => q.QuestionID == questionID && q.IsDeleted == false).ToListAsync();
-
-            return question;
-        }
-
-        public async Task<Category> GetCategoryByIDAsync(int categoryID, string userID)
-        {
-            return await _context.Categories
-                .Where(m => m.OwnerID == userID && m.IsDeleted == false)
-                .FirstOrDefaultAsync(m => m.ID == categoryID);
-        }
-
-        public async Task<Set> GetSetByIDAsync(int setID, string userID, bool includeShared = false)
-        {
-            IQueryable<Set> query =
-                _context.Sets.Include(o => o.QuestionSets).ThenInclude(q => q.Question)
-                .Where(m => m.ID == setID);
-
-            if (includeShared == true)
-            {
-                return await query
-                    .FirstOrDefaultAsync(q => q.OwnerID == userID || q.Shares.Any(p => p.UserID == userID));
-            }
-            else
-            {
-                return await query.FirstOrDefaultAsync(m => m.OwnerID == userID);
-            }
-        }
-
-        public async Task<Test> GetTestByIDAsync(string userID, int? setID, int? testID)
-        {
-            IQueryable<Test> query = _context.Tests
-                .Where(q => q.UserID == userID)
-                .Include(q => q.TestQuestions).ThenInclude(q => q.Question).ThenInclude(q => q.Answers)
-                .Include(q => q.TestQuestions).ThenInclude(q => q.Question).ThenInclude(q => q.Picture)
-                .Include(q => q.QuestionResponses).ThenInclude(p => p.ChoosenAnswers);
-
-            if (testID != null) query = query.Where(m => m.ID == testID && m.IsCompleted == true).Include(q => q.Set);
-            else if (setID != null) query = query.Where(q => q.SetID == setID && q.IsCompleted == false);
-
-            return await query.FirstOrDefaultAsync();
-        }
+        public async Task<List<Category>> GetCategoryListAsync()
+            => await _context.Categories.Where(q => q.OwnerID == _userId).ToListAsync();
     }
 }

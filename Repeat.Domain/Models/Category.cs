@@ -10,7 +10,6 @@ namespace Repeat.Domain.Models
         public string Name { get; set; }
         [Required]
         public string OwnerID { get; set; }
-        public bool IsDeleted { get; set; }
         public IList<Question> Questions { get; set; }
     }
 }

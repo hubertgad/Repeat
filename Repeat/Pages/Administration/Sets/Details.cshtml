@@ -31,13 +31,13 @@
                 <label>Question @i:</label>
             </dt>
             <dd class="col-sm-9">
-                <label>@questionSet.Question.QuestionText</label>
-            </dd>
+                <partial name="Questions/_TextPartial" model="@questionSet.Question.QuestionText" />
+             </dd>
         }
     </dl>
 </div>
 <div>
-    @{ if (Model.Set.OwnerID == Model.CurrentUserID)
+    @{ if (Model.Set.OwnerID == Model.userId)
         {
             <a asp-page="./Edit" asp-route-id="@Model.Set.ID" class="btn btn-warning">Edit</a> <a>|</a>
         }

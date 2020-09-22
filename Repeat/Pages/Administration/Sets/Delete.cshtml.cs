@@ -1,20 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Repeat.DataAccess.Services;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
-using Repeat.Pages;
 
 namespace Repeat
 {
     [Authorize]
-    public class DeleteModel : CustomPageModel
+    public class DeleteModel : PageModel
     {
-        public DeleteModel(UserManager<IdentityUser> userManager, QuestionService questionService)
-            : base(userManager, questionService)
+        private readonly ISetService _setService;
+        public DeleteModel(ISetService setService)
         {
+            _setService = setService;
         }
 
         [BindProperty] public Set Set { get; set; }
@@ -26,7 +25,7 @@ namespace Repeat
                 return NotFound();
             }
 
-            this.Set = await _qService.GetSetByIDAsync((int)id, this.CurrentUserID);
+            this.Set = await _setService.GetSetByIdAsync(id);
 
             if (this.Set == null)
             {
@@ -43,11 +42,11 @@ namespace Repeat
                 return NotFound();
             }
 
-            this.Set = await _qService.GetSetByIDAsync((int)id, this.CurrentUserID);
+            this.Set = await _setService.GetSetByIdAsync(id);
 
             if (Set != null)
             {
-                await _qService.RemoveAsync(this.Set);
+                await _setService.RemoveSetAsync(this.Set);
             }
 
             return RedirectToPage("./Index");

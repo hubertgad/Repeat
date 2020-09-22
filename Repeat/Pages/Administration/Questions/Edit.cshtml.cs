@@ -1,23 +1,23 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Repeat.DataAccess.Services;
+using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
 
 namespace Repeat.Pages.Administration.Questions
 {
     [Authorize]
-    public class EditModel : CustomPageModel
+    public class EditModel : PageModel
     {
-        public EditModel(UserManager<IdentityUser> userManager, QuestionService questionService)
-            : base(userManager, questionService)
+        private readonly IQuestionService _questionService;
+
+        public EditModel(IQuestionService questionService)
         {
+            _questionService = questionService;
         }
 
         [BindProperty] public Question Question { get; set; }
@@ -32,11 +32,11 @@ namespace Repeat.Pages.Administration.Questions
                 return NotFound();
             }
 
-            this.Question = await _qService.GetQuestionByIDAsync((int)id, this.CurrentUserID);
+            this.Question = await _questionService.GetQuestionByIdAsync(id);
 
             while (answers > this.Question.Answers.Count && answers < 11)
             {
-                Question.Answers.Add(new Answer { QuestionID = this.Question.ID });
+                this.Question.Answers.Add(new Answer { QuestionID = this.Question.ID });
             }
 
             if (this.Question == null)
@@ -59,17 +59,15 @@ namespace Repeat.Pages.Administration.Questions
             return RedirectToPage($"./Details", new { question.ID });
         }
 
-        public async Task<IActionResult> OnPostRemoveAsync(Question question, int? answerId)
+        public async Task<IActionResult> OnPostRemoveAsync(Question question, int? answerIndex)
         {
             if (!ModelState.IsValid) return Page();
 
-            question.Answers[(int)answerId].IsDeleted = true;
+            question.Answers.RemoveAt((int)answerIndex);
 
             var success = await UpdateQuestionAsync(question);
             if (success == false) return NotFound();
-
-            question.Answers.Remove(question.Answers[(int)answerId]);
-
+                       
             return RedirectToPage(new { id = question.ID, answers = question.Answers.Count });
         }
 
@@ -86,23 +84,23 @@ namespace Repeat.Pages.Administration.Questions
         private async Task BindDataToViewAsync()
         {
             IEnumerable<int> selectedSetsValues = Question.QuestionSets.Select(q => q.SetID);
-            ViewData["CategoryID"] = new SelectList(await _qService.GetCategoryListAsync(this.CurrentUserID), "ID", "Name");
-            ViewData["SetID"] = new MultiSelectList(await _qService.GetSetListAsync(this.CurrentUserID), "ID", "Name", selectedSetsValues);
+            ViewData["CategoryID"] = new SelectList(await _questionService.GetCategoryListAsync(), "ID", "Name");
+            ViewData["SetID"] = new MultiSelectList(await _questionService.GetSetListAsync(), "ID", "Name", selectedSetsValues);
         }
 
         private async Task<bool> UpdateQuestionAsync(Question question)
         {
             try
             {
-                question = UpdateQuestionSetsState(question);
-                question = await FileUpload.UpdatePictureStateAsync(question);
-                await _qService.UpdateQuestionAsync(question, RemovePicture);
+                UpdateQuestionSets(ref question);
+                question = await FileUpload.UpdatePictureAsync(question);
+                await _questionService.UpdateQuestionAsync(question, this.RemovePicture);
                 return true;
             }
             catch { return false; }
         }
 
-        private Question UpdateQuestionSetsState(Question question)
+        private void UpdateQuestionSets(ref Question question)
         {
             question.QuestionSets = new HashSet<QuestionSet>();
             foreach (var setID in this.SelectedSets)
@@ -113,7 +111,6 @@ namespace Repeat.Pages.Administration.Questions
                     SetID = setID
                 });
             }
-            return question;
         }
     }
 }

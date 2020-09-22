@@ -1,20 +1,23 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Repeat.DataAccess.Services;
+using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
-using Repeat.Pages;
 
 namespace Repeat
 {
     [Authorize]
-    public class EditModel : CustomPageModel
+    public class EditModel : PageModel
     {
-        public EditModel(UserManager<IdentityUser> userManager, QuestionService questionService)
-            : base(userManager, questionService)
+        private readonly ISetService _setService;
+        public readonly string userId;
+
+        public EditModel(ISetService setService, ICurrentUserService userService)
         {
+            _setService = setService;
+            userId = userService.UserId;
         }
 
         [BindProperty] public Set Set { get; set; }
@@ -27,7 +30,7 @@ namespace Repeat
                 return NotFound();
             }
 
-            this.Set = await _qService.GetSetByIDAsync((int)id, this.CurrentUserID);
+            this.Set = await _setService.GetSetByIdAsync(id);
 
             if (this.Set == null)
             {
@@ -42,11 +45,11 @@ namespace Repeat
             if (!ModelState.IsValid)
             {
                 return Page();
-            }
+            }            
 
             try
             {
-                await _qService.UpdateAsync(this.Set);
+                await _setService.UpdateSetAsync(this.Set);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -60,7 +63,7 @@ namespace Repeat
         {
             try
             {
-                await _qService.RemoveAsync(this.QuestionSet);
+                await _setService.RemoveQuestionSetAsync(this.QuestionSet);
             }
             catch
             {

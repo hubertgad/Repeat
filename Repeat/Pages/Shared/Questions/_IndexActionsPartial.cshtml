@@ -1,0 +1,8 @@
+﻿@model int
+@{ 
+    string cls = "btn btn-sm m-1 w-100";
+}
+
+<a asp-page="./Edit" asp-route-id="@Model" class="@cls btn-warning">Edit</a>
+<a asp-page="./Details" asp-route-id="@Model" class="@cls btn-info">Details</a>
+<a asp-page="./Delete" asp-route-id="@Model" class="@cls btn-danger">Delete</a>

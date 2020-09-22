@@ -34,7 +34,7 @@ namespace Repeat
             return imgSrc;
         }
 
-        public async Task<Question> UpdatePictureStateAsync(Question question)
+        public async Task<Question> UpdatePictureAsync(Question question)
         {
             if (this.FormFile != null && this.FormFile.Length > 0)
             {

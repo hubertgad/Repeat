@@ -13,7 +13,7 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Set.ID" value="@Model.Set.ID" />
-            <input type="hidden" asp-for="Set.OwnerID" value="@Model.CurrentUserID" />
+            <input type="hidden" asp-for="Set.OwnerID" value="@Model.Set.OwnerID" />
             <div class="form-group">
                 <label asp-for="Set.Name" class="control-label"></label>
                 <input asp-for="Set.Name" class="form-control" />
@@ -38,13 +38,13 @@
                 </nobr>
             </td>
             <td class="text-left">
-                <label>@questionSet.Question.QuestionText</label>
+                <partial name="Questions/_TextPartial" model="@questionSet.Question.QuestionText" />
             </td>
             <td class="text-right">
                 <form method="post" asp-page-handler="Detach">
                     <input type="hidden" asp-for="@Model.QuestionSet.QuestionID" value="@questionSet.QuestionID" />
                     <input type="hidden" asp-for="@Model.QuestionSet.SetID" value="@questionSet.SetID" />
-                    <input type="submit" value="Remove" class="btn btn-danger btn-sm" />
+                    <input type="submit" class="btn btn-danger btn-sm" value="Remove" />
                 </form>
             </td>
         </tr>

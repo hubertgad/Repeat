@@ -1,21 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Repeat.Domain.Models;
-using Repeat.DataAccess.Services;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Repeat.Domain.Interfaces;
 
 namespace Repeat.Pages.Administration.Questions
 {
     [Authorize]
-    public class IndexModel : CustomPageModel
+    public class IndexModel : PageModel
     {
+        private readonly IQuestionService _questionService;
 
-        public IndexModel(UserManager<IdentityUser> userManager, QuestionService questionService)
-            : base(userManager, questionService)
+        public IndexModel(IQuestionService questionService)
         {
+            _questionService = questionService;
         }
 
         public List<Question> Questions { get; set; }
@@ -24,16 +25,15 @@ namespace Repeat.Pages.Administration.Questions
 
         public async Task OnGetAsync()
         {
-            this.Questions = await _qService.GetQuestionListAsync(this.CurrentUserID, this.SelectedCategoryID, this.SelectedSetID);
+            this.Questions = await _questionService.GetQuestionListAsync(this.SelectedCategoryID, this.SelectedSetID);
 
-            ViewData["CategoryID"] = new SelectList(await _qService.GetCategoryListAsync(this.CurrentUserID), "ID", "Name");
-            ViewData["SetID"] = new SelectList(await _qService.GetSetListAsync(this.CurrentUserID), "ID", "Name");          
+            ViewData["CategoryID"] = new SelectList(await _questionService.GetCategoryListAsync(), "ID", "Name");
+            ViewData["SetID"] = new SelectList(await _questionService.GetSetListAsync(), "ID", "Name");          
         }
 
-        public async Task<IActionResult> OnPostCategoryAsync()
+        public Task OnPostFilterAsync()
         {
-            await OnGetAsync();
-            return Page();
+            return OnGetAsync();
         }
     }
 }

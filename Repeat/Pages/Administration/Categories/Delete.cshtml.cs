@@ -1,30 +1,27 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Repeat.DataAccess.Services;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
 
 namespace Repeat.Pages.Administration.Categories
 {
     [Authorize]
-    public class DeleteModel : CustomPageModel
+    public class DeleteModel : PageModel
     {
-        public DeleteModel(UserManager<IdentityUser> userManager, QuestionService questionService)
-            : base(userManager, questionService)
+        private readonly ICategoryService _categoryService;
+
+        public DeleteModel(ICategoryService categoryService)
         {
+            _categoryService = categoryService;
         }
 
         [BindProperty] public Category Category { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            this.Category = await _qService.GetCategoryByIDAsync((int)id, this.CurrentUserID);
+            this.Category = await _categoryService.GetCategoryByIdAsync(id);
 
             if (this.Category == null)
             {
@@ -34,25 +31,11 @@ namespace Repeat.Pages.Administration.Categories
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id)
+        public async Task<IActionResult> OnPostAsync(Category category)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            this.Category = await _qService.GetCategoryByIDAsync((int)id, this.CurrentUserID);
-            
-            this.Category.IsDeleted = true;
-
-            foreach (var question in this.Category.Questions)
-            {
-                question.IsDeleted = true;
-            }
-
             try
             {
-                await _qService.UpdateAsync(this.Category);
+                await _categoryService.RemoveCategoryAsync(category);
             }
             catch
             {

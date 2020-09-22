@@ -1,30 +1,29 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Repeat.DataAccess.Services;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
 
 namespace Repeat.Pages.Administration.Categories
 {
     [Authorize]
-    public class DetailsModel : CustomPageModel
+    public class DetailsModel : PageModel
     {
-        public DetailsModel(UserManager<IdentityUser> userManager, QuestionService questionService)
-            : base(userManager, questionService)
+        private readonly ICategoryService _categoryService;
+        public readonly string userId;
+
+        public DetailsModel(ICategoryService categoryService, ICurrentUserService userService)
         {
+            _categoryService = categoryService;
+            userId = userService.UserId;
         }
 
         public Category Category { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            this.Category = await _qService.GetCategoryByIDAsync((int)id, this.CurrentUserID);
+            this.Category = await _categoryService.GetCategoryByIdAsync(id);
 
             if (this.Category == null)
             {

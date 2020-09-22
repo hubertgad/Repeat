@@ -18,9 +18,7 @@
                 <input asp-for="Category.Name" class="form-control" />
                 <span asp-validation-for="Category.Name" class="text-danger"></span>
             </div>
-            <div>
-                <input type="hidden" asp-for="Category.OwnerID" value="@Model.CurrentUserID" />
-            </div>
+            <input type="hidden" asp-for="Category.OwnerID" value="empty" />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

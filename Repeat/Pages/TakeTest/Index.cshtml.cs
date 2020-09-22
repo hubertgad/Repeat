@@ -1,26 +1,27 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Repeat.DataAccess.Services;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
 
 namespace Repeat.Pages.TakeTest
 {
     [Authorize]
-    public class IndexModel : CustomPageModel
+    public class IndexModel : PageModel
     {
-        public IndexModel(UserManager<IdentityUser> userManager, QuestionService questionService)
-            : base(userManager, questionService)
+        private readonly ITestService _testService;
+
+        public IndexModel(ITestService testService)
         {
+            _testService = testService;
         }
 
         public List<Set> Sets { get; set; }
-        public List<Category> Categories { get; set; }
 
         public async Task OnGetAsync()
         {
-            this.Sets = await _qService.GetSetListAsync(this.CurrentUserID, true);
+            this.Sets = await _testService.GetAvailableSetsAsync();
         }
     }
 }

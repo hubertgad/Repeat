@@ -10,12 +10,19 @@ for details on configuring this project to bundle and minify static web assets. 
     counter-reset: line;
 }
 
-
+.code-box {
+    display: flex;
+    overflow-x: auto;
+    background-color: rgba(255, 255, 255, 0.7);
+}
 
 code {
+    color: var(--first);
     counter-increment: line;
     font-size: small;
-    overflow: scroll !important;
+}
+.nowrap {
+    white-space: pre !important;
 }
 
     code::before {
@@ -91,25 +98,30 @@ a.navbar-brand {
 
 .main-box {
     padding: 1em;
-    background: rgba(255, 255, 255, 0.8);
-    border: var(--second) solid 3.5px;
+    background: rgba(255, 255, 255, 0.7);
+    border: black solid 4px;
     margin-bottom: 1em;
+}
+
+hr {
+    background-color: white;
 }
 
 /* My custom buttons */
 
-.btn-my {
+.btn-nav2 {
     color: #ffffff;
     background-color: var(--first);
     margin-bottom: 1px;
     border: 0px;
+    font-weight: 400;
 }
-    .btn-my:hover {
+    .btn-nav2:hover {
         color: #ffffff;
         background-color: var(--second);
-        border-radius: 0px;
-        border: 0px;
         margin-bottom: 1px;
+        border: 0px;
+        font-weight: 400;
     }
 
 .btn {
@@ -218,7 +230,7 @@ html {
 body {
     /* Margin bottom by footer height */
     margin-bottom: 60px;
-    background-color: black;
+    background: rgba(0, 0, 0, 0.85);
 }
 .footer {
   position: absolute;

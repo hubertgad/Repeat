@@ -1,0 +1,9 @@
+﻿@model Repeat.Domain.Models.Picture
+
+@if (Model != null && Model.Data != null)
+{
+    var base64 = Convert.ToBase64String(Model.Data);
+    var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+    <img class="embed-responsive-item img-fluid p-3" 
+         src="@imgSrc" alt="Question picture" />
+}

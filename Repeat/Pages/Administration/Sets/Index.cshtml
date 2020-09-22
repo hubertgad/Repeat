@@ -7,29 +7,18 @@
 
 <br />
 <h4>List of sets</h4>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Set[0].Name)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Set) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td align="right">
-                <nobr>
-                    <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
-                    <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
-                    <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
-                </nobr>
-            </td>
-        </tr>
+
+@await Html.PartialAsync("Questions/_IndexHeaderPartial", "Set name")
+
+@foreach (var item in Model.Set)
+{
+    <div class="row">
+        <div class="col-9 col-md-10 align-self-center">
+            @Html.DisplayFor(modelItem => item.Name)
+        </div>
+        <div class="col-3 col-md-2">
+            <partial name="Questions/_IndexActionsPartial" model="item.ID" />
+        </div>
+    </div>
+    <hr />
 }
-    </tbody>
-</table>

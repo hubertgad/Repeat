@@ -1,18 +1,20 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Repeat.DataAccess.Services;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
 
 namespace Repeat.Pages.Administration.Questions
 {
     [Authorize]
-    public class DeleteModel : CustomPageModel
+    public class DeleteModel : PageModel
     {
-        public DeleteModel(UserManager<IdentityUser> userManager, QuestionService questionService) 
-            : base(userManager, questionService)
+        private readonly IQuestionService _questionService;
+
+        public DeleteModel(IQuestionService questionService)
         {
+            _questionService = questionService;
         }
 
         public Question Question { get; set; }
@@ -24,7 +26,7 @@ namespace Repeat.Pages.Administration.Questions
                 return NotFound();
             }
 
-            this.Question = await _qService.GetQuestionByIDAsync((int)id, this.CurrentUserID);
+            this.Question = await _questionService.GetQuestionByIdAsync(id);
 
             if (this.Question == null)
             {
@@ -41,12 +43,11 @@ namespace Repeat.Pages.Administration.Questions
                 return NotFound();
             }
 
-            this.Question = await _qService.GetQuestionByIDAsync((int)id, this.CurrentUserID);
-            this.Question.IsDeleted = true;
-
+            this.Question = await _questionService.GetQuestionByIdAsync(id);
+            
             try
             {
-                await _qService.UpdateAsync(this.Question);
+                await _questionService.RemoveQuestionAsync(this.Question);
             }
             catch
             {

@@ -30,101 +30,39 @@
             <h4>Question @(Model.Questions.IndexOf(question) + 1):</h4>
             <hr />
             <dl class="row">
-                <dd class="col-sm-12 mb-3">
-                    @foreach (var part in Model.SplitTextByPattern(question.QuestionText))
-                    {
-                        if (part.Contains(@"<code>") && (part.Contains(@"</code>")))
-                        {
-                            <span class="code">
-                                @foreach (var line in part.Replace("<code>", "").Replace("</code>", "").Split("\n"))
-                                {
-                                    <code class="multiline">@Html.DisplayFor(x => line)<br /></code>
-                                }
-                            </span>
-                        }
-                        else
-                        {
-                            <span class="multiline">@Html.DisplayFor(x => part)</span>
-                        }
-                    }
+                <dd class="col-12 mb-3">
+                    <partial name="Questions/_TextPartial" model="question.QuestionText" />
                 </dd>
             @if (question.Picture != null)
             {
-                <dt class="col-sm-2">
+                <dt class="col-3 col-xl-2">
                     <label>Picture:</label>
                 </dt>
-                <dd class="col-sm-10">
-                    @{
-                        var base64 = Convert.ToBase64String(question.Picture.Data);
-                        var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
-                    }
-                    <img src="@imgSrc" />
+                <dd class="col-9 col-xl-10">
+                    <partial name="Questions/_PicturePartial" model="question.Picture" />
                 </dd>
             }
-            @for (int i = 0; i < Model.Test.QuestionResponses[Model.Questions.IndexOf(question)].ChoosenAnswers.Count; i++)
+            @for (int i = 0; i < Model.Test.TestQuestions[Model.Questions.IndexOf(question)].ChoosenAnswers.Count; i++)
             {
-                <dt class="col-sm-2">
-                    <nobr>
+                <dt class="col-3 col-xl-2">
                         Answer @((char)('A' + i)):
                         @if (question.Answers[i].IsTrue == true)
                         {<span class="badge badge-success">True</span> }
                         else
                         { <span class="badge badge-danger">False</span>}
-                    </nobr>
                 </dt>
-                <dd class="col-sm-10">
-                    @if (Model.Test.QuestionResponses[Model.Questions.IndexOf(question)].ChoosenAnswers.FirstOrDefault(q => q.AnswerID == question.Answers[i].ID).GivenAnswer == true)
-                    {
-                    <div class="given-answer">
-                        @foreach (var part in Model.SplitTextByPattern(question.Answers[i].AnswerText))
-                        {
-                            if (part.Contains(@"<code>") && (part.Contains(@"</code>")))
-                            {
-                                <span>
-                                    @foreach (var line in part.Replace("<code>", "").Replace("</code>", "").Split("\n"))
-                                    {
-                                        <code class="multiline">@Html.DisplayFor(x => line)<br /></code>
-
-                                    }
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="multiline">@Html.DisplayFor(x => part)</span>
-                            }
-                        }
+                <dd class="col-9 col-xl-10">
+                    <div class="@(Model.Test.TestQuestions[Model.Questions.IndexOf(question)].ChoosenAnswers.FirstOrDefault(q => q.AnswerID == question.Answers[i].ID).GivenAnswer == true ? "given-answer" : "")">
+                        <partial name="Questions/_TextPartial" model="question.Answers[i].AnswerText" />
                     </div>
-                    }
-                    else
-                    {
-                        <div>
-                            @foreach (var part in Model.SplitTextByPattern(question.Answers[i].AnswerText))
-                            {
-                                if (part.Contains(@"<code>") && (part.Contains(@"</code>")))
-                                {
-                                    <span>
-                                        @foreach (var line in part.Replace("<code>", "").Replace("</code>", "").Split("\n"))
-                                        {
-                                            <code class="multiline">@Html.DisplayFor(x => line)<br /></code>
-
-                                        }
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="multiline">@Html.DisplayFor(x => part)</span>
-                                }
-                            }
-                        </div>
-                    }
                 </dd>
             }
             @if (question.Reference != null)
             {
-                <dt class="col-sm-2">
+                <dt class="col-3 col-xl-2">
                     <label>References:</label>
                 </dt>
-                <dd class="col-sm-10">
+                <dd class="col-9 col-xl-10">
                     <a class="multiline">@Html.DisplayFor(model => question.Reference)</a>
                 </dd>
             }

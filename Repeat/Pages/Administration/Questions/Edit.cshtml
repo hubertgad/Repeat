@@ -47,7 +47,7 @@
                         </div>
                         <textarea asp-for="Question.Answers[i].AnswerText" placeholder="Answer @((char)('A' + i))" class="form-control" aria-label="Text input with checkbox"></textarea>
                         <input type="submit" asp-page-handler="Remove"
-                               asp-route-question="@Model.Question" asp-route-answerId="@i"
+                               asp-route-question="@Model.Question" asp-route-answerIndex="@i"
                                value="Remove" class="btn btn-danger btn-sm" />
                     </div>
                     <span asp-validation-for="Question.Answers[i].AnswerText" class="text-danger"></span>
@@ -61,11 +61,7 @@
             </div>
             @if (Model.Question.Picture != null && Model.Question.Picture.Data != null)
             {
-                <div>
-                    <img src="@FileUpload.ToString(Model.Question.Picture.Data)" />
-                    <input type="hidden" asp-for="Question.Picture.ID" />
-                    <label><input type="checkbox" asp-for="RemovePicture" /> Remove picture</label>
-                </div>
+                <partial name="Questions/_PicturePartial" model="Model.Question.Picture" />
             }
             <div class="form-group">
                 <input asp-for="FileUpload.FormFile" class="form-control-file" />
