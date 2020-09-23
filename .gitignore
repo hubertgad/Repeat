@@ -3,6 +3,7 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+*.a11yrc
 Repeat/appsettings.Development.json
 Repeat/appsettings.json
 Repeat/web.config
