@@ -44,14 +44,7 @@
         {
             <dt class="@dtclass">
                 <label class="d-inline text-nowrap">
-                    @if (Model.Question.Answers[i].IsTrue)
-                    {
-                        <span class="badge badge-success">T</span>
-                    }
-                    else
-                    {
-                        <span class="badge badge-danger">F</span>
-                    }
+                    <partial name="Questions/_QuestionBadgePartial" model="Model.Question.Answers[i]" />
                     Answer @((char)('A' + i)):
                 </label>
             </dt>
