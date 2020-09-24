@@ -188,6 +188,7 @@ namespace Repeat.DataAccess.Services
                 .Include(q => q.QuestionSets)
                     .ThenInclude(q => q.Question)
                     .ThenInclude(q => q.Category)
+                .Include(q => q.Owner)
                 .ToListAsync();
         }
     }

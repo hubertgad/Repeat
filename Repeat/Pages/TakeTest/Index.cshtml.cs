@@ -11,10 +11,12 @@ namespace Repeat.Pages.TakeTest
     public class IndexModel : PageModel
     {
         private readonly ITestService _testService;
+        public string UserId { get; }
 
-        public IndexModel(ITestService testService)
+        public IndexModel(ITestService testService, ICurrentUserService currentUserService)
         {
             _testService = testService;
+            UserId = currentUserService.UserId;
         }
 
         public List<Set> Sets { get; set; }

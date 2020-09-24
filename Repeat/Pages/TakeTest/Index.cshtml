@@ -13,7 +13,11 @@
     {
         <tr>
             <td class="col-md-10">
-                @Html.DisplayFor(modelItem => set.Name)
+                @Html.DisplayFor(modelItem => set.Name) 
+                @if (set.OwnerID != Model.UserId)
+                {
+                    <span class="badge badge-dark">Shared by @Html.DisplayFor(m => set.Owner.UserName)</span>
+                }
             </td>
             <td class="col-md-2">
                 <a class="btn btn-nav2" asp-page="./Run" asp-route-id="@set.ID">RUN</a>
