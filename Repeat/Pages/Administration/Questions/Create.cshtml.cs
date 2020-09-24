@@ -72,8 +72,6 @@ namespace Repeat.Pages.Administration.Questions
         
         public async Task<IActionResult> OnPostAsync()
         {
-            //if (!ModelState.IsValid) return Page();
-
             this.Question = await FileUpload.UpdatePictureAsync(this.Question);
             this.Question.QuestionSets = CreateListOfQuestionSets();
 
