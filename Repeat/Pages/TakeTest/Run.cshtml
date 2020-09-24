@@ -20,10 +20,12 @@
         @for (int i = 0; i < Model.Test.TestQuestions[Model.CurrentQuestionIndex].Question.Answers.Count; i++)
         {
             <div class="input-group">
-                <label>
-                    <input type="checkbox" class="align-content-center"
+                <label class="row">
+                    <input type="checkbox" class="align-content-center m-3"
                            asp-for="ChoosenAnswers[i].GivenAnswer" />
-                    <partial name="Questions/_TextPartial" model="Model.Test.TestQuestions[Model.CurrentQuestionIndex].Question.Answers[i].AnswerText" />
+                    <span class="my-auto">
+                        <partial name="Questions/_TextPartial" model="Model.Test.TestQuestions[Model.CurrentQuestionIndex].Question.Answers[i].AnswerText" />
+                    </span>
                 </label>
             </div>
         }
