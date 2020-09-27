@@ -7,23 +7,23 @@ using System.Threading.Tasks;
 
 namespace Repeat.DataAccess.Services
 {
-    class CategoryService : ICategoryService
+    public class CategoryService : ICategoryService
     {
         private readonly IApplicationDbContext _context;
         private readonly string _userId;
 
-        public CategoryService(IApplicationDbContext context, ICurrentUserService user)
+        public CategoryService(IApplicationDbContext context, ICurrentUserService userService)
         {
             _context = context;
-            _userId = user.UserId;
+            _userId = userService.UserId;
         }
 
-        public Task AddCategoryAsync(Category model)
+        public async Task AddCategoryAsync(Category model)
         {
             model.OwnerID = _userId;
-            _context.Categories.Add(model);
+            await _context.Categories.AddAsync(model);
 
-            return _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         public Task RemoveCategoryAsync(Category model)
@@ -44,9 +44,9 @@ namespace Repeat.DataAccess.Services
         public Task<Category> GetCategoryByIdAsync(int? id)
         {
             return _context.Categories
-                .Where(q => q.OwnerID == _userId)
+                .Where(q => q.OwnerID == _userId && q.ID == id)
                 .Include(q => q.Questions)
-                .FirstOrDefaultAsync(q => q.ID == id);
+                .FirstOrDefaultAsync();
         }
 
         public Task<List<Category>> GetCategoriesForCurrentUserAsync()

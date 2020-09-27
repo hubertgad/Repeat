@@ -12,6 +12,7 @@ namespace Repeat.Domain.Models
         [Required]
         public int AnswerID { get; set; }
         public bool GivenAnswer { get; set; }
+        public Question Question { get; set; }
         public TestQuestion TestQuestion { get; set; }
     }
 }

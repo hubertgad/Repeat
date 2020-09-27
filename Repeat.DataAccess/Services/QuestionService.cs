@@ -22,6 +22,16 @@ namespace Repeat.DataAccess.Services
         {
             model.OwnerID = _userId;
             await _context.Questions.AddAsync(model);
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveQuestionAsync(Question model)
+        {
+            _context.TestQuestions.RemoveRange(_context.TestQuestions.Where(q => q.QuestionID == model.ID));
+            _context.ChoosenAnswers.RemoveRange(_context.ChoosenAnswers.Where(q => q.QuestionID == model.ID));
+            _context.Questions.Remove(model);
+
             await _context.SaveChangesAsync();
         }
 
@@ -32,7 +42,7 @@ namespace Repeat.DataAccess.Services
             var currentQuestionSets = _context.QuestionSets.Where(q => q.QuestionID == model.ID).ToList();
             _context.QuestionSets.RemoveRange(currentQuestionSets.Except(model.QuestionSets));
             _context.QuestionSets.AddRange(model.QuestionSets.Except(currentQuestionSets));
-            
+
             var answersToRemove = _context.Answers.Where(q => q.QuestionID == model.ID).ToList().Except(model.Answers);
             _context.Answers.RemoveRange(answersToRemove);
 
@@ -46,19 +56,9 @@ namespace Repeat.DataAccess.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task RemoveQuestionAsync(Question model)
-        {
-            _context.QuestionSets.RemoveRange(_context.QuestionSets.Where(q => q.QuestionID == model.ID));
-            _context.TestQuestions.RemoveRange(_context.TestQuestions.Where(q => q.QuestionID == model.ID));
-            _context.ChoosenAnswers.RemoveRange(_context.ChoosenAnswers.Where(q => q.QuestionID == model.ID));
-            _context.Answers.RemoveRange(_context.Answers.Where(q => q.QuestionID == model.ID));
-            _context.Questions.Remove(model);
-            await _context.SaveChangesAsync();
-        }
-
         public async Task<Question> GetQuestionByIdAsync(int? id)
         {
-            Question question = await _context.Questions
+            var question = await _context.Questions
                 .Where(m => m.OwnerID == _userId)
                 .Include(o => o.Category)
                 .Include(p => p.Picture)
@@ -71,13 +71,15 @@ namespace Repeat.DataAccess.Services
             return question;
         }
 
-        public async Task<List<Question>> GetQuestionListAsync(int? catID, int? setID)
+        public async Task<List<Question>> GetQuestionListAsync(int? catId, int? setId)
         {
-            IQueryable<Question> query = _context.Questions
+            var query = _context.Questions
                 .Include(q => q.QuestionSets)
                 .Where(q => q.OwnerID == _userId);
-            if (setID != null) query = query.Where(q => q.QuestionSets.Any(p => p.SetID == setID));
-            if (catID != null) query = query.Where(q => q.CategoryID == catID);
+            
+            if (setId != null) query = query.Where(q => q.QuestionSets.Any(p => p.SetID == setId));
+            
+            if (catId != null) query = query.Where(q => q.CategoryID == catId);
 
             var questions = await query.ToListAsync();
 
@@ -103,7 +105,9 @@ namespace Repeat.DataAccess.Services
                 .ToListAsync();
         }
 
-        public async Task<List<Category>> GetCategoryListAsync()
-            => await _context.Categories.Where(q => q.OwnerID == _userId).ToListAsync();
+        public Task<List<Category>> GetCategoryListAsync()
+        {
+            return _context.Categories.Where(q => q.OwnerID == _userId).ToListAsync();
+        }
     }
 }

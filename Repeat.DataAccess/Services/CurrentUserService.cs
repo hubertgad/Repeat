@@ -4,9 +4,13 @@ using System.Security.Claims;
 
 namespace Repeat.DataAccess.Services
 {
-    class CurrentUserService : ICurrentUserService
+    public class CurrentUserService : ICurrentUserService
     {
         public string UserId { get; set; }
+
+        public CurrentUserService()
+        {
+        }
 
         public CurrentUserService(IHttpContextAccessor httpContextAccessor)
         {
