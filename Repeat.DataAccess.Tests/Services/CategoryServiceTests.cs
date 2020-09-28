@@ -3,7 +3,6 @@ using Repeat.DataAccess.Services;
 using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,8 +17,6 @@ namespace Repeat.DataAccess.Tests.Services
         public override void SetUp()
         {
             base.SetUp();
-
-            Seed();
 
             _categoryService = new CategoryService(_context, _userService);
         }
@@ -87,15 +84,15 @@ namespace Repeat.DataAccess.Tests.Services
         [Test]
         public async Task GetCategoryById_CategoryExists_ShouldReturnCategory()
         {
-            var result = await _categoryService.GetCategoryByIdAsync(2);
+            var result = await _categoryService.GetCategoryByIdAsync(1);
 
-            Assert.That(result.Name, Is.EqualTo("Category 2"));
+            Assert.That(result.Name, Is.EqualTo("Category 1"));
         }
 
         [Test]
         public async Task GetCategoryByIdAsync_CategoryExists_ShouldContainListOfQuestions()
         {
-            var result = await _categoryService.GetCategoryByIdAsync(2);
+            var result = await _categoryService.GetCategoryByIdAsync(1);
 
             Assert.That(result.Questions, Is.Not.Null);
         }
@@ -113,28 +110,7 @@ namespace Repeat.DataAccess.Tests.Services
         {
             var result = await _categoryService.GetCategoriesForCurrentUserAsync();
 
-            Assert.That(result.Count, Is.EqualTo(5));
-        }
-
-        private void Seed()
-        {
-            var questions = new List<Question>
-            {
-                new Question { QuestionText = "Question 1" },
-                new Question { QuestionText = "Question 2" },
-                new Question { QuestionText = "Question 3" }
-            };
-            var categories = new List<Category>
-            {
-                new Category { Name = "Category 1", OwnerID = _userService.UserId, Questions = questions },
-                new Category { Name = "Category 2", OwnerID = _userService.UserId, Questions = questions },
-                new Category { Name = "Category 3", OwnerID = _userService.UserId, Questions = questions },
-                new Category { Name = "Category 4", OwnerID = _userService.UserId, Questions = questions },
-                new Category { Name = "Category 5", OwnerID = _userService.UserId, Questions = questions }
-            };
-
-            _setUpContext.Categories.AddRange(categories);
-            _setUpContext.SaveChanges();
+            Assert.That(result.Count, Is.EqualTo(2));
         }
     }
 }

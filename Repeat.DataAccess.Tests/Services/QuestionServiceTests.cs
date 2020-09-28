@@ -2,7 +2,6 @@
 using Repeat.DataAccess.Services;
 using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,8 +16,6 @@ namespace Repeat.DataAccess.Tests.Services
         public override void SetUp()
         {
             base.SetUp();
-
-            Seed();
 
             _questionService = new QuestionService(_context, _userService);
         }
@@ -145,11 +142,11 @@ namespace Repeat.DataAccess.Tests.Services
         }
 
         [Test]
-        public async Task GetQuestionListAsync_WhenCalled_ShouldReturnFiveQuestions()
+        public async Task GetQuestionListAsync_WhenCalled_ShouldReturnTwoQuestions()
         {
             var questions = await _questionService.GetQuestionListAsync(null, null);
 
-            Assert.That(questions.Count, Is.EqualTo(5));
+            Assert.That(questions.Count, Is.EqualTo(2));
         }
 
         [Test]
@@ -161,11 +158,11 @@ namespace Repeat.DataAccess.Tests.Services
         }
 
         [Test]
-        public async Task GetQuestionListAsync_WhenSetIdIsPassed_ShouldReturnFiveQuestions()
+        public async Task GetQuestionListAsync_WhenSetIdIsPassed_ShouldReturnTwoQuestions()
         {
             var questions = await _questionService.GetQuestionListAsync(null, 1);
 
-            Assert.That(questions.Count, Is.EqualTo(5));
+            Assert.That(questions.Count, Is.EqualTo(2));
         }
 
         [Test]
@@ -181,58 +178,7 @@ namespace Repeat.DataAccess.Tests.Services
         {
             var categories = await _questionService.GetCategoryListAsync();
 
-            Assert.That(categories.Count, Is.EqualTo(5));
-        }
-
-        private void Seed()
-        {
-            var set = new Set { Name = "Sample set", OwnerID = _userService.UserId };
-            var set2 = new Set { Name = "Sample set2", OwnerID = _userService.UserId };
-            _setUpContext.Sets.Add(set);
-            _setUpContext.Sets.Add(set2);
-
-            var questions = new List<Question>();
-            var testQuestions = new List<TestQuestion>();
-            var choosenAnswers = new List<ChoosenAnswer>();
-
-            for (var i = 0; i < 5; i++)
-            {
-                questions.Add(
-                    new Question
-                    {
-                        QuestionText = $"Question { i + 1 }",
-                        OwnerID = _userService.UserId,
-                        Picture = new Picture { Data = new byte[] { 1, 3, 4, 5 } },
-                        Category = new Category { Name = $"Category { i }", OwnerID = _userService.UserId },
-                        Answers = new List<Answer>(),
-                        QuestionSets = new HashSet<QuestionSet>()
-                    });
-                questions[i].Answers.Add(new Answer { Question = questions[i] });
-                questions[i].Answers.Add(new Answer { Question = questions[i] });
-                questions[i].QuestionSets.Add(
-                    new QuestionSet 
-                    {
-                        Question = questions[i],
-                        Set = set
-                     });
-                testQuestions.Add(
-                    new TestQuestion
-                    {
-                        Question = questions[i],
-                        Test = new Test()
-                    });
-                choosenAnswers.Add(
-                    new ChoosenAnswer
-                    {
-                        Question = questions[i]
-                    });
-            }
-
-            _setUpContext.Questions.AddRange(questions);
-            _setUpContext.TestQuestions.AddRange(testQuestions);
-            _setUpContext.ChoosenAnswers.AddRange(choosenAnswers);
-
-            _setUpContext.SaveChanges();
+            Assert.That(categories.Count, Is.EqualTo(2));
         }
     }
 }
