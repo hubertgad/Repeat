@@ -222,6 +222,24 @@ namespace Repeat.DataAccess.Tests.Services
         }
 
         [Test]
+        public async Task GetSetListAsync_WhenCalled_ShouldContainShares()
+        {
+            var sets = await _questionService.GetSetListAsync();
+
+            Assert.That(sets.TrueForAll(q => q.Shares != null));
+        }
+
+        [Test]
+        public async Task GetSetListAsync_WhenCalled_ShouldContainQuestionsWithCategories()
+        {
+            var sets = await _questionService.GetSetListAsync();
+
+            Assert.That(sets
+                .TrueForAll(q => q.QuestionSets
+                    .Select(w => w.Question.Category) != null));
+        }
+
+        [Test]
         public async Task GetCategoryListAsync_WhenCalled_ShouldReturnTwoCategories()
         {
             var categories = await _questionService.GetCategoryListAsync();

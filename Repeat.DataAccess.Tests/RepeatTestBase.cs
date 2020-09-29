@@ -51,8 +51,20 @@ namespace Repeat.DataAccess.Services
 
             var sets = new List<Set>
             {
-                new Set { ID = 1, Name = "Set 1", OwnerID = _userService.UserId },
-                new Set { ID = 2, Name = "Set 2", OwnerID = _userService.UserId }
+                new Set 
+                { 
+                    ID = 1, 
+                    Name = "Set 1", 
+                    OwnerID = _userService.UserId,
+                    Shares = new HashSet<Share>()
+                },
+                new Set 
+                { 
+                    ID = 2, 
+                    Name = "Set 2", 
+                    OwnerID = _userService.UserId,
+                    Shares = new HashSet<Share>()
+                }
             };
 
             var questions = new List<Question>
