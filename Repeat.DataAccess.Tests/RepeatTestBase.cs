@@ -43,6 +43,18 @@ namespace Repeat.DataAccess.Services
 
         private void SeedTestDb()
         {
+            var user = new ApplicationUser
+            {
+                Id = _userService.UserId,
+                UserName = "User"
+            };
+
+            var secondUser = new ApplicationUser
+            {
+                Id = "SecondUser",
+                UserName = "Second User"
+            };
+
             var categories = new List<Category>
             {
                 new Category { ID = 1, Name = "Category 1", OwnerID = _userService.UserId },
@@ -56,7 +68,14 @@ namespace Repeat.DataAccess.Services
                     ID = 1, 
                     Name = "Set 1", 
                     OwnerID = _userService.UserId,
-                    Shares = new HashSet<Share>()
+                    Shares = new HashSet<Share>
+                    {
+                        new Share
+                        {
+                            SetID = 1,
+                            UserID = "SecondUser"
+                        }
+                    }
                 },
                 new Set 
                 { 
@@ -105,6 +124,8 @@ namespace Repeat.DataAccess.Services
                     }
                 },
             };
+
+            _setUpContext.Users.AddRange(user, secondUser);
 
             _setUpContext.Categories.AddRange(categories);
 
