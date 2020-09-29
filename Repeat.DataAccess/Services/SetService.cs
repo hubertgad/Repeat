@@ -21,16 +21,6 @@ namespace Repeat.DataAccess.Services
         public async Task AddSetAsync(Set model)
         {
             model.OwnerID = _userId;
-
-            model.Shares = new HashSet<Share>
-            {
-                new Share
-                {
-                    SetID = model.ID,
-                    UserID = _userId
-                }
-            };
-
             await _context.Sets.AddAsync(model);
 
             await _context.SaveChangesAsync();
