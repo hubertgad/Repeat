@@ -167,12 +167,21 @@ namespace Repeat.DataAccess.Tests.Services
 
             Assert.That(question.QuestionSets.First().Set, Is.Not.Null);
         }
+
         [Test]
         public async Task GetQuestionByIdAsync_WhenCalled_ShouldContainAnswers()
         {
             var question = await _questionService.GetQuestionByIdAsync(1);
 
             Assert.That(question.Answers, Is.Not.Null);
+        }
+
+        [Test]
+        public async Task GetQuestionByIdAsync_WhenCalled_ShouldContainOwner()
+        {
+            var question = await _questionService.GetQuestionByIdAsync(1);
+
+            Assert.That(question.Owner, Is.Not.Null);
         }
 
         [Test]
