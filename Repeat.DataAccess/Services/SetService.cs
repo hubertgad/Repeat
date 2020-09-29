@@ -12,10 +12,10 @@ namespace Repeat.DataAccess.Services
         private readonly IApplicationDbContext _context;
         private readonly string _userId;
 
-        public SetService(IApplicationDbContext context, ICurrentUserService user)
+        public SetService(IApplicationDbContext context, ICurrentUserService currentUserService)
         {
             _context = context;
-            _userId = user.UserId;
+            _userId = currentUserService.UserId;
         }
 
         public async Task AddSetAsync(Set model)
@@ -36,11 +36,15 @@ namespace Repeat.DataAccess.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task AddShareAsync(int? setId, string userName)
+        public async Task AddShareAsync(int setId, string userName)
         {
             var user = await _context.Users.FirstOrDefaultAsync(q => q.UserName == userName);
 
             if (user == null) return;
+
+            var set = await _context.Sets.FindAsync(setId);
+
+            if (set.OwnerID != _userId) return;
 
             _context.Shares.Add(
                 new Share
