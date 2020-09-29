@@ -41,9 +41,9 @@
                 <partial name="Questions/_TextPartial" model="@questionSet.Question.QuestionText" />
             </td>
             <td class="text-right">
-                <form method="post" asp-page-handler="Detach">
-                    <input type="hidden" asp-for="@Model.QuestionSet.QuestionID" value="@questionSet.QuestionID" />
-                    <input type="hidden" asp-for="@Model.QuestionSet.SetID" value="@questionSet.SetID" />
+                <form method="post" asp-page-handler="Detach" asp-route-id="@Model.Set.ID">
+                    <input type="hidden" asp-for="QuestionSet.QuestionID" value="@questionSet.QuestionID" />
+                    <input type="hidden" asp-for="QuestionSet.SetID" value="@questionSet.SetID" />
                     <input type="submit" class="btn btn-danger btn-sm" value="Remove" />
                 </form>
             </td>

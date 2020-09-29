@@ -45,7 +45,7 @@ namespace Repeat
             if (!ModelState.IsValid)
             {
                 return Page();
-            }            
+            }
 
             try
             {
@@ -59,7 +59,7 @@ namespace Repeat
             return RedirectToPage("./Index");
         }
 
-        public async Task<IActionResult> OnPostDetachAsync()
+        public async Task<IActionResult> OnPostDetachAsync(int? id)
         {
             try
             {
@@ -70,7 +70,7 @@ namespace Repeat
                 NotFound();
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("Edit", new { id });
         }
     }
 }
