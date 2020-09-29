@@ -89,7 +89,6 @@ namespace Repeat.DataAccess.Services
                     },
                     QuestionSets = new HashSet<QuestionSet>
                     {
-                        new QuestionSet { QuestionID = 2, SetID = 1 },
                         new QuestionSet { QuestionID = 2, SetID = 2 }
                     }
                 },
