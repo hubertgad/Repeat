@@ -59,11 +59,11 @@ namespace Repeat.DataAccess.Services
         public async Task<Question> GetQuestionByIdAsync(int? id)
         {
             var question = await _context.Questions
-                .Where(m => m.OwnerID == _userId)
-                .Include(o => o.Category)
-                .Include(p => p.Picture)
-                .Include(r => r.QuestionSets).ThenInclude(q => q.Set)
-                .FirstOrDefaultAsync(m => m.ID == id);
+                .Where(q => q.OwnerID == _userId)
+                .Include(q => q.Category)
+                .Include(q => q.Picture)
+                .Include(q => q.QuestionSets).ThenInclude(q => q.Set)
+                .FirstOrDefaultAsync(q => q.ID == id);
 
             question.Answers = await _context.Answers
                 .Where(q => q.QuestionID == id).ToListAsync();
