@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Repeat.Domain.Models;
 using System.Threading;
@@ -9,7 +8,7 @@ namespace Repeat.Domain.Interfaces
 {
     public interface IApplicationDbContext
     {
-        public DbSet<IdentityUser> Users { get; set; }
+        public DbSet<ApplicationUser> Users { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Answer> Answers { get; set; }

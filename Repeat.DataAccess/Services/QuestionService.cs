@@ -60,6 +60,7 @@ namespace Repeat.DataAccess.Services
         {
             var question = await _context.Questions
                 .Where(q => q.OwnerID == _userId)
+                .Include(q => q.Owner)
                 .Include(q => q.Category)
                 .Include(q => q.Picture)
                 .Include(q => q.QuestionSets).ThenInclude(q => q.Set)

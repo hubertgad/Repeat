@@ -1,6 +1,5 @@
 ﻿@page
 @model Repeat.Pages.Administration.Questions.DetailsModel
-@inject UserManager<IdentityUser> UserManager
 
 @{
     ViewData["Title"] = "Details";
@@ -67,7 +66,8 @@
             <label>Owner:</label>
         </dt>
         <dd class="@ddclass">
-            <label>@UserManager.FindByIdAsync(Model.Question.OwnerID).Result.UserName</label>
+            @*<label>@UserManager.FindByIdAsync(Model.Question.OwnerID).Result.UserName</label>*@
+            <label>@Model.Question.Owner.UserName</label>
         </dd>
 
         <dt class="@dtclass">

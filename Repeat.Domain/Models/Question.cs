@@ -12,6 +12,7 @@ namespace Repeat.Domain.Models
         public int CategoryID { get; set; }
         [Required]
         public string OwnerID { get; set; }
+        public ApplicationUser Owner { get; set; }
         [MaxLength(1000)]
         public string Reference { get; set; }
         public Picture Picture { get; set; }

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Repeat.Domain.SeedWork;
+﻿using Repeat.Domain.SeedWork;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,7 +10,7 @@ namespace Repeat.Domain.Models
         public string Name { get; set; }
         [Required]
         public string OwnerID { get; set; }
-        public IdentityUser Owner { get; set; }
+        public ApplicationUser Owner { get; set; }
         public ISet<QuestionSet> QuestionSets { get; set; }
         public ISet<Share> Shares { get; set; }
         public bool IsPublic { get; set; }

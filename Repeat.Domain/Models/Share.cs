@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Repeat.Domain.SeedWork;
+﻿using Repeat.Domain.SeedWork;
 using System.ComponentModel.DataAnnotations;
 
 namespace Repeat.Domain.Models
@@ -11,6 +10,6 @@ namespace Repeat.Domain.Models
         [Required]
         public string UserID { get; set; }
         public Set Set { get; set; }
-        public IdentityUser User { get; set; }
+        public ApplicationUser User { get; set; }
     }
 }
