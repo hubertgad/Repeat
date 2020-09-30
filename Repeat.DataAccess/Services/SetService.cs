@@ -10,17 +10,17 @@ namespace Repeat.DataAccess.Services
     public class SetService : ISetService
     {
         private readonly IApplicationDbContext _context;
-        private readonly string _userId;
+        private readonly string _currentUserId;
 
         public SetService(IApplicationDbContext context, ICurrentUserService currentUserService)
         {
             _context = context;
-            _userId = currentUserService.UserId;
+            _currentUserId = currentUserService.UserId;
         }
 
         public async Task AddSetAsync(Set model)
         {
-            model.OwnerID = _userId;
+            model.OwnerID = _currentUserId;
             await _context.Sets.AddAsync(model);
 
             await _context.SaveChangesAsync();
@@ -34,7 +34,7 @@ namespace Repeat.DataAccess.Services
 
             var set = await _context.Sets.FindAsync(setId);
 
-            if (set.OwnerID != _userId) return;
+            if (set.OwnerID != _currentUserId) return;
 
             if (set.OwnerID == user.Id) return;
 
@@ -50,6 +50,8 @@ namespace Repeat.DataAccess.Services
 
         public Task RemoveSetAsync(Set model)
         {
+            if (model.OwnerID != _currentUserId) return null;
+
             var tests = _context.Tests.Where(q => q.SetID == model.ID);
             _context.Tests.RemoveRange(tests);
 
@@ -74,7 +76,7 @@ namespace Repeat.DataAccess.Services
 
         public Task UpdateSetAsync(Set model)
         {
-            model.OwnerID = _userId;
+            model.OwnerID = _currentUserId;
             _context.Sets.Update(model);
 
             return _context.SaveChangesAsync();
@@ -83,7 +85,7 @@ namespace Repeat.DataAccess.Services
         public Task<Set> GetSetByIdAsync(int? id)
         {
             return _context.Sets
-                .Where(q => q.OwnerID == _userId)
+                .Where(q => q.OwnerID == _currentUserId)
                 .Include(q => q.QuestionSets)
                     .ThenInclude(q => q.Question)
                 .FirstOrDefaultAsync(q => q.ID == id);
@@ -92,7 +94,7 @@ namespace Repeat.DataAccess.Services
         public Task<List<Set>> GetSetsForCurrentUserAsync()
         {
             return _context.Sets
-                .Where(q => q.OwnerID == _userId)
+                .Where(q => q.OwnerID == _currentUserId)
                 .Include(q => q.Shares)
                     .ThenInclude(q => q.Set)
                 .Include(q => q.Shares)

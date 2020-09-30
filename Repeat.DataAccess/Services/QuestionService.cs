@@ -10,17 +10,17 @@ namespace Repeat.DataAccess.Services
     public class QuestionService : IQuestionService
     {
         private readonly IApplicationDbContext _context;
-        private readonly string _userId;
+        private readonly string _currentUserId;
 
         public QuestionService(IApplicationDbContext context, ICurrentUserService currentUserService)
         {
             _context = context;
-            _userId = currentUserService.UserId;
+            _currentUserId = currentUserService.UserId;
         }
 
         public async Task AddQuestionAsync(Question model)
         {
-            model.OwnerID = _userId;
+            model.OwnerID = _currentUserId;
             await _context.Questions.AddAsync(model);
 
             await _context.SaveChangesAsync();
@@ -37,7 +37,7 @@ namespace Repeat.DataAccess.Services
 
         public async Task UpdateQuestionAsync(Question model, bool removePicture)
         {
-            model.OwnerID = _userId;
+            model.OwnerID = _currentUserId;
 
             var currentQuestionSets = _context.QuestionSets.Where(q => q.QuestionID == model.ID).ToList();
             _context.QuestionSets.RemoveRange(currentQuestionSets.Except(model.QuestionSets));
@@ -59,7 +59,7 @@ namespace Repeat.DataAccess.Services
         public async Task<Question> GetQuestionByIdAsync(int? id)
         {
             var question = await _context.Questions
-                .Where(q => q.OwnerID == _userId)
+                .Where(q => q.OwnerID == _currentUserId)
                 .Include(q => q.Owner)
                 .Include(q => q.Category)
                 .Include(q => q.Picture)
@@ -76,7 +76,7 @@ namespace Repeat.DataAccess.Services
         {
             var query = _context.Questions
                 .Include(q => q.QuestionSets)
-                .Where(q => q.OwnerID == _userId);
+                .Where(q => q.OwnerID == _currentUserId);
             
             if (setId != null) query = query.Where(q => q.QuestionSets.Any(p => p.SetID == setId));
             
@@ -99,7 +99,7 @@ namespace Repeat.DataAccess.Services
         {
             return _context.Sets
                 .Include(q => q.Shares)
-                .Where(q => q.OwnerID == _userId)
+                .Where(q => q.OwnerID == _currentUserId)
                 .Include(q => q.QuestionSets)
                     .ThenInclude(q => q.Question)
                     .ThenInclude(q => q.Category)
@@ -108,7 +108,7 @@ namespace Repeat.DataAccess.Services
 
         public Task<List<Category>> GetCategoryListAsync()
         {
-            return _context.Categories.Where(q => q.OwnerID == _userId).ToListAsync();
+            return _context.Categories.Where(q => q.OwnerID == _currentUserId).ToListAsync();
         }
     }
 }

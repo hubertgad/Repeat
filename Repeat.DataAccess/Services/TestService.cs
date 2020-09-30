@@ -10,12 +10,12 @@ namespace Repeat.DataAccess.Services
     public class TestService : ITestService
     {
         private readonly IApplicationDbContext _context;
-        private readonly string _userId;
+        private readonly string _currentUserId;
 
         public TestService(IApplicationDbContext context, ICurrentUserService user)
         {
             _context = context;
-            _userId = user.UserId;
+            _currentUserId = user.UserId;
         }
 
         public async Task AddTestAsync(Test model)
@@ -41,13 +41,13 @@ namespace Repeat.DataAccess.Services
 
             var set = await _context.Sets
                 .FirstOrDefaultAsync(q => q.ID == setId && 
-                (q.OwnerID == _userId || q.Shares.Any(q => q.UserID == _userId))); 
+                (q.OwnerID == _currentUserId || q.Shares.Any(q => q.UserID == _currentUserId))); 
             
             var test = new Test
             {
                 SetID = (int)setId,
                 Set = await _context.Sets.FirstOrDefaultAsync(q => q.ID == setId),
-                UserID = _userId,
+                UserID = _currentUserId,
                 IsCompleted = false,
                 TestQuestions = new List<TestQuestion>()
             };
@@ -110,7 +110,7 @@ namespace Repeat.DataAccess.Services
         public async Task MoveToPreviousQuestion(int? setId)
         {
             var test = _context.Tests
-                .FirstOrDefault(q => q.SetID == setId && q.IsCompleted == false && q.UserID == _userId);
+                .FirstOrDefault(q => q.SetID == setId && q.IsCompleted == false && q.UserID == _currentUserId);
 
             var currentQuestionIndex = test.TestQuestions.IndexOf(
                 test.TestQuestions.FirstOrDefault(q => q.QuestionID == test.CurrentQuestionID));
@@ -122,7 +122,7 @@ namespace Repeat.DataAccess.Services
         public async Task MoveToNextQuestion(int? setId)
         {
             var test = _context.Tests
-                .FirstOrDefault(q => q.SetID == setId && q.IsCompleted == false && q.UserID == _userId);
+                .FirstOrDefault(q => q.SetID == setId && q.IsCompleted == false && q.UserID == _currentUserId);
 
             var currentQuestionIndex = test.TestQuestions.IndexOf(
                 test.TestQuestions.FirstOrDefault(q => q.QuestionID == test.CurrentQuestionID));
@@ -134,7 +134,7 @@ namespace Repeat.DataAccess.Services
         public async Task FinishTest(int? setId)
         {
             var test = _context.Tests
-                .FirstOrDefault(q => q.SetID == setId && q.IsCompleted == false && q.UserID == _userId);
+                .FirstOrDefault(q => q.SetID == setId && q.IsCompleted == false && q.UserID == _currentUserId);
 
             test.IsCompleted = true;
             
@@ -144,7 +144,7 @@ namespace Repeat.DataAccess.Services
         public Task<Test> GetOpenTestBySetIdAsync(int? setId)
         {
             return _context.Tests
-                .Where(q => q.UserID == _userId && q.SetID == setId && q.IsCompleted == false)
+                .Where(q => q.UserID == _currentUserId && q.SetID == setId && q.IsCompleted == false)
                 .Include(q => q.TestQuestions)
                     .ThenInclude(q => q.Question)
                     .ThenInclude(q => q.Answers)
@@ -157,7 +157,7 @@ namespace Repeat.DataAccess.Services
         public async Task<Test> GetClosedTestBySetIdAsync(int? setId)
         {
             var tests = await _context.Tests
-                .Where(q => q.UserID == _userId && q.SetID == setId && q.IsCompleted == true)
+                .Where(q => q.UserID == _currentUserId && q.SetID == setId && q.IsCompleted == true)
                 .Include(q => q.TestQuestions)
                     .ThenInclude(q => q.Question)
                     .ThenInclude(q => q.Answers)
@@ -182,7 +182,7 @@ namespace Repeat.DataAccess.Services
         public Task<List<Set>> GetAvailableSetsAsync()
         {
             return _context.Sets
-                .Where(q => q.OwnerID == _userId || q.Shares.Any(p => p.UserID == _userId))
+                .Where(q => q.OwnerID == _currentUserId || q.Shares.Any(p => p.UserID == _currentUserId))
                 .Where(q => q.QuestionSets.Any())
                 .Include(q => q.Shares)
                 .Include(q => q.QuestionSets)

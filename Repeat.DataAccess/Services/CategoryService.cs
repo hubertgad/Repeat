@@ -10,17 +10,17 @@ namespace Repeat.DataAccess.Services
     public class CategoryService : ICategoryService
     {
         private readonly IApplicationDbContext _context;
-        private readonly string _userId;
+        private readonly string _currentUserId;
 
         public CategoryService(IApplicationDbContext context, ICurrentUserService userService)
         {
             _context = context;
-            _userId = userService.UserId;
+            _currentUserId = userService.UserId;
         }
 
         public async Task AddCategoryAsync(Category model)
         {
-            model.OwnerID = _userId;
+            model.OwnerID = _currentUserId;
             await _context.Categories.AddAsync(model);
 
             await _context.SaveChangesAsync();
@@ -35,7 +35,7 @@ namespace Repeat.DataAccess.Services
 
         public Task UpdateCategoryAsync(Category model)
         {
-            model.OwnerID = _userId;
+            model.OwnerID = _currentUserId;
             _context.Categories.Update(model);
 
             return _context.SaveChangesAsync();
@@ -44,7 +44,7 @@ namespace Repeat.DataAccess.Services
         public Task<Category> GetCategoryByIdAsync(int? id)
         {
             return _context.Categories
-                .Where(q => q.OwnerID == _userId && q.ID == id)
+                .Where(q => q.OwnerID == _currentUserId && q.ID == id)
                 .Include(q => q.Questions)
                 .FirstOrDefaultAsync();
         }
@@ -52,7 +52,7 @@ namespace Repeat.DataAccess.Services
         public Task<List<Category>> GetCategoriesForCurrentUserAsync()
         {
             return _context.Categories
-                .Where(q => q.OwnerID == _userId)
+                .Where(q => q.OwnerID == _currentUserId)
                 .ToListAsync();
         }
     }
