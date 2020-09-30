@@ -94,6 +94,19 @@ namespace Repeat.DataAccess.Tests.Services
         }
 
         [Test]
+        public async Task RemoveSetAsync_WhenNotValidOwnerId_ShouldNotRemoveSet()
+        {
+            var set = new Set { ID = 3, OwnerID = "SecondUserId" };
+            _setUpContext.Sets.Add(set);
+            _setUpContext.SaveChanges();
+            
+            await _setService.RemoveSetAsync(set);
+
+            var setInDb = _context.Sets.FirstOrDefault(q => q.ID == 3);
+            Assert.That(setInDb, Is.Not.Null);
+        }
+
+        [Test]
         public async Task RemoveSetAsync_WhenCalled_ShouldRemoveAssociatedTests()
         {
             var set = _setUpContext.Sets.Find(1);
@@ -105,7 +118,7 @@ namespace Repeat.DataAccess.Tests.Services
         }
 
         [Test]
-        public async Task RemoveQuestionSetAsync()
+        public async Task RemoveQuestionSetAsync_WhenCalled_ShouldRemoveSet()
         {
             var questionSet = _setUpContext.QuestionSets.Find(1, 1);
 
