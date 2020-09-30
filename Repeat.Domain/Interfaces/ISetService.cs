@@ -9,7 +9,7 @@ namespace Repeat.Domain.Interfaces
         Task AddSetAsync(Set model);
         Task AddShareAsync(int setId, string userName);
         Task RemoveSetAsync(Set model);
-        Task RemoveQuestionFromSetAsync(QuestionSet model);
+        Task RemoveQuestionSetAsync(QuestionSet model);
         Task RemoveShareAsync(Share model);
         Task UpdateSetAsync(Set model);
         Task<Set> GetSetByIdAsync(int? id);

@@ -63,7 +63,7 @@ namespace Repeat
         {
             try
             {
-                await _setService.RemoveQuestionFromSetAsync(this.QuestionSet);
+                await _setService.RemoveQuestionSetAsync(this.QuestionSet);
             }
             catch
             {

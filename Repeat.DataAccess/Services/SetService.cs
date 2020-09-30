@@ -36,12 +36,10 @@ namespace Repeat.DataAccess.Services
 
             if (set.OwnerID != _userId) return;
 
-            if (set.OwnerID == user.Id) return;
-
             _context.Shares.Add(
                 new Share
                 {
-                    SetID = setId,
+                    SetID = (int)setId,
                     UserID = user.Id
                 });
 
@@ -58,9 +56,10 @@ namespace Repeat.DataAccess.Services
             return _context.SaveChangesAsync();
         }
 
-        public Task RemoveQuestionFromSetAsync(QuestionSet model)
+        public Task RemoveQuestionSetAsync(QuestionSet model)
         {
-            _context.QuestionSets.Remove(model);
+            _context.QuestionSets
+                .Remove(model);
 
             return _context.SaveChangesAsync();
         }

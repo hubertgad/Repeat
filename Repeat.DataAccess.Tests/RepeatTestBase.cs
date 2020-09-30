@@ -13,12 +13,12 @@ namespace Repeat.DataAccess.Services
     {
         protected IApplicationDbContext _setUpContext;
         protected IApplicationDbContext _context;
-        protected ICurrentUserService _currentUserService;
+        protected ICurrentUserService _userService;
 
         [SetUp]
         public virtual void SetUp()
         {
-            _currentUserService = new CurrentUserService { UserId = Guid.NewGuid().ToString() };
+            _userService = new CurrentUserService { UserId = Guid.NewGuid().ToString() };
 
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
@@ -43,17 +43,22 @@ namespace Repeat.DataAccess.Services
 
         private void SeedTestDb()
         {
-            var users = new List<ApplicationUser>
+            var user = new ApplicationUser
             {
-                new ApplicationUser { Id = _currentUserService.UserId, UserName = "User" },
-                new ApplicationUser { Id = "SecondUserId", UserName = "Second User" },
-                new ApplicationUser { Id = "ThirdUserId", UserName = "Third User" }
+                Id = _userService.UserId,
+                UserName = "User"
+            };
+
+            var secondUser = new ApplicationUser
+            {
+                Id = "SecondUser",
+                UserName = "Second User"
             };
 
             var categories = new List<Category>
             {
-                new Category { ID = 1, Name = "Category 1", OwnerID = _currentUserService.UserId },
-                new Category { ID = 2, Name = "Category 2", OwnerID = _currentUserService.UserId }
+                new Category { ID = 1, Name = "Category 1", OwnerID = _userService.UserId },
+                new Category { ID = 2, Name = "Category 2", OwnerID = _userService.UserId }
             };
 
             var sets = new List<Set>
@@ -62,29 +67,23 @@ namespace Repeat.DataAccess.Services
                 { 
                     ID = 1, 
                     Name = "Set 1", 
-                    OwnerID = _currentUserService.UserId,
+                    OwnerID = _userService.UserId,
                     Shares = new HashSet<Share>
                     {
-                        new Share { SetID = 1, UserID = "SecondUserId" }
+                        new Share
+                        {
+                            SetID = 1,
+                            UserID = "SecondUser"
+                        }
                     }
                 },
                 new Set 
                 { 
                     ID = 2, 
                     Name = "Set 2", 
-                    OwnerID = _currentUserService.UserId,
+                    OwnerID = _userService.UserId,
                     Shares = new HashSet<Share>()
                 }
-            };
-
-            var test = new Test
-            {
-                ID = 1,
-                SetID = 1,
-                CurrentQuestionID = 0,
-                IsCompleted = false,
-                UserID = _currentUserService.UserId,
-                TestQuestions = new List<TestQuestion>()
             };
 
             var questions = new List<Question>
@@ -93,7 +92,7 @@ namespace Repeat.DataAccess.Services
                 {
                     ID = 1,
                     QuestionText = "Question 1",
-                    OwnerID = _currentUserService.UserId,
+                    OwnerID = _userService.UserId,
                     Picture = new Picture { Data = new byte[] { 255, 255, 255 } },
                     CategoryID = 1,
                     Answers = new List<Answer>
@@ -111,7 +110,7 @@ namespace Repeat.DataAccess.Services
                 {
                     ID = 2,
                     QuestionText = "Question 2",
-                    OwnerID = _currentUserService.UserId,
+                    OwnerID = _userService.UserId,
                     Picture = new Picture { Data = new byte[] { 255, 255, 255 } },
                     CategoryID = 2,
                     Answers = new List<Answer>
@@ -126,13 +125,11 @@ namespace Repeat.DataAccess.Services
                 },
             };
 
-            _setUpContext.Users.AddRange(users);
+            _setUpContext.Users.AddRange(user, secondUser);
 
             _setUpContext.Categories.AddRange(categories);
 
             _setUpContext.Sets.AddRange(sets);
-
-            _setUpContext.Tests.Add(test);
 
             _setUpContext.Questions.AddRange(questions);
 

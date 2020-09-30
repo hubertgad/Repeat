@@ -18,7 +18,7 @@ namespace Repeat.DataAccess.Tests.Services
         {
             base.SetUp();
 
-            _categoryService = new CategoryService(_context, _currentUserService);
+            _categoryService = new CategoryService(_context, _userService);
         }
 
         [Test]
@@ -42,7 +42,7 @@ namespace Repeat.DataAccess.Tests.Services
             await _categoryService.AddCategoryAsync(category);
 
             var savedOwnerId = _context.Categories.First(q => q.ID == category.ID).OwnerID;
-            Assert.That(savedOwnerId, Is.EqualTo(_currentUserService.UserId));
+            Assert.That(savedOwnerId, Is.EqualTo(_userService.UserId));
         }
 
         [Test]
@@ -78,7 +78,7 @@ namespace Repeat.DataAccess.Tests.Services
             await _categoryService.UpdateCategoryAsync(category);
 
             var savedOwnerId = _context.Categories.First(q => q.ID == category.ID).OwnerID;
-            Assert.That(savedOwnerId, Is.EqualTo(_currentUserService.UserId));
+            Assert.That(savedOwnerId, Is.EqualTo(_userService.UserId));
         }
 
         [Test]

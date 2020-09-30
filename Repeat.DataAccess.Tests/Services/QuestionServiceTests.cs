@@ -17,7 +17,7 @@ namespace Repeat.DataAccess.Tests.Services
         {
             base.SetUp();
 
-            _questionService = new QuestionService(_context, _currentUserService);
+            _questionService = new QuestionService(_context, _userService);
         }
 
         [Test]
@@ -39,7 +39,7 @@ namespace Repeat.DataAccess.Tests.Services
             await _questionService.AddQuestionAsync(question);
 
             var savedOwnerId = _context.Questions.First(q => q.ID == question.ID).OwnerID;
-            Assert.That(savedOwnerId, Is.EqualTo(_currentUserService.UserId));
+            Assert.That(savedOwnerId, Is.EqualTo(_userService.UserId));
         }
 
         [Test]
