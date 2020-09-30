@@ -48,16 +48,16 @@ namespace Repeat.DataAccess.Services
             await _context.SaveChangesAsync();
         }
 
-        public Task RemoveSetAsync(Set model)
+        public async Task RemoveSetAsync(Set model)
         {
-            if (model.OwnerID != _currentUserId) return null;
+            if (model.OwnerID != _currentUserId) return;
 
             var tests = _context.Tests.Where(q => q.SetID == model.ID);
             _context.Tests.RemoveRange(tests);
 
             _context.Sets.Remove(model);
 
-            return _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         public Task RemoveQuestionFromSetAsync(QuestionSet model)
