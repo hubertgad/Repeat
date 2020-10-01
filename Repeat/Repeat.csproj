@@ -31,8 +31,8 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\Repeat.DataAccess\Repeat.DataAccess.csproj" />
     <ProjectReference Include="..\Repeat.Domain\Repeat.Domain.csproj" />
+    <ProjectReference Include="..\Repeat.Infrastructure\Repeat.Infrastucture.csproj" />
   </ItemGroup>
 
 

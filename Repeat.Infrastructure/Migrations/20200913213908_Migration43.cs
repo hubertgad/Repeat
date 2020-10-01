@@ -1,0 +1,45 @@
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+
+namespace Repeat.Data.Migrations
+{
+    public partial class Migration43 : Migration
+    {
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.AddColumn<int>(
+                name: "TestID1",
+                table: "TestQuestions",
+                nullable: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TestQuestions_TestID1",
+                table: "TestQuestions",
+                column: "TestID1",
+                unique: true,
+                filter: "[TestID1] IS NOT NULL");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_TestQuestions_Tests_TestID1",
+                table: "TestQuestions",
+                column: "TestID1",
+                principalTable: "Tests",
+                principalColumn: "ID",
+                onDelete: ReferentialAction.Restrict);
+        }
+
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropForeignKey(
+                name: "FK_TestQuestions_Tests_TestID1",
+                table: "TestQuestions");
+
+            migrationBuilder.DropIndex(
+                name: "IX_TestQuestions_TestID1",
+                table: "TestQuestions");
+
+            migrationBuilder.DropColumn(
+                name: "TestID1",
+                table: "TestQuestions");
+        }
+    }
+}

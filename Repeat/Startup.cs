@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Repeat.DataAccess.Data;
+using Repeat.Infrastructure.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Repeat.DataAccess;
+using Repeat.Infrastructure;
 using Repeat.Domain.Models;
 
 namespace Repeat
@@ -20,7 +20,7 @@ namespace Repeat
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDataAccess(Configuration);
+            services.AddInfrastructure(Configuration);
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddRazorPages().AddRazorRuntimeCompilation();
