@@ -23,7 +23,7 @@ namespace Repeat.Infrastructure.Tests.Services
         [Test]
         public async Task AddSetAsync_WhenCalled_ShouldSaveSetInDb()
         {
-            var set = new Set { ID = 3 };
+            var set = new Set { ID = 5 };
 
             await _setService.AddSetAsync(set);
 
@@ -34,7 +34,7 @@ namespace Repeat.Infrastructure.Tests.Services
         [Test]
         public async Task AddSetAsync_NotValidOwnerId_ShouldCorrectId()
         {
-            var set = new Set { ID = 3, OwnerID = "SecondUserId" };
+            var set = new Set { ID = 5, OwnerID = "SecondUserId" };
 
             await _setService.AddSetAsync(set);
 
@@ -64,12 +64,12 @@ namespace Repeat.Infrastructure.Tests.Services
         [Test]
         public async Task AddShareAsync_CurrentUserIsNotSetOwner_ShouldNotSaveShare()
         {
-            _setUpContext.Sets.Add(new Set { ID = 3, OwnerID = "SecondUserId" });
+            _setUpContext.Sets.Add(new Set { ID = 5, OwnerID = "SecondUserId" });
             _setUpContext.SaveChanges();
 
-            await _setService.AddShareAsync(3, "Third User");
+            await _setService.AddShareAsync(5, "Third User");
 
-            var savedShare = _context.Shares.FirstOrDefault(q => q.SetID == 3);
+            var savedShare = _context.Shares.FirstOrDefault(q => q.SetID == 5);
             Assert.That(savedShare, Is.Null);
         }
 
@@ -96,13 +96,13 @@ namespace Repeat.Infrastructure.Tests.Services
         [Test]
         public async Task RemoveSetAsync_WhenNotValidOwnerId_ShouldNotRemoveSet()
         {
-            var set = new Set { ID = 3, OwnerID = "SecondUserId" };
+            var set = new Set { ID = 5, OwnerID = "SecondUserId" };
             _setUpContext.Sets.Add(set);
             _setUpContext.SaveChanges();
             
             await _setService.RemoveSetAsync(set);
 
-            var setInDb = _context.Sets.FirstOrDefault(q => q.ID == 3);
+            var setInDb = _context.Sets.FirstOrDefault(q => q.ID == 5);
             Assert.That(setInDb, Is.Not.Null);
         }
 
@@ -118,7 +118,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task RemoveQuestionFromSetAsync_WhenCalled_ShouldRemoveSet()
+        public async Task RemoveQuestionFromSetAsync_WhenCalled_ShouldRemoveQuestion()
         {
             var questionSet = _setUpContext.QuestionSets.Find(1, 1);
 
@@ -127,6 +127,18 @@ namespace Repeat.Infrastructure.Tests.Services
             var removedQuestionSet = _context.QuestionSets
                 .FirstOrDefault(q => q.QuestionID == 1 && q.SetID == 1);
             Assert.That(removedQuestionSet, Is.Null);
+        }
+
+        [Test]
+        public async Task RemoveQuestionFromSetAsync_WhenNotValidOwnerId_ShouldNotRemoveQuestion()
+        {
+            var questionSet = _setUpContext.QuestionSets.Find(3, 3);
+
+            await _setService.RemoveQuestionFromSetAsync(questionSet);
+
+            var questionSetInDb = _context.QuestionSets
+                .FirstOrDefault(q => q.QuestionID == 3 && q.SetID == 3);
+            Assert.That(questionSetInDb, Is.Not.Null);
         }
 
         // ...
