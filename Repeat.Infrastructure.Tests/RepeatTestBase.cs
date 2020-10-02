@@ -74,6 +74,13 @@ namespace Repeat.Infrastructure.Services
                     Name = "Set 2", 
                     OwnerID = _currentUserService.UserId,
                     Shares = new HashSet<Share>()
+                },
+                new Set 
+                { 
+                    ID = 3, 
+                    Name = "Set 3", 
+                    OwnerID = "SecondUserId",
+                    Shares = new HashSet<Share>()
                 }
             };
 
@@ -124,6 +131,23 @@ namespace Repeat.Infrastructure.Services
                         new QuestionSet { QuestionID = 2, SetID = 2 }
                     }
                 },
+                new Question
+                {
+                    ID = 3,
+                    QuestionText = "Question 3",
+                    OwnerID = "SecondUserId",
+                    Picture = new Picture { Data = new byte[] { 255, 255, 255 } },
+                    CategoryID = 2,
+                    Answers = new List<Answer>
+                    {
+                        new Answer { QuestionID = 3, AnswerText = "Answer 3-1" },
+                        new Answer { QuestionID = 3, AnswerText = "Answer 3-2" }
+                    },
+                    QuestionSets = new HashSet<QuestionSet>
+                    {
+                        new QuestionSet { QuestionID = 3, SetID = 3 }
+                    }
+                }
             };
 
             _setUpContext.Users.AddRange(users);
