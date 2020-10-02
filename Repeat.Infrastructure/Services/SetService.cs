@@ -60,11 +60,13 @@ namespace Repeat.Infrastructure.Services
             await _context.SaveChangesAsync();
         }
 
-        public Task RemoveQuestionFromSetAsync(QuestionSet model)
+        public async Task RemoveQuestionFromSetAsync(QuestionSet model)
         {
+            if (model.Set.OwnerID != _currentUserId) return;
+
             _context.QuestionSets.Remove(model);
 
-            return _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         public async Task RemoveShareAsync(Share model)
