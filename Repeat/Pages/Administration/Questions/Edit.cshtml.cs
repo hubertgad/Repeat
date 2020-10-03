@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Repeat.Pages.Administration.Questions
 {
@@ -67,7 +67,7 @@ namespace Repeat.Pages.Administration.Questions
 
             var success = await UpdateQuestionAsync(question);
             if (success == false) return NotFound();
-                       
+
             return RedirectToPage(new { id = question.ID, answers = question.Answers.Count });
         }
 

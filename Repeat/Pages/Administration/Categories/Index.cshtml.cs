@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Repeat.Pages.Administration.Categories
 {
@@ -17,7 +17,7 @@ namespace Repeat.Pages.Administration.Categories
             _categoryService = categoryService;
         }
 
-        public List<Category> Categories { get;set; }
+        public List<Category> Categories { get; set; }
 
         public async Task OnGetAsync()
         {

@@ -77,9 +77,9 @@ namespace Repeat.Infrastructure.Services
             var query = _context.Questions
                 .Include(q => q.QuestionSets)
                 .Where(q => q.OwnerID == _currentUserId);
-            
+
             if (setId != null) query = query.Where(q => q.QuestionSets.Any(p => p.SetID == setId));
-            
+
             if (catId != null) query = query.Where(q => q.CategoryID == catId);
 
             var questions = await query.ToListAsync();

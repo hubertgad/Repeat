@@ -23,7 +23,6 @@ namespace Repeat.Infrastructure.Services
             _context.Tests.Add(model);
             await _context.SaveChangesAsync();
 
-            //EF nie chce przypisywać TestID podczas tworzenia ChoosenAnswers! :(
             foreach (var testQuestion in model.TestQuestions)
             {
                 foreach (var choosenAnswer in testQuestion.ChoosenAnswers)
@@ -39,10 +38,6 @@ namespace Repeat.Infrastructure.Services
         {
             if (setId == null) return;
 
-            var set = await _context.Sets
-                .FirstOrDefaultAsync(q => q.ID == setId && 
-                (q.OwnerID == _currentUserId || q.Shares.Any(q => q.UserID == _currentUserId))); 
-            
             var test = new Test
             {
                 SetID = (int)setId,
@@ -83,7 +78,7 @@ namespace Repeat.Infrastructure.Services
                 }
             }
 
-            await AddTestAsync(test);            
+            await AddTestAsync(test);
         }
 
         public Task UpdateTestAsync(Test model)
@@ -99,7 +94,7 @@ namespace Repeat.Infrastructure.Services
                     && q.QuestionID == choosenAnswers.FirstOrDefault().QuestionID)
                 .ToListAsync();
 
-            for (int i = 0; i < currentAnswers.Count(); i++)
+            for (int i = 0; i < currentAnswers.Count; i++)
             {
                 currentAnswers[i].GivenAnswer = choosenAnswers[i].GivenAnswer;
             }
@@ -115,7 +110,7 @@ namespace Repeat.Infrastructure.Services
             var currentQuestionIndex = test.TestQuestions.IndexOf(
                 test.TestQuestions.FirstOrDefault(q => q.QuestionID == test.CurrentQuestionID));
             test.CurrentQuestionID = test.TestQuestions[currentQuestionIndex - 1].QuestionID;
-            
+
             await _context.SaveChangesAsync();
         }
 
@@ -127,7 +122,7 @@ namespace Repeat.Infrastructure.Services
             var currentQuestionIndex = test.TestQuestions.IndexOf(
                 test.TestQuestions.FirstOrDefault(q => q.QuestionID == test.CurrentQuestionID));
             test.CurrentQuestionID = test.TestQuestions[currentQuestionIndex + 1].QuestionID;
-            
+
             await _context.SaveChangesAsync();
         }
 
@@ -137,7 +132,7 @@ namespace Repeat.Infrastructure.Services
                 .FirstOrDefault(q => q.SetID == setId && q.IsCompleted == false && q.UserID == _currentUserId);
 
             test.IsCompleted = true;
-            
+
             await _context.SaveChangesAsync();
         }
 

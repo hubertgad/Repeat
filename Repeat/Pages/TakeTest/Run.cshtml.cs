@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Repeat
 {
@@ -71,7 +71,8 @@ namespace Repeat
             this.Test = await _testService.GetOpenTestBySetIdAsync(id);
 
             this.ChoosenAnswers.ToList()
-                    .ForEach(q => {
+                    .ForEach(q =>
+                    {
                         q.TestID = this.Test.ID;
                         q.QuestionID = this.Test.CurrentQuestionID;
                     });

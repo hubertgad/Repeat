@@ -11,8 +11,8 @@ namespace Repeat.Infrastructure.Services
     [SetUpFixture]
     public class RepeatTestBase
     {
-        protected IApplicationDbContext _setUpContext;
-        protected IApplicationDbContext _context;
+        protected ApplicationDbContext _setUpContext;
+        protected ApplicationDbContext _context;
         protected ICurrentUserService _currentUserService;
 
         [SetUp]
@@ -23,7 +23,7 @@ namespace Repeat.Infrastructure.Services
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
-            
+
             _setUpContext = new ApplicationDbContext(options);
             _context = new ApplicationDbContext(options);
 
@@ -58,27 +58,27 @@ namespace Repeat.Infrastructure.Services
 
             var sets = new List<Set>
             {
-                new Set 
-                { 
-                    ID = 1, 
-                    Name = "Set 1", 
+                new Set
+                {
+                    ID = 1,
+                    Name = "Set 1",
                     OwnerID = _currentUserService.UserId,
                     Shares = new HashSet<Share>
                     {
                         new Share { SetID = 1, UserID = "SecondUserId" }
                     }
                 },
-                new Set 
-                { 
-                    ID = 2, 
-                    Name = "Set 2", 
+                new Set
+                {
+                    ID = 2,
+                    Name = "Set 2",
                     OwnerID = _currentUserService.UserId,
                     Shares = new HashSet<Share>()
                 },
-                new Set 
-                { 
-                    ID = 3, 
-                    Name = "Set 3", 
+                new Set
+                {
+                    ID = 3,
+                    Name = "Set 3",
                     OwnerID = "SecondUserId",
                     Shares = new HashSet<Share>()
                 }

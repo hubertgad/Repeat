@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Repeat.Pages.Administration.Questions
 {
@@ -13,7 +13,7 @@ namespace Repeat.Pages.Administration.Questions
     public class CreateModel : PageModel
     {
         private readonly IQuestionService _questionService;
-        public CreateModel(IQuestionService questionService) 
+        public CreateModel(IQuestionService questionService)
         {
             _questionService = questionService;
         }
@@ -69,7 +69,7 @@ namespace Repeat.Pages.Administration.Questions
                 this.Question.Answers.Add(new Answer());
             }
         }
-        
+
         public async Task<IActionResult> OnPostAsync()
         {
             this.Question = await FileUpload.UpdatePictureAsync(this.Question);
@@ -94,9 +94,9 @@ namespace Repeat.Pages.Administration.Questions
             {
                 questionSets = new HashSet<QuestionSet>
                 {
-                    new QuestionSet { 
-                        QuestionID = this.Question.ID, 
-                        SetID = setID 
+                    new QuestionSet {
+                        QuestionID = this.Question.ID,
+                        SetID = setID
                     }
                 };
             }

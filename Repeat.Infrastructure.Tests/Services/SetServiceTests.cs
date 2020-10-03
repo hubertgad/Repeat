@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
-using Repeat.Infrastructure.Services;
 using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
+using Repeat.Infrastructure.Services;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -99,7 +99,7 @@ namespace Repeat.Infrastructure.Tests.Services
             var set = new Set { ID = 5, OwnerID = "SecondUserId" };
             _setUpContext.Sets.Add(set);
             _setUpContext.SaveChanges();
-            
+
             await _setService.RemoveSetAsync(set);
 
             var setInDb = _context.Sets.FirstOrDefault(q => q.ID == 5);

@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
-using Repeat.Infrastructure.Services;
 using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
+using Repeat.Infrastructure.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

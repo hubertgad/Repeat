@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Repeat
 {
@@ -16,7 +16,7 @@ namespace Repeat
             _setService = setService;
         }
 
-        public List<Set> Set { get;set; }
+        public List<Set> Set { get; set; }
 
         public async Task OnGetAsync()
         {

@@ -7,7 +7,7 @@ namespace Repeat.Extensions
     {
         public static List<string> SplitForCodeLines(this string input)
         {
-            List<string> lines = new List<string>{ "" };
+            List<string> lines = new List<string> { "" };
 
             foreach (Match m in Regex.Matches(input, @"<code>(.+?)<\/code>|(.| )?", RegexOptions.Singleline))
             {

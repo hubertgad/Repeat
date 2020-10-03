@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Repeat.Pages.TakeTest
 {
@@ -35,7 +35,7 @@ namespace Repeat.Pages.TakeTest
             }
 
             this.Test = await _testService.GetClosedTestBySetIdAsync(id);
-            
+
             if (this.Test == null)
             {
                 return NotFound();
@@ -60,7 +60,7 @@ namespace Repeat.Pages.TakeTest
                 {
                     if (choosenAnswer.GivenAnswer == true)
                     {
-                        var answer = 
+                        var answer =
                             this.Questions
                             .FirstOrDefault(q => q.ID == choosenAnswer.QuestionID)
                             .Answers

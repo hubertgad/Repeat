@@ -9,9 +9,9 @@ namespace Repeat.Domain.Models
         [Required]
         public int SetID { get; set; }
         public Set Set { get; set; }
-        [Required] 
+        [Required]
         public string UserID { get; set; }
-        [Required] 
+        [Required]
         public bool IsCompleted { get; set; }
         [Required]
         public int CurrentQuestionID { get; set; }

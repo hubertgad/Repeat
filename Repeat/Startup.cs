@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Repeat.Infrastructure.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Repeat.Infrastructure;
 using Repeat.Domain.Models;
+using Repeat.Infrastructure;
+using Repeat.Infrastructure.Data;
 
 namespace Repeat
 {

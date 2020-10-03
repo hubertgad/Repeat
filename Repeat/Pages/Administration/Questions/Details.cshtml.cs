@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
+using System.Threading.Tasks;
 
 namespace Repeat.Pages.Administration.Questions
 {
@@ -11,7 +11,7 @@ namespace Repeat.Pages.Administration.Questions
     public class DetailsModel : PageModel
     {
         private readonly IQuestionService _questionService;
-        
+
         public DetailsModel(IQuestionService questionService)
         {
             _questionService = questionService;
@@ -25,9 +25,9 @@ namespace Repeat.Pages.Administration.Questions
             {
                 return NotFound();
             }
-            
+
             this.Question = await _questionService.GetQuestionByIdAsync(id);
-            
+
             if (this.Question == null)
             {
                 return NotFound();

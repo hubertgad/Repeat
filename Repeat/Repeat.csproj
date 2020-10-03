@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>$(AssemblyName)</UserSecretsId>
     <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
+    <CodeAnalysisRuleSet>..\.sonarlint\repeatcsharp.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   

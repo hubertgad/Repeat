@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Repeat.Domain.Models;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Repeat.Domain.Interfaces;
+using Repeat.Domain.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Repeat.Pages.Administration.Questions
 {
@@ -28,7 +28,7 @@ namespace Repeat.Pages.Administration.Questions
             this.Questions = await _questionService.GetQuestionListAsync(this.SelectedCategoryID, this.SelectedSetID);
 
             ViewData["CategoryID"] = new SelectList(await _questionService.GetCategoryListAsync(), "ID", "Name");
-            ViewData["SetID"] = new SelectList(await _questionService.GetSetListAsync(), "ID", "Name");          
+            ViewData["SetID"] = new SelectList(await _questionService.GetSetListAsync(), "ID", "Name");
         }
 
         public Task OnPostFilterAsync()

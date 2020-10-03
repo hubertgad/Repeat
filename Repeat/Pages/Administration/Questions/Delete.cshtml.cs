@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
+using System.Threading.Tasks;
 
 namespace Repeat.Pages.Administration.Questions
 {
@@ -44,7 +44,7 @@ namespace Repeat.Pages.Administration.Questions
             }
 
             this.Question = await _questionService.GetQuestionByIdAsync(id);
-            
+
             try
             {
                 await _questionService.RemoveQuestionAsync(this.Question);
