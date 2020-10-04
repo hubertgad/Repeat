@@ -80,7 +80,10 @@ namespace Repeat.Infrastructure.Services
                     Id = 3,
                     Name = "Set 3",
                     OwnerId = "SecondUserId",
-                    Shares = new HashSet<Share>()
+                    Shares = new HashSet<Share>
+                    {
+                        new Share { SetId = 3, UserId = "ThirdUserId" }
+                    }
                 }
             };
 
