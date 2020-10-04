@@ -2,6 +2,8 @@
 using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
 using Repeat.Infrastructure.Services;
+using Repeat.Infrastucture.Exceptions;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -62,15 +64,14 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task AddShareAsync_CurrentUserIsNotSetOwner_ShouldNotSaveShare()
+        public void AddShareAsync_CurrentUserIsNotSetOwner_ThrowNotValidOwnerException()
         {
             _setUpContext.Sets.Add(new Set { Id = 5, OwnerId = "SecondUserId" });
             _setUpContext.SaveChanges();
 
-            await _setService.AddShareAsync(5, "Third User");
 
-            var savedShare = _context.Shares.FirstOrDefault(q => q.SetId == 5);
-            Assert.That(savedShare, Is.Null);
+            Assert.That(async () => await _setService.AddShareAsync(5, "Third User"),
+                Throws.Exception.TypeOf<NotValidOwnerIdException>());
         }
 
         [Test]
@@ -94,16 +95,14 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task RemoveSetAsync_WhenNotValidOwnerId_ShouldNotRemoveSet()
+        public void RemoveSetAsync_NotValidOwnerId_ThrowNotValidOwnerException()
         {
             var set = new Set { Id = 5, OwnerId = "SecondUserId" };
             _setUpContext.Sets.Add(set);
             _setUpContext.SaveChanges();
 
-            await _setService.RemoveSetAsync(set);
-
-            var setInDb = _context.Sets.FirstOrDefault(q => q.Id == 5);
-            Assert.That(setInDb, Is.Not.Null);
+            Assert.That(async () => await _setService.RemoveSetAsync(set),
+                Throws.Exception.TypeOf<NotValidOwnerIdException>());
         }
 
         [Test]
@@ -130,17 +129,98 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task RemoveQuestionFromSetAsync_WhenNotValidOwnerId_ShouldNotRemoveQuestion()
+        public void RemoveQuestionFromSetAsync_NotValidOwnerId_ThrowNotValidOwnerException()
         {
             var questionSet = _setUpContext.QuestionSets.Find(3, 3);
 
-            await _setService.RemoveQuestionFromSetAsync(questionSet);
-
-            var questionSetInDb = _context.QuestionSets
-                .FirstOrDefault(q => q.QuestionId == 3 && q.SetId == 3);
-            Assert.That(questionSetInDb, Is.Not.Null);
+            Assert.That(async () => await _setService.RemoveQuestionFromSetAsync(questionSet),
+                Throws.Exception.TypeOf<NotValidOwnerIdException>());
         }
 
-        // ...
+        [Test]
+        public async Task RemoveShareAsync_WhenCalled_ShouldRemoveShare()
+        {
+            var share = _setUpContext.Shares.Find(1, "SecondUserId");
+
+            await _setService.RemoveShareAsync(share);
+
+            var removedShare = _context.Shares
+                .FirstOrDefault(q => q.SetId == 1 && q.UserId == "SecondUserId");
+            Assert.That(removedShare, Is.Null);
+        }
+
+        [Test]
+        public void RemoveShareAsync_NotValidOwnerId_ThrowNotValidOwnerIdException()
+        {
+            var share = _setUpContext.Shares.Find(3, "ThirdUserId");
+
+            Assert.That(async () => await _setService.RemoveShareAsync(share),
+                Throws.Exception.TypeOf<NotValidOwnerIdException>());
+        }
+
+        [Test]
+        public async Task UpdateSetAsync_WhenCalled_ShouldUpdateSet()
+        {
+            var set = _setUpContext.Sets.Find(1);
+            set.Name = "New name";
+
+            await _setService.UpdateSetAsync(set);
+
+            var setInDb = _context.Sets.Find(1);
+            Assert.That(setInDb.Name, Is.EqualTo("New name"));
+        }
+
+        [Test]
+        public void UpdateSetAsync_NotValidOwnerId_ThrowNotValidOwnerException()
+        {
+            var set = _setUpContext.Sets.Find(3);
+            set.Name = "New name";
+
+            Assert.That(async () => await _setService.UpdateSetAsync(set), 
+                Throws.Exception.TypeOf<NotValidOwnerIdException>());
+        }
+
+        [Test]
+        public async Task GetSetByIdAsync_WhenCalled_ShouldReturnSetAsync()
+        {
+            var result = await _setService.GetSetByIdAsync(1);
+
+            Assert.That(result, Is.TypeOf<Set>());
+        }
+
+        [Test]
+        public async Task GetSetByIdAsync_WhenCalled_ShouldContainQuestionsAsync()
+        {
+            var result = await _setService.GetSetByIdAsync(1);
+
+            Assert.That(result.QuestionSets.FirstOrDefault().Question, Is.TypeOf<Question>());
+        }
+
+        [Test]
+        public async Task GetSetByIdAsync_NotValidOwnerId_ShouldReturnNullAsync()
+        {
+            var result = await _setService.GetSetByIdAsync(3);
+
+            Assert.That(result, Is.Null);
+        }
+
+        [Test]
+        public async Task GetSetsForCurrentUserAsync_WhenCalled_ShouldReturnListOfSetsAsync()
+        {
+            var result = await _setService.GetSetsForCurrentUserAsync();
+
+            Assert.That(result, Is.TypeOf<List<Set>>());
+            Assert.That(result, Is.Not.Empty);
+        }
+
+        [Test]
+        public async Task GetSetsForCurrentUserAsync_WhenCalled_ShouldContainUserReferenceAsync()
+        {
+            var result = await _setService.GetSetsForCurrentUserAsync();
+            var share = result.FirstOrDefault().Shares.FirstOrDefault();
+
+            Assert.That(share.User, Is.TypeOf<ApplicationUser>());
+            Assert.That(share.User.Id, Is.TypeOf<string>());
+        }
     }
 }
