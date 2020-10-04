@@ -105,7 +105,7 @@ namespace Repeat.Infrastructure.Services
         public async Task MoveToPreviousQuestion(int? setId)
         {
             var test = _context.Tests
-                .FirstOrDefault(q => q.SetId == setId && q.IsCompleted == false && q.UserId == _currentUserId);
+                .FirstOrDefault(q => q.SetId == setId && !q.IsCompleted && q.UserId == _currentUserId);
 
             var currentQuestionIndex = test.TestQuestions.IndexOf(
                 test.TestQuestions.FirstOrDefault(q => q.QuestionId == test.CurrentQuestionId));
@@ -117,7 +117,7 @@ namespace Repeat.Infrastructure.Services
         public async Task MoveToNextQuestion(int? setId)
         {
             var test = _context.Tests
-                .FirstOrDefault(q => q.SetId == setId && q.IsCompleted == false && q.UserId == _currentUserId);
+                .FirstOrDefault(q => q.SetId == setId && !q.IsCompleted && q.UserId == _currentUserId);
 
             var currentQuestionIndex = test.TestQuestions.IndexOf(
                 test.TestQuestions.FirstOrDefault(q => q.QuestionId == test.CurrentQuestionId));
@@ -129,7 +129,7 @@ namespace Repeat.Infrastructure.Services
         public async Task FinishTest(int? setId)
         {
             var test = _context.Tests
-                .FirstOrDefault(q => q.SetId == setId && q.IsCompleted == false && q.UserId == _currentUserId);
+                .FirstOrDefault(q => q.SetId == setId && !q.IsCompleted && q.UserId == _currentUserId);
 
             test.IsCompleted = true;
 
@@ -139,7 +139,7 @@ namespace Repeat.Infrastructure.Services
         public Task<Test> GetOpenTestBySetIdAsync(int? setId)
         {
             return _context.Tests
-                .Where(q => q.UserId == _currentUserId && q.SetId == setId && q.IsCompleted == false)
+                .Where(q => q.UserId == _currentUserId && q.SetId == setId && !q.IsCompleted)
                 .Include(q => q.TestQuestions)
                     .ThenInclude(q => q.Question)
                     .ThenInclude(q => q.Answers)
@@ -152,7 +152,7 @@ namespace Repeat.Infrastructure.Services
         public async Task<Test> GetClosedTestBySetIdAsync(int? setId)
         {
             var tests = await _context.Tests
-                .Where(q => q.UserId == _currentUserId && q.SetId == setId && q.IsCompleted == true)
+                .Where(q => q.UserId == _currentUserId && q.SetId == setId && q.IsCompleted)
                 .Include(q => q.TestQuestions)
                     .ThenInclude(q => q.Question)
                     .ThenInclude(q => q.Answers)
