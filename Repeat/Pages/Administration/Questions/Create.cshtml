@@ -15,24 +15,24 @@
         <div class="mb-md-2 btn-group">
             <form method="post" asp-page-handler="Less">
                 <input type="hidden" asp-for="AnswersCount" value="@Model.Question.Answers.Count" />
-                @if(@Model.AnswersCount <= 2)
+                @if (@Model.AnswersCount <= 2)
                 {
-                <button disabled class="btn btn-warning mr-md-2 btn-sm">Remove Answer @((char)('A' + @Model.Question.Answers.Count - 1))</button>
+                    <button disabled class="btn btn-warning mr-md-2 btn-sm">Remove Answer @((char)('A' + @Model.Question.Answers.Count - 1))</button>
                 }
                 else
                 {
-                <button class="btn btn-warning mr-md-2 btn-sm">Remove Answer @((char)('A' + @Model.Question.Answers.Count - 1))</button>
+                    <button class="btn btn-warning mr-md-2 btn-sm">Remove Answer @((char)('A' + @Model.Question.Answers.Count - 1))</button>
                 }
             </form>
             <form method="post" asp-page-handler="More">
                 <input type="hidden" asp-for="AnswersCount" value="@Model.Question.Answers.Count" />
-                @if(@Model.AnswersCount >= 10)
+                @if (@Model.AnswersCount >= 10)
                 {
-                <button disabled class="btn btn-success btn-sm">Add Answer @((char)('A' + @Model.Question.Answers.Count))</button>
+                    <button disabled class="btn btn-success btn-sm">Add Answer @((char)('A' + @Model.Question.Answers.Count))</button>
                 }
                 else
                 {
-                <button class="btn btn-success btn-sm">Add Answer @((char)('A' + @Model.Question.Answers.Count))</button>
+                    <button class="btn btn-success btn-sm">Add Answer @((char)('A' + @Model.Question.Answers.Count))</button>
                 }
             </form>
         </div>
@@ -106,21 +106,5 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script>
-        $('body').on('keydown', 'textarea', function (e)
-        {
-            if (e.which == 9)
-            {
-                e.preventDefault();
-                var start = this.selectionStart;
-                var end = this.selectionEnd;
-
-                $(this).val($(this).val().substring(0, start)
-                    + "\t"
-                    + $(this).val().substring(end));
-
-                this.selectionStart = this.selectionEnd = start + 1;
-            }
-        });
-    </script>
+    <script src="~/js/tab.js"></script>
 }
