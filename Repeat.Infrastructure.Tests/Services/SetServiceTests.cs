@@ -39,7 +39,7 @@ namespace Repeat.Infrastructure.Tests.Services
             await _setService.AddSetAsync(set);
 
             var savedSet = _context.Sets.First(q => q.Id == set.Id);
-            Assert.That(savedSet.Owner.Id, Is.EqualTo(_currentUserService.UserId));
+            Assert.That(savedSet.OwnerId, Is.EqualTo(_currentUserService.UserId));
         }
 
         [Test]
