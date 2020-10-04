@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
+using Repeat.Infrastucture.Exceptions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,6 +22,7 @@ namespace Repeat.Infrastructure.Services
         public async Task AddSetAsync(Set model)
         {
             model.OwnerId = _currentUserId;
+
             await _context.Sets.AddAsync(model);
 
             await _context.SaveChangesAsync();
@@ -34,9 +36,11 @@ namespace Repeat.Infrastructure.Services
 
             var set = await _context.Sets.FindAsync(setId);
 
-            if (set.OwnerId != _currentUserId) return;
+            if (set.OwnerId != _currentUserId) throw new NotValidOwnerIdException();
 
             if (set.OwnerId == user.Id) return;
+
+            if (_context.Shares.Any(q => q.SetId == setId && q.UserId == user.Id)) return;
 
             _context.Shares.Add(
                 new Share
@@ -50,7 +54,7 @@ namespace Repeat.Infrastructure.Services
 
         public async Task RemoveSetAsync(Set model)
         {
-            if (model.OwnerId != _currentUserId) return;
+            if (model.OwnerId != _currentUserId) throw new NotValidOwnerIdException();
 
             var tests = _context.Tests.Where(q => q.SetId == model.Id);
             _context.Tests.RemoveRange(tests);
@@ -62,7 +66,7 @@ namespace Repeat.Infrastructure.Services
 
         public async Task RemoveQuestionFromSetAsync(QuestionSet model)
         {
-            if (model.Set.OwnerId != _currentUserId) return;
+            if (model.Set.OwnerId != _currentUserId) throw new NotValidOwnerIdException();
 
             _context.QuestionSets.Remove(model);
 
@@ -71,6 +75,9 @@ namespace Repeat.Infrastructure.Services
 
         public async Task RemoveShareAsync(Share model)
         {
+            model.Set = _context.Sets.Find(model.SetId);
+            if (model.Set.OwnerId != _currentUserId) throw new NotValidOwnerIdException();
+
             _context.Shares.Remove(model);
 
             await _context.SaveChangesAsync();
@@ -78,7 +85,8 @@ namespace Repeat.Infrastructure.Services
 
         public Task UpdateSetAsync(Set model)
         {
-            model.OwnerId = _currentUserId;
+            if (model.OwnerId != _currentUserId) throw new NotValidOwnerIdException();
+
             _context.Sets.Update(model);
 
             return _context.SaveChangesAsync();
@@ -97,8 +105,6 @@ namespace Repeat.Infrastructure.Services
         {
             return _context.Sets
                 .Where(q => q.OwnerId == _currentUserId)
-                .Include(q => q.Shares)
-                    .ThenInclude(q => q.Set)
                 .Include(q => q.Shares)
                     .ThenInclude(q => q.User)
                 .ToListAsync();
