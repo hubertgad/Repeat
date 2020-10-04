@@ -22,17 +22,7 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
-      
-    - name: npm install, make test-coverage
-      run: |
-        npm install
-        make test-coverage
-    - name: Coveralls
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-      
+      run: dotnet test --no-restore --verbosity normal      
     - name: Cache SonarCloud packages
       uses: actions/cache@v1
       with:
