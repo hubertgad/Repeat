@@ -13,9 +13,9 @@ namespace Repeat.Extensions
             {
                 if (m.Value.Contains(@"<code>") && (m.Value.Contains(@"</code>")))
                 {
-                    if (lines[lines.Count - 1].ToString() == "")
+                    if (lines[^1].ToString() == "")
                     {
-                        lines[lines.Count - 1] = m.Value;
+                        lines[^1] = m.Value;
                     }
                     else
                     {
@@ -25,7 +25,7 @@ namespace Repeat.Extensions
                 }
                 else
                 {
-                    lines[lines.Count - 1] += m.Value;
+                    lines[^1] += m.Value;
                 }
             }
 
