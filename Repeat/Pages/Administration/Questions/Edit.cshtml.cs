@@ -90,10 +90,17 @@ namespace Repeat.Pages.Administration.Questions
 
         private async Task<bool> UpdateQuestionAsync(Question question)
         {
-            UpdateQuestionSets(ref question);
-            question = await FileUpload.UpdatePictureAsync(question);
-            await _questionService.UpdateQuestionAsync(question, this.RemovePicture);
-            return true;
+            try
+            {
+                UpdateQuestionSets(ref question);
+                question = await FileUpload.UpdatePictureAsync(question);
+                await _questionService.UpdateQuestionAsync(question, this.RemovePicture);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private void UpdateQuestionSets(ref Question question)
