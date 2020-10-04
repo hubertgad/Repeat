@@ -52,45 +52,45 @@ namespace Repeat.Infrastructure.Services
 
             var categories = new List<Category>
             {
-                new Category { ID = 1, Name = "Category 1", OwnerID = _currentUserService.UserId },
-                new Category { ID = 2, Name = "Category 2", OwnerID = _currentUserService.UserId }
+                new Category { Id = 1, Name = "Category 1", OwnerId = _currentUserService.UserId },
+                new Category { Id = 2, Name = "Category 2", OwnerId = _currentUserService.UserId }
             };
 
             var sets = new List<Set>
             {
                 new Set
                 {
-                    ID = 1,
+                    Id = 1,
                     Name = "Set 1",
-                    OwnerID = _currentUserService.UserId,
+                    OwnerId = _currentUserService.UserId,
                     Shares = new HashSet<Share>
                     {
-                        new Share { SetID = 1, UserID = "SecondUserId" }
+                        new Share { SetId = 1, UserId = "SecondUserId" }
                     }
                 },
                 new Set
                 {
-                    ID = 2,
+                    Id = 2,
                     Name = "Set 2",
-                    OwnerID = _currentUserService.UserId,
+                    OwnerId = _currentUserService.UserId,
                     Shares = new HashSet<Share>()
                 },
                 new Set
                 {
-                    ID = 3,
+                    Id = 3,
                     Name = "Set 3",
-                    OwnerID = "SecondUserId",
+                    OwnerId = "SecondUserId",
                     Shares = new HashSet<Share>()
                 }
             };
 
             var test = new Test
             {
-                ID = 1,
-                SetID = 1,
-                CurrentQuestionID = 0,
+                Id = 1,
+                SetId = 1,
+                CurrentQuestionId = 0,
                 IsCompleted = false,
-                UserID = _currentUserService.UserId,
+                UserId = _currentUserService.UserId,
                 TestQuestions = new List<TestQuestion>()
             };
 
@@ -98,54 +98,54 @@ namespace Repeat.Infrastructure.Services
             {
                 new Question
                 {
-                    ID = 1,
+                    Id = 1,
                     QuestionText = "Question 1",
-                    OwnerID = _currentUserService.UserId,
+                    OwnerId = _currentUserService.UserId,
                     Picture = new Picture { Data = new byte[] { 255, 255, 255 } },
-                    CategoryID = 1,
+                    CategoryId = 1,
                     Answers = new List<Answer>
                     {
-                        new Answer { QuestionID = 1, AnswerText = "Answer 1-1" },
-                        new Answer { QuestionID = 1, AnswerText = "Answer 1-2" }
+                        new Answer { QuestionId = 1, AnswerText = "Answer 1-1" },
+                        new Answer { QuestionId = 1, AnswerText = "Answer 1-2" }
                     },
                     QuestionSets = new HashSet<QuestionSet>
                     {
-                        new QuestionSet { QuestionID = 1, SetID = 1 },
-                        new QuestionSet { QuestionID = 1, SetID = 2 }
+                        new QuestionSet { QuestionId = 1, SetId = 1 },
+                        new QuestionSet { QuestionId = 1, SetId = 2 }
                     }
                 },
                 new Question
                 {
-                    ID = 2,
+                    Id = 2,
                     QuestionText = "Question 2",
-                    OwnerID = _currentUserService.UserId,
+                    OwnerId = _currentUserService.UserId,
                     Picture = new Picture { Data = new byte[] { 255, 255, 255 } },
-                    CategoryID = 2,
+                    CategoryId = 2,
                     Answers = new List<Answer>
                     {
-                        new Answer { QuestionID = 2, AnswerText = "Answer 2-1" },
-                        new Answer { QuestionID = 2, AnswerText = "Answer 2-2" }
+                        new Answer { QuestionId = 2, AnswerText = "Answer 2-1" },
+                        new Answer { QuestionId = 2, AnswerText = "Answer 2-2" }
                     },
                     QuestionSets = new HashSet<QuestionSet>
                     {
-                        new QuestionSet { QuestionID = 2, SetID = 2 }
+                        new QuestionSet { QuestionId = 2, SetId = 2 }
                     }
                 },
                 new Question
                 {
-                    ID = 3,
+                    Id = 3,
                     QuestionText = "Question 3",
-                    OwnerID = "SecondUserId",
+                    OwnerId = "SecondUserId",
                     Picture = new Picture { Data = new byte[] { 255, 255, 255 } },
-                    CategoryID = 2,
+                    CategoryId = 2,
                     Answers = new List<Answer>
                     {
-                        new Answer { QuestionID = 3, AnswerText = "Answer 3-1" },
-                        new Answer { QuestionID = 3, AnswerText = "Answer 3-2" }
+                        new Answer { QuestionId = 3, AnswerText = "Answer 3-1" },
+                        new Answer { QuestionId = 3, AnswerText = "Answer 3-2" }
                     },
                     QuestionSets = new HashSet<QuestionSet>
                     {
-                        new QuestionSet { QuestionID = 3, SetID = 3 }
+                        new QuestionSet { QuestionId = 3, SetId = 3 }
                     }
                 }
             };

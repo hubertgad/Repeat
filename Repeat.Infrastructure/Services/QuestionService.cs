@@ -20,7 +20,7 @@ namespace Repeat.Infrastructure.Services
 
         public async Task AddQuestionAsync(Question model)
         {
-            model.OwnerID = _currentUserId;
+            model.OwnerId = _currentUserId;
             await _context.Questions.AddAsync(model);
 
             await _context.SaveChangesAsync();
@@ -28,8 +28,8 @@ namespace Repeat.Infrastructure.Services
 
         public async Task RemoveQuestionAsync(Question model)
         {
-            _context.TestQuestions.RemoveRange(_context.TestQuestions.Where(q => q.QuestionID == model.ID));
-            _context.ChoosenAnswers.RemoveRange(_context.ChoosenAnswers.Where(q => q.QuestionID == model.ID));
+            _context.TestQuestions.RemoveRange(_context.TestQuestions.Where(q => q.QuestionId == model.Id));
+            _context.ChoosenAnswers.RemoveRange(_context.ChoosenAnswers.Where(q => q.QuestionId == model.Id));
             _context.Questions.Remove(model);
 
             await _context.SaveChangesAsync();
@@ -37,18 +37,19 @@ namespace Repeat.Infrastructure.Services
 
         public async Task UpdateQuestionAsync(Question model, bool removePicture)
         {
-            model.OwnerID = _currentUserId;
+            model.OwnerId = _currentUserId;
 
-            var currentQuestionSets = _context.QuestionSets.Where(q => q.QuestionID == model.ID).ToList();
+            var currentQuestionSets = _context.QuestionSets.Where(q => q.QuestionId == model.Id).AsEnumerable();
             _context.QuestionSets.RemoveRange(currentQuestionSets.Except(model.QuestionSets));
             _context.QuestionSets.AddRange(model.QuestionSets.Except(currentQuestionSets));
 
-            var answersToRemove = _context.Answers.Where(q => q.QuestionID == model.ID).ToList().Except(model.Answers);
+            var answersToRemove = _context.Answers.Where(q => q.QuestionId == model.Id).AsEnumerable().Except(model.Answers);
             _context.Answers.RemoveRange(answersToRemove);
 
-            if (removePicture == true)
+            var picture = await _context.Pictures.FirstOrDefaultAsync(q => q.Id == model.Id);
+            if (removePicture || (picture != null && model.Picture != null))
             {
-                _context.Pictures.Remove(model.Picture);
+                _context.Pictures.Remove(picture);
             }
 
             _context.Questions.Update(model);
@@ -59,15 +60,15 @@ namespace Repeat.Infrastructure.Services
         public async Task<Question> GetQuestionByIdAsync(int? id)
         {
             var question = await _context.Questions
-                .Where(q => q.OwnerID == _currentUserId)
+                .Where(q => q.OwnerId == _currentUserId)
                 .Include(q => q.Owner)
                 .Include(q => q.Category)
                 .Include(q => q.Picture)
                 .Include(q => q.QuestionSets).ThenInclude(q => q.Set)
-                .FirstOrDefaultAsync(q => q.ID == id);
+                .FirstOrDefaultAsync(q => q.Id == id);
 
             question.Answers = await _context.Answers
-                .Where(q => q.QuestionID == id).ToListAsync();
+                .Where(q => q.QuestionId == id).ToListAsync();
 
             return question;
         }
@@ -76,11 +77,11 @@ namespace Repeat.Infrastructure.Services
         {
             var query = _context.Questions
                 .Include(q => q.QuestionSets)
-                .Where(q => q.OwnerID == _currentUserId);
+                .Where(q => q.OwnerId == _currentUserId);
 
-            if (setId != null) query = query.Where(q => q.QuestionSets.Any(p => p.SetID == setId));
+            if (setId != null) query = query.Where(q => q.QuestionSets.Any(p => p.SetId == setId));
 
-            if (catId != null) query = query.Where(q => q.CategoryID == catId);
+            if (catId != null) query = query.Where(q => q.CategoryId == catId);
 
             var questions = await query.ToListAsync();
 
@@ -88,7 +89,7 @@ namespace Repeat.Infrastructure.Services
             {
                 question.Answers =
                     await _context.Answers
-                    .Where(q => q.QuestionID == question.ID)
+                    .Where(q => q.QuestionId == question.Id)
                     .ToListAsync();
             }
 
@@ -99,7 +100,7 @@ namespace Repeat.Infrastructure.Services
         {
             return _context.Sets
                 .Include(q => q.Shares)
-                .Where(q => q.OwnerID == _currentUserId)
+                .Where(q => q.OwnerId == _currentUserId)
                 .Include(q => q.QuestionSets)
                     .ThenInclude(q => q.Question)
                     .ThenInclude(q => q.Category)
@@ -108,7 +109,7 @@ namespace Repeat.Infrastructure.Services
 
         public Task<List<Category>> GetCategoryListAsync()
         {
-            return _context.Categories.Where(q => q.OwnerID == _currentUserId).ToListAsync();
+            return _context.Categories.Where(q => q.OwnerId == _currentUserId).ToListAsync();
         }
     }
 }

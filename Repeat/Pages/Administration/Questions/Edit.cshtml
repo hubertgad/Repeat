@@ -15,12 +15,12 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <div class="input-group mb-3">
-                    <select asp-for="Question.CategoryID" class="form-control"
-                            asp-items="ViewBag.CategoryID">
+                    <select asp-for="Question.CategoryId" class="form-control"
+                            asp-items="ViewBag.CategoryId">
                         <option value="" selected disabled>-- Select category --</option>
                     </select>
                 </div>
-                <span asp-validation-for="Question.CategoryID" class="text-danger"></span>
+                <span asp-validation-for="Question.CategoryId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <div class="input-group mb-3">
@@ -35,8 +35,8 @@
             </div>
             @for (int i = 0; i < Model.Question.Answers.Count(); i++)
             {
-                <input type="hidden" asp-for="Question.Answers[i].ID" />
-                <input type="hidden" asp-for="Question.Answers[i].QuestionID" />
+                <input type="hidden" asp-for="Question.Answers[i].Id" />
+                <input type="hidden" asp-for="Question.Answers[i].QuestionId" />
                 <div class="form-group">
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
@@ -61,6 +61,10 @@
             @if (Model.Question.Picture != null && Model.Question.Picture.Data != null)
             {
                 <partial name="Questions/_PicturePartial" model="Model.Question.Picture" />
+                <label class="col-12">
+                    <input asp-for="RemovePicture" />
+                    Remove Picture
+                </label>
             }
             <div class="form-group">
                 <input asp-for="FileUpload.FormFile" class="form-control-file" />
@@ -68,7 +72,7 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Belongs to sets:</label>
-                <select asp-for="SelectedSets" class="form-control" asp-items="ViewBag.SetID"
+                <select asp-for="SelectedSets" class="form-control" asp-items="ViewBag.SetId"
                         selected="selected" multiple="multiple">
                 </select>
             </div>
@@ -83,8 +87,8 @@
                 </div>
                 <span asp-validation-for="Question.Reference" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Question.OwnerID" value="@Model.Question.OwnerID" />
-            <input type="hidden" asp-for="Question.ID" value="@Model.Question.ID" />
+            <input type="hidden" asp-for="Question.OwnerId" value="@Model.Question.OwnerId" />
+            <input type="hidden" asp-for="Question.Id" value="@Model.Question.Id" />
             <div class="form-group">
                 <input type="submit" value="Edit" class="btn btn-primary" />
             </div>

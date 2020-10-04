@@ -7,14 +7,14 @@ namespace Repeat.Domain.Models
     public class Test : Entity
     {
         [Required]
-        public int SetID { get; set; }
+        public int? SetId { get; set; }
         public Set Set { get; set; }
         [Required]
-        public string UserID { get; set; }
+        public string UserId { get; set; }
         [Required]
         public bool IsCompleted { get; set; }
         [Required]
-        public int CurrentQuestionID { get; set; }
+        public int CurrentQuestionId { get; set; }
         [Required]
         public IList<TestQuestion> TestQuestions { get; set; }
     }

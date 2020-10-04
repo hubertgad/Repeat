@@ -34,11 +34,11 @@ namespace Repeat.Infrastructure.Tests.Services
         [Test]
         public async Task AddQuestionAsync_NotValidOwnerId_ShouldCorrectId()
         {
-            var question = new Question { OwnerID = "not-valid-id" };
+            var question = new Question { OwnerId = "not-valid-id" };
 
             await _questionService.AddQuestionAsync(question);
 
-            var savedOwnerId = _context.Questions.First(q => q.ID == question.ID).OwnerID;
+            var savedOwnerId = _context.Questions.First(q => q.Id == question.Id).OwnerId;
             Assert.That(savedOwnerId, Is.EqualTo(_currentUserService.UserId));
         }
 
@@ -63,7 +63,7 @@ namespace Repeat.Infrastructure.Tests.Services
             await _questionService.RemoveQuestionAsync(question);
 
             var associatedQuestionSets = _context.QuestionSets
-                .Where(q => q.QuestionID == question.ID)
+                .Where(q => q.QuestionId == question.Id)
                 .ToList();
             Assert.That(associatedQuestionSets, Is.Empty);
         }
@@ -76,7 +76,7 @@ namespace Repeat.Infrastructure.Tests.Services
             await _questionService.RemoveQuestionAsync(question);
 
             var associatedTestQuestions = _context.TestQuestions
-                .Where(q => q.QuestionID == question.ID)
+                .Where(q => q.QuestionId == question.Id)
                 .ToList();
             Assert.That(associatedTestQuestions, Is.Empty);
         }
@@ -89,7 +89,7 @@ namespace Repeat.Infrastructure.Tests.Services
             await _questionService.RemoveQuestionAsync(question);
 
             var associatedChoosenAnswers = _context.ChoosenAnswers
-                .Where(q => q.QuestionID == question.ID)
+                .Where(q => q.QuestionId == question.Id)
                 .ToList();
             Assert.That(associatedChoosenAnswers, Is.Empty);
         }
@@ -213,7 +213,7 @@ namespace Repeat.Infrastructure.Tests.Services
         {
             var questions = await _questionService.GetQuestionListAsync(1, null);
 
-            Assert.That(questions.TrueForAll(q => q.CategoryID == 1));
+            Assert.That(questions.TrueForAll(q => q.CategoryId == 1));
         }
 
         [Test]
@@ -221,7 +221,7 @@ namespace Repeat.Infrastructure.Tests.Services
         {
             var questions = await _questionService.GetQuestionListAsync(null, 1);
 
-            Assert.That(questions.TrueForAll(q => q.QuestionSets.Any(w => w.SetID == 1)));
+            Assert.That(questions.TrueForAll(q => q.QuestionSets.Any(w => w.SetId == 1)));
         }
 
         [Test]

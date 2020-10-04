@@ -9,9 +9,9 @@ namespace Repeat.Domain.Models
         [Required, MaxLength(5000), Display(Name = "Question Text")]
         public string QuestionText { get; set; }
         [Display(Name = "Category ID")]
-        public int CategoryID { get; set; }
+        public int CategoryId { get; set; }
         [Required]
-        public string OwnerID { get; set; }
+        public string OwnerId { get; set; }
         public ApplicationUser Owner { get; set; }
         [MaxLength(1000)]
         public string Reference { get; set; }

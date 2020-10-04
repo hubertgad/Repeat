@@ -13,13 +13,13 @@
 <div>
     <dl class="row">
         <dt class="@dtclass">
-            <nobr>Result:</nobr>
+            Result:
         </dt>
         <dd class="@ddclass">
             @Html.DisplayFor(model => model.Result) %
         </dd>
         <dt class="@dtclass">
-            <nobr>Total Points:</nobr>
+            Total Points:
         </dt>
         <dd class="@ddclass">
             @Html.DisplayFor(model => model.TotalCollectedPoints) / @Html.DisplayFor(model => model.AvailablePoints)
@@ -51,7 +51,7 @@
                     Answer @((char)('A' + i)):
                 </dt>
                 <dd class="@ddclass">
-                    <div class="@(Model.Test.TestQuestions[Model.Questions.IndexOf(question)].ChoosenAnswers.FirstOrDefault(q => q.AnswerID == question.Answers[i].ID).GivenAnswer == true ? "given-answer" : "")">
+                    <div class="@(Model.Test.TestQuestions[Model.Questions.IndexOf(question)].ChoosenAnswers.FirstOrDefault(q => q.AnswerId == question.Answers[i].Id).GivenAnswer == true ? "given-answer" : "")">
                         <partial name="Questions/_TextPartial" model="question.Answers[i].AnswerText" />
                     </div>
                 </dd>

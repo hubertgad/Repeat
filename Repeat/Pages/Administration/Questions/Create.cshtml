@@ -41,12 +41,12 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <div class="input-group mb-3">
-                    <select asp-for="Question.CategoryID" class="form-control"
-                            asp-items="ViewBag.CategoryID">
+                    <select asp-for="Question.CategoryId" class="form-control"
+                            asp-items="ViewBag.CategoryId">
                         <option value="" selected disabled>-- Select category --</option>
                     </select>
                 </div>
-                <span asp-validation-for="Question.CategoryID" class="text-danger"></span>
+                <span asp-validation-for="Question.CategoryId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <div class="input-group mb-3">
@@ -79,7 +79,7 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Belongs to sets:</label>
-                <select asp-for="SelectedSets" class="form-control" asp-items="ViewBag.SetID" multiple="multiple"></select>
+                <select asp-for="SelectedSets" class="form-control" asp-items="ViewBag.SetId" multiple="multiple"></select>
             </div>
             <div class="form-group">
                 <div class="input-group mb-3">
@@ -92,7 +92,7 @@
                 </div>
                 <span asp-validation-for="Question.Reference" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Question.OwnerID" value="@Model.Question.OwnerID" />
+            <input type="hidden" asp-for="Question.OwnerId" value="@Model.Question.OwnerId" />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

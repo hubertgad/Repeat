@@ -33,7 +33,7 @@
             @if (Model.CurrentQuestionIndex > 0)
             {
                 <input type="submit" class="btn btn-nav2 m-3" value="Previous" 
-                       asp-route-id="@Model.Test.SetID" asp-page-handler="Previous" />
+                       asp-route-id="@Model.Test.SetId" asp-page-handler="Previous" />
             }
             else
             {
@@ -42,13 +42,13 @@
             @if (Model.CurrentQuestionIndex < Model.Test.TestQuestions.Count() - 1)
             {
                 <input type="submit" class="btn btn-nav2 m-3" value="Next" 
-                       asp-route-id="@Model.Test.SetID" asp-page-handler="Next" />
+                       asp-route-id="@Model.Test.SetId" asp-page-handler="Next" />
             }
             else
             {
                 <button disabled class="btn btn-nav2 m-3">Next</button>
                 <input type="submit" class="btn btn-success m-3" value="Finish test" 
-                       asp-route-id="@Model.Test.SetID" asp-page-handler="Finish" />
+                       asp-route-id="@Model.Test.SetId" asp-page-handler="Finish" />
             }
         </div>
     </form>

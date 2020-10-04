@@ -31,51 +31,36 @@
 <br />
 <h5>Shares:</h5>
 <hr />
+
 <div class="row">
-    <div class="col-md-12">
-        <table>
-            <thead>
-                <tr>
-                    <th>
-                        <label class="font-weight-bold col-md-4">Set</label>
-                    </th>
-                    <th>
-                        <label class="font-weight-bold col-md-4">User</label>
-                    </th>
-                    <th>
-                        <label class="font-weight-bold col-md-4">Edit</label>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var set in Model.Sets)
-                {
-                    @foreach (var share in set.Shares)
-                    {
-                        <tr>
-                            <td class="col-md-4">
-                                @share.Set.Name
-                            </td>
-                            <td class="col-md-4">
-                                @share.User.UserName
-                            </td>
-                            <td class="col-md-4">
-                                <form method="post" asp-page-handler="Unshare">
-                                    <input type="hidden" asp-for="Share.UserID" value="@share.UserID" />
-                                    <input type="hidden" asp-for="Share.SetID" value="@set.ID" />
-                                    <input type="submit" value="Unshare" class="btn btn-danger btn-sm" />
-                                </form>
-                            </td>
-                        </tr>
-                    }
-                }
-            </tbody>
-        </table>
-    </div>
+    <label class="font-weight-bold col-6">Set</label>
+    <label class="font-weight-bold col-4">User</label>
+    <label class="font-weight-bold col-2">Edit</label>
 </div>
 
-<br />
-<div>
+@foreach (var set in Model.Sets)
+{
+    @foreach (var share in set.Shares)
+    {
+        <div class="row my-1">
+            <div class="col-6">
+                @share.Set.Name
+            </div>
+            <div class="col-4">
+                @share.User.UserName
+            </div>
+            <div class="col-2">
+                <form method="post" asp-page-handler="Unshare">
+                    <input type="hidden" asp-for="Share.UserId" value="@share.UserId" />
+                    <input type="hidden" asp-for="Share.SetId" value="@set.Id" />
+                    <input type="submit" value="Unshare" class="btn btn-danger btn-sm" />
+                </form>
+            </div>
+        </div>
+    }
+}
+
+<div class="mt-3">
     <a asp-page="Index" class="btn btn-dark">Back to List</a>
 </div>
 

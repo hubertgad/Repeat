@@ -40,9 +40,9 @@ namespace Repeat
             }
             this.CurrentQuestionIndex = this.Test.TestQuestions.IndexOf(
                 this.Test.TestQuestions
-                .FirstOrDefault(q => q.QuestionID == this.Test.CurrentQuestionID));
+                .FirstOrDefault(q => q.QuestionId == this.Test.CurrentQuestionId));
 
-            this.ChoosenAnswers = await _testService.GetChoosenAnswersAsync(this.Test.ID, this.Test.CurrentQuestionID);
+            this.ChoosenAnswers = await _testService.GetChoosenAnswersAsync(this.Test.Id, this.Test.CurrentQuestionId);
 
             return Page();
         }
@@ -73,8 +73,8 @@ namespace Repeat
             this.ChoosenAnswers.ToList()
                     .ForEach(q =>
                     {
-                        q.TestID = this.Test.ID;
-                        q.QuestionID = this.Test.CurrentQuestionID;
+                        q.TestId = this.Test.Id;
+                        q.QuestionId = this.Test.CurrentQuestionId;
                     });
 
             await task();

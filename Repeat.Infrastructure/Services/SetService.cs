@@ -20,7 +20,7 @@ namespace Repeat.Infrastructure.Services
 
         public async Task AddSetAsync(Set model)
         {
-            model.OwnerID = _currentUserId;
+            model.OwnerId = _currentUserId;
             await _context.Sets.AddAsync(model);
 
             await _context.SaveChangesAsync();
@@ -34,15 +34,15 @@ namespace Repeat.Infrastructure.Services
 
             var set = await _context.Sets.FindAsync(setId);
 
-            if (set.OwnerID != _currentUserId) return;
+            if (set.OwnerId != _currentUserId) return;
 
-            if (set.OwnerID == user.Id) return;
+            if (set.OwnerId == user.Id) return;
 
             _context.Shares.Add(
                 new Share
                 {
-                    SetID = setId,
-                    UserID = user.Id
+                    SetId = setId,
+                    UserId = user.Id
                 });
 
             await _context.SaveChangesAsync();
@@ -50,9 +50,9 @@ namespace Repeat.Infrastructure.Services
 
         public async Task RemoveSetAsync(Set model)
         {
-            if (model.OwnerID != _currentUserId) return;
+            if (model.OwnerId != _currentUserId) return;
 
-            var tests = _context.Tests.Where(q => q.SetID == model.ID);
+            var tests = _context.Tests.Where(q => q.SetId == model.Id);
             _context.Tests.RemoveRange(tests);
 
             _context.Sets.Remove(model);
@@ -62,7 +62,7 @@ namespace Repeat.Infrastructure.Services
 
         public async Task RemoveQuestionFromSetAsync(QuestionSet model)
         {
-            if (model.Set.OwnerID != _currentUserId) return;
+            if (model.Set.OwnerId != _currentUserId) return;
 
             _context.QuestionSets.Remove(model);
 
@@ -78,7 +78,7 @@ namespace Repeat.Infrastructure.Services
 
         public Task UpdateSetAsync(Set model)
         {
-            model.OwnerID = _currentUserId;
+            model.OwnerId = _currentUserId;
             _context.Sets.Update(model);
 
             return _context.SaveChangesAsync();
@@ -87,16 +87,16 @@ namespace Repeat.Infrastructure.Services
         public Task<Set> GetSetByIdAsync(int? id)
         {
             return _context.Sets
-                .Where(q => q.OwnerID == _currentUserId)
+                .Where(q => q.OwnerId == _currentUserId)
                 .Include(q => q.QuestionSets)
                     .ThenInclude(q => q.Question)
-                .FirstOrDefaultAsync(q => q.ID == id);
+                .FirstOrDefaultAsync(q => q.Id == id);
         }
 
         public Task<List<Set>> GetSetsForCurrentUserAsync()
         {
             return _context.Sets
-                .Where(q => q.OwnerID == _currentUserId)
+                .Where(q => q.OwnerId == _currentUserId)
                 .Include(q => q.Shares)
                     .ThenInclude(q => q.Set)
                 .Include(q => q.Shares)

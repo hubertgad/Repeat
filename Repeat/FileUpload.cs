@@ -25,8 +25,9 @@ namespace Repeat
                     }
                 }
             }
-            return null;
+            return new byte[0];
         }
+
         public static string ToString(byte[] data)
         {
             var base64 = Convert.ToBase64String(data);
@@ -44,10 +45,6 @@ namespace Repeat
                 {
                     question.Picture ??= new Picture();
                     question.Picture.Data = memoryStream.ToArray();
-                }
-                else
-                {
-                    return null;
                 }
             }
             return question;

@@ -10,7 +10,7 @@ namespace Repeat.Domain.Interfaces
         Task RemoveQuestionAsync(Question model);
         Task UpdateQuestionAsync(Question model, bool removePicture);
         Task<Question> GetQuestionByIdAsync(int? id);
-        Task<List<Question>> GetQuestionListAsync(int? catID, int? setID);
+        Task<List<Question>> GetQuestionListAsync(int? catId, int? setId);
         Task<List<Set>> GetSetListAsync();
         Task<List<Category>> GetCategoryListAsync();
 

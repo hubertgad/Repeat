@@ -58,19 +58,19 @@ namespace Repeat.Pages.TakeTest
                 points.Add(0);
                 foreach (var choosenAnswer in this.Test.TestQuestions[i].ChoosenAnswers)
                 {
-                    if (choosenAnswer.GivenAnswer == true)
+                    if (choosenAnswer.GivenAnswer)
                     {
                         var answer =
                             this.Questions
-                            .FirstOrDefault(q => q.ID == choosenAnswer.QuestionID)
+                            .FirstOrDefault(q => q.Id == choosenAnswer.QuestionId)
                             .Answers
-                            .FirstOrDefault(q => q.ID == choosenAnswer.AnswerID);
+                            .FirstOrDefault(q => q.Id == choosenAnswer.AnswerId);
 
-                        if (answer.IsTrue == true)
+                        if (answer.IsTrue)
                         {
                             points[i]++;
                         }
-                        else if (answer.IsTrue == false)
+                        else if (!answer.IsTrue)
                         {
                             points[i] = 0;
                             break;
@@ -88,7 +88,7 @@ namespace Repeat.Pages.TakeTest
             {
                 foreach (var answer in question.Answers)
                 {
-                    if (answer.IsTrue == true)
+                    if (answer.IsTrue)
                     {
                         maxPoints++;
                     }

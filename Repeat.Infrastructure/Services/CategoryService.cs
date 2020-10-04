@@ -20,7 +20,7 @@ namespace Repeat.Infrastructure.Services
 
         public async Task AddCategoryAsync(Category model)
         {
-            model.OwnerID = _currentUserId;
+            model.OwnerId = _currentUserId;
             await _context.Categories.AddAsync(model);
 
             await _context.SaveChangesAsync();
@@ -35,7 +35,7 @@ namespace Repeat.Infrastructure.Services
 
         public Task UpdateCategoryAsync(Category model)
         {
-            model.OwnerID = _currentUserId;
+            model.OwnerId = _currentUserId;
             _context.Categories.Update(model);
 
             return _context.SaveChangesAsync();
@@ -44,7 +44,7 @@ namespace Repeat.Infrastructure.Services
         public Task<Category> GetCategoryByIdAsync(int? id)
         {
             return _context.Categories
-                .Where(q => q.OwnerID == _currentUserId && q.ID == id)
+                .Where(q => q.OwnerId == _currentUserId && q.Id == id)
                 .Include(q => q.Questions)
                 .FirstOrDefaultAsync();
         }
@@ -52,7 +52,7 @@ namespace Repeat.Infrastructure.Services
         public Task<List<Category>> GetCategoriesForCurrentUserAsync()
         {
             return _context.Categories
-                .Where(q => q.OwnerID == _currentUserId)
+                .Where(q => q.OwnerId == _currentUserId)
                 .ToListAsync();
         }
     }

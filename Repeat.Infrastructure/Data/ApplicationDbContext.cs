@@ -29,34 +29,34 @@ namespace Repeat.Infrastructure.Data
             base.OnModelCreating(builder);
 
             builder.Entity<QuestionSet>()
-                .HasKey(qs => new { qs.QuestionID, qs.SetID });
+                .HasKey(qs => new { qs.QuestionId, qs.SetId });
             builder.Entity<QuestionSet>()
                 .HasOne(qs => qs.Question)
                 .WithMany(q => q.QuestionSets)
-                .HasForeignKey(qs => qs.QuestionID);
+                .HasForeignKey(qs => qs.QuestionId);
             builder.Entity<QuestionSet>()
                 .HasOne(qs => qs.Set)
                 .WithMany(s => s.QuestionSets)
-                .HasForeignKey(qs => qs.SetID);
+                .HasForeignKey(qs => qs.SetId);
 
             builder.Entity<Share>()
-                .HasKey(su => new { su.SetID, su.UserID });
+                .HasKey(su => new { su.SetId, su.UserId });
             builder.Entity<Share>()
                 .HasOne(su => su.Set)
                 .WithMany(su => su.Shares)
-                .HasForeignKey(su => su.SetID);
+                .HasForeignKey(su => su.SetId);
 
             builder.Entity<TestQuestion>()
-                .HasKey(tq => new { tq.TestID, tq.QuestionID });
+                .HasKey(tq => new { tq.TestId, tq.QuestionId });
             builder.Entity<TestQuestion>()
                 .HasOne(tq => tq.Test)
                 .WithMany(tq => tq.TestQuestions)
-                .HasForeignKey(tq => tq.TestID);
+                .HasForeignKey(tq => tq.TestId);
 
             builder.Entity<TestQuestion>()
                 .HasMany(q => q.ChoosenAnswers)
                 .WithOne(q => q.TestQuestion)
-                .HasForeignKey(q => new { q.TestID, q.QuestionID })
+                .HasForeignKey(q => new { q.TestId, q.QuestionId })
                 .OnDelete(DeleteBehavior.Cascade);
 
         }

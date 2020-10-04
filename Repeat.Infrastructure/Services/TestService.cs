@@ -27,7 +27,7 @@ namespace Repeat.Infrastructure.Services
             {
                 foreach (var choosenAnswer in testQuestion.ChoosenAnswers)
                 {
-                    choosenAnswer.TestID = model.ID;
+                    choosenAnswer.TestId = model.Id;
                 }
             }
 
@@ -40,28 +40,28 @@ namespace Repeat.Infrastructure.Services
 
             var test = new Test
             {
-                SetID = (int)setId,
-                Set = await _context.Sets.FirstOrDefaultAsync(q => q.ID == setId),
-                UserID = _currentUserId,
+                SetId = (int)setId,
+                Set = await _context.Sets.FirstOrDefaultAsync(q => q.Id == setId),
+                UserId = _currentUserId,
                 IsCompleted = false,
                 TestQuestions = new List<TestQuestion>()
             };
 
             var questions = await _context.Questions
-                .Where(q => q.QuestionSets.Any(w => w.SetID == (int)setId))
+                .Where(q => q.QuestionSets.Any(w => w.SetId == (int)setId))
                 .Include(q => q.Answers)
                 .ToListAsync();
 
             foreach (var question in questions)
             {
                 int i = questions.IndexOf(question);
-                if (i == 0) test.CurrentQuestionID = question.ID;
+                if (i == 0) test.CurrentQuestionId = question.Id;
 
                 test.TestQuestions.Add(
                     new TestQuestion
                     {
-                        TestID = test.ID,
-                        QuestionID = question.ID,
+                        TestId = test.Id,
+                        QuestionId = question.Id,
                         Question = question,
                         ChoosenAnswers = new List<ChoosenAnswer>()
                     });
@@ -71,9 +71,9 @@ namespace Repeat.Infrastructure.Services
                     test.TestQuestions[i].ChoosenAnswers.Add(
                         new ChoosenAnswer
                         {
-                            TestID = test.ID,
-                            QuestionID = question.ID,
-                            AnswerID = answer.ID,
+                            TestId = test.Id,
+                            QuestionId = question.Id,
+                            AnswerId = answer.Id,
                         });
                 }
             }
@@ -90,8 +90,8 @@ namespace Repeat.Infrastructure.Services
         public async Task UpdateChoosenAnswersAsync(IList<ChoosenAnswer> choosenAnswers)
         {
             var currentAnswers = await _context.ChoosenAnswers
-                .Where(q => q.TestID == choosenAnswers.FirstOrDefault().TestID
-                    && q.QuestionID == choosenAnswers.FirstOrDefault().QuestionID)
+                .Where(q => q.TestId == choosenAnswers.FirstOrDefault().TestId
+                    && q.QuestionId == choosenAnswers.FirstOrDefault().QuestionId)
                 .ToListAsync();
 
             for (int i = 0; i < currentAnswers.Count; i++)
@@ -105,11 +105,11 @@ namespace Repeat.Infrastructure.Services
         public async Task MoveToPreviousQuestion(int? setId)
         {
             var test = _context.Tests
-                .FirstOrDefault(q => q.SetID == setId && q.IsCompleted == false && q.UserID == _currentUserId);
+                .FirstOrDefault(q => q.SetId == setId && q.IsCompleted == false && q.UserId == _currentUserId);
 
             var currentQuestionIndex = test.TestQuestions.IndexOf(
-                test.TestQuestions.FirstOrDefault(q => q.QuestionID == test.CurrentQuestionID));
-            test.CurrentQuestionID = test.TestQuestions[currentQuestionIndex - 1].QuestionID;
+                test.TestQuestions.FirstOrDefault(q => q.QuestionId == test.CurrentQuestionId));
+            test.CurrentQuestionId = test.TestQuestions[currentQuestionIndex - 1].QuestionId;
 
             await _context.SaveChangesAsync();
         }
@@ -117,11 +117,11 @@ namespace Repeat.Infrastructure.Services
         public async Task MoveToNextQuestion(int? setId)
         {
             var test = _context.Tests
-                .FirstOrDefault(q => q.SetID == setId && q.IsCompleted == false && q.UserID == _currentUserId);
+                .FirstOrDefault(q => q.SetId == setId && q.IsCompleted == false && q.UserId == _currentUserId);
 
             var currentQuestionIndex = test.TestQuestions.IndexOf(
-                test.TestQuestions.FirstOrDefault(q => q.QuestionID == test.CurrentQuestionID));
-            test.CurrentQuestionID = test.TestQuestions[currentQuestionIndex + 1].QuestionID;
+                test.TestQuestions.FirstOrDefault(q => q.QuestionId == test.CurrentQuestionId));
+            test.CurrentQuestionId = test.TestQuestions[currentQuestionIndex + 1].QuestionId;
 
             await _context.SaveChangesAsync();
         }
@@ -129,7 +129,7 @@ namespace Repeat.Infrastructure.Services
         public async Task FinishTest(int? setId)
         {
             var test = _context.Tests
-                .FirstOrDefault(q => q.SetID == setId && q.IsCompleted == false && q.UserID == _currentUserId);
+                .FirstOrDefault(q => q.SetId == setId && q.IsCompleted == false && q.UserId == _currentUserId);
 
             test.IsCompleted = true;
 
@@ -139,7 +139,7 @@ namespace Repeat.Infrastructure.Services
         public Task<Test> GetOpenTestBySetIdAsync(int? setId)
         {
             return _context.Tests
-                .Where(q => q.UserID == _currentUserId && q.SetID == setId && q.IsCompleted == false)
+                .Where(q => q.UserId == _currentUserId && q.SetId == setId && q.IsCompleted == false)
                 .Include(q => q.TestQuestions)
                     .ThenInclude(q => q.Question)
                     .ThenInclude(q => q.Answers)
@@ -152,7 +152,7 @@ namespace Repeat.Infrastructure.Services
         public async Task<Test> GetClosedTestBySetIdAsync(int? setId)
         {
             var tests = await _context.Tests
-                .Where(q => q.UserID == _currentUserId && q.SetID == setId && q.IsCompleted == true)
+                .Where(q => q.UserId == _currentUserId && q.SetId == setId && q.IsCompleted == true)
                 .Include(q => q.TestQuestions)
                     .ThenInclude(q => q.Question)
                     .ThenInclude(q => q.Answers)
@@ -170,14 +170,14 @@ namespace Repeat.Infrastructure.Services
         public Task<List<ChoosenAnswer>> GetChoosenAnswersAsync(int? testId, int? questionId)
         {
             return _context.ChoosenAnswers
-                .Where(q => q.TestID == testId && q.QuestionID == questionId)
+                .Where(q => q.TestId == testId && q.QuestionId == questionId)
                 .ToListAsync();
         }
 
         public Task<List<Set>> GetAvailableSetsAsync()
         {
             return _context.Sets
-                .Where(q => q.OwnerID == _currentUserId || q.Shares.Any(p => p.UserID == _currentUserId))
+                .Where(q => q.OwnerId == _currentUserId || q.Shares.Any(p => p.UserId == _currentUserId))
                 .Where(q => q.QuestionSets.Any())
                 .Include(q => q.Shares)
                 .Include(q => q.QuestionSets)

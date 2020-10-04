@@ -23,23 +23,23 @@ namespace Repeat.Infrastructure.Tests.Services
         [Test]
         public async Task AddSetAsync_WhenCalled_ShouldSaveSetInDb()
         {
-            var set = new Set { ID = 5 };
+            var set = new Set { Id = 5 };
 
             await _setService.AddSetAsync(set);
 
-            var savedSet = _context.Sets.First(q => q.ID == set.ID);
+            var savedSet = _context.Sets.First(q => q.Id == set.Id);
             Assert.That(savedSet, Is.EqualTo(set));
         }
 
         [Test]
         public async Task AddSetAsync_NotValidOwnerId_ShouldCorrectId()
         {
-            var set = new Set { ID = 5, OwnerID = "SecondUserId" };
+            var set = new Set { Id = 5, OwnerId = "SecondUserId" };
 
             await _setService.AddSetAsync(set);
 
-            var savedSet = _context.Sets.First(q => q.ID == set.ID);
-            Assert.That(savedSet.OwnerID, Is.EqualTo(_currentUserService.UserId));
+            var savedSet = _context.Sets.First(q => q.Id == set.Id);
+            Assert.That(savedSet.Owner.Id, Is.EqualTo(_currentUserService.UserId));
         }
 
         [Test]
@@ -48,7 +48,7 @@ namespace Repeat.Infrastructure.Tests.Services
             await _setService.AddShareAsync(2, "Second User");
 
             var savedShare = _context.Shares
-                .First(q => q.SetID == 2 && q.UserID == "SecondUserId");
+                .First(q => q.SetId == 2 && q.UserId == "SecondUserId");
             Assert.That(savedShare, Is.Not.Null);
         }
 
@@ -57,19 +57,19 @@ namespace Repeat.Infrastructure.Tests.Services
         {
             await _setService.AddShareAsync(2, "Wrong Name");
 
-            var savedShare = _context.Shares.FirstOrDefault(q => q.SetID == 2);
+            var savedShare = _context.Shares.FirstOrDefault(q => q.SetId == 2);
             Assert.That(savedShare, Is.Null);
         }
 
         [Test]
         public async Task AddShareAsync_CurrentUserIsNotSetOwner_ShouldNotSaveShare()
         {
-            _setUpContext.Sets.Add(new Set { ID = 5, OwnerID = "SecondUserId" });
+            _setUpContext.Sets.Add(new Set { Id = 5, OwnerId = "SecondUserId" });
             _setUpContext.SaveChanges();
 
             await _setService.AddShareAsync(5, "Third User");
 
-            var savedShare = _context.Shares.FirstOrDefault(q => q.SetID == 5);
+            var savedShare = _context.Shares.FirstOrDefault(q => q.SetId == 5);
             Assert.That(savedShare, Is.Null);
         }
 
@@ -78,7 +78,7 @@ namespace Repeat.Infrastructure.Tests.Services
         {
             await _setService.AddShareAsync(2, "User");
 
-            var savedShare = _context.Shares.FirstOrDefault(q => q.SetID == 2);
+            var savedShare = _context.Shares.FirstOrDefault(q => q.SetId == 2);
             Assert.That(savedShare, Is.Null);
         }
 
@@ -89,20 +89,20 @@ namespace Repeat.Infrastructure.Tests.Services
 
             await _setService.RemoveSetAsync(set);
 
-            var removedSet = _context.Sets.FirstOrDefault(q => q.ID == 1);
+            var removedSet = _context.Sets.FirstOrDefault(q => q.Id == 1);
             Assert.That(removedSet, Is.Null);
         }
 
         [Test]
         public async Task RemoveSetAsync_WhenNotValidOwnerId_ShouldNotRemoveSet()
         {
-            var set = new Set { ID = 5, OwnerID = "SecondUserId" };
+            var set = new Set { Id = 5, OwnerId = "SecondUserId" };
             _setUpContext.Sets.Add(set);
             _setUpContext.SaveChanges();
 
             await _setService.RemoveSetAsync(set);
 
-            var setInDb = _context.Sets.FirstOrDefault(q => q.ID == 5);
+            var setInDb = _context.Sets.FirstOrDefault(q => q.Id == 5);
             Assert.That(setInDb, Is.Not.Null);
         }
 
@@ -113,7 +113,7 @@ namespace Repeat.Infrastructure.Tests.Services
 
             await _setService.RemoveSetAsync(set);
 
-            var removedTests = _context.Tests.Where(q => q.SetID == 1).ToList();
+            var removedTests = _context.Tests.Where(q => q.SetId == 1).ToList();
             Assert.That(removedTests, Is.Empty);
         }
 
@@ -125,7 +125,7 @@ namespace Repeat.Infrastructure.Tests.Services
             await _setService.RemoveQuestionFromSetAsync(questionSet);
 
             var removedQuestionSet = _context.QuestionSets
-                .FirstOrDefault(q => q.QuestionID == 1 && q.SetID == 1);
+                .FirstOrDefault(q => q.QuestionId == 1 && q.SetId == 1);
             Assert.That(removedQuestionSet, Is.Null);
         }
 
@@ -137,7 +137,7 @@ namespace Repeat.Infrastructure.Tests.Services
             await _setService.RemoveQuestionFromSetAsync(questionSet);
 
             var questionSetInDb = _context.QuestionSets
-                .FirstOrDefault(q => q.QuestionID == 3 && q.SetID == 3);
+                .FirstOrDefault(q => q.QuestionId == 3 && q.SetId == 3);
             Assert.That(questionSetInDb, Is.Not.Null);
         }
 

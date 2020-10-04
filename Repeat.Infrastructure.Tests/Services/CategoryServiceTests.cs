@@ -29,7 +29,7 @@ namespace Repeat.Infrastructure.Tests.Services
 
             await _categoryService.AddCategoryAsync(category);
 
-            var savedCategory = _context.Categories.First(q => q.ID == category.ID);
+            var savedCategory = _context.Categories.First(q => q.Id == category.Id);
             Assert.That(savedCategory, Is.EqualTo(category));
             Assert.That(savedCategory.Name, Is.EqualTo(name));
         }
@@ -37,11 +37,11 @@ namespace Repeat.Infrastructure.Tests.Services
         [Test]
         public async Task AddCategoryAsync_NotValidOwnerId_ShouldCorrectId()
         {
-            var category = new Category { OwnerID = "not-valid-id" };
+            var category = new Category { OwnerId = "not-valid-id" };
 
             await _categoryService.AddCategoryAsync(category);
 
-            var savedOwnerId = _context.Categories.First(q => q.ID == category.ID).OwnerID;
+            var savedOwnerId = _context.Categories.First(q => q.Id == category.Id).OwnerId;
             Assert.That(savedOwnerId, Is.EqualTo(_currentUserService.UserId));
         }
 
@@ -64,7 +64,7 @@ namespace Repeat.Infrastructure.Tests.Services
 
             await _categoryService.UpdateCategoryAsync(category);
 
-            var savedName = _context.Categories.First(q => q.ID == category.ID).Name;
+            var savedName = _context.Categories.First(q => q.Id == category.Id).Name;
             Assert.That(savedName, Is.EqualTo("New name"));
         }
 
@@ -73,11 +73,11 @@ namespace Repeat.Infrastructure.Tests.Services
         {
             var category = _setUpContext.Categories.FirstOrDefault();
             category.Name = "New name";
-            category.OwnerID = "not-valid-id";
+            category.OwnerId = "not-valid-id";
 
             await _categoryService.UpdateCategoryAsync(category);
 
-            var savedOwnerId = _context.Categories.First(q => q.ID == category.ID).OwnerID;
+            var savedOwnerId = _context.Categories.First(q => q.Id == category.Id).OwnerId;
             Assert.That(savedOwnerId, Is.EqualTo(_currentUserService.UserId));
         }
 

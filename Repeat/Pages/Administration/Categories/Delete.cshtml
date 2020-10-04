@@ -20,9 +20,9 @@
     </dl>
 
     <form method="post">
-        <label class="text-danger font-weight-bold">This operation deletes all questions (@Model.Category.Questions.Count()) in this category!</label>
+        <label class="text-danger font-weight-bold">This operation deletes all questions (@Model.Category.Questions.Count) in this category!</label>
         <br />
-        <input type="hidden" asp-for="Category.ID" />
+        <input type="hidden" asp-for="Category.Id" />
         <input type="submit" asp-route-category="@Model.Category" value="Delete" class="btn btn-danger" /> |
         <a asp-page="Index" class="btn btn-dark">Back to List</a>
     </form>

@@ -13,10 +13,10 @@
 <div class="">
     <form method="post">
         <div class="input-group mb-3">
-            <select asp-for="SelectedCategoryID" asp-items="ViewBag.CategoryID" class="form-control custom-control-inline">
+            <select asp-for="SelectedCategoryId" asp-items="ViewBag.CategoryId" class="form-control custom-control-inline">
                 <option value="" selected disabled>-- Select category --</option>
             </select>
-            <select asp-for="SelectedSetID" asp-items="ViewBag.SetID" class="form-control custom-control-inline">
+            <select asp-for="SelectedSetId" asp-items="ViewBag.SetId" class="form-control custom-control-inline">
                 <option value="" selected disabled>-- Select set --</option>
             </select>
             <div class="input-group-prepend">
@@ -35,7 +35,7 @@
             <partial name="Questions/_TextPartial" model="question.QuestionText" />
         </div>
         <div class="col-3 col-md-2">
-            <partial name="Questions/_IndexActionsPartial" model="question.ID" />
+            <partial name="Questions/_IndexActionsPartial" model="question.Id" />
         </div>
     </div>
     <hr />

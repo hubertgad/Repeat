@@ -227,7 +227,7 @@ namespace Repeat.Data.Migrations
 
             modelBuilder.Entity("Repeat.Domain.Models.Answer", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -240,19 +240,19 @@ namespace Repeat.Data.Migrations
                     b.Property<bool>("IsTrue")
                         .HasColumnType("bit");
 
-                    b.Property<int>("QuestionID")
+                    b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex("QuestionID");
+                    b.HasIndex("QuestionId");
 
                     b.ToTable("Answers");
                 });
 
             modelBuilder.Entity("Repeat.Domain.Models.Category", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -262,67 +262,67 @@ namespace Repeat.Data.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
-                    b.Property<string>("OwnerID")
+                    b.Property<string>("OwnerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Repeat.Domain.Models.ChoosenAnswer", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AnswerID")
+                    b.Property<int>("AnswerId")
                         .HasColumnType("int");
 
                     b.Property<bool>("GivenAnswer")
                         .HasColumnType("bit");
 
-                    b.Property<int>("QuestionID")
+                    b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TestID")
+                    b.Property<int>("TestId")
                         .HasColumnType("int");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex("QuestionID");
+                    b.HasIndex("QuestionId");
 
-                    b.HasIndex("TestID", "QuestionID");
+                    b.HasIndex("TestId", "QuestionId");
 
                     b.ToTable("ChoosenAnswers");
                 });
 
             modelBuilder.Entity("Repeat.Domain.Models.Picture", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .HasColumnType("int");
 
                     b.Property<byte[]>("Data")
                         .HasColumnType("varbinary(max)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Pictures");
                 });
 
             modelBuilder.Entity("Repeat.Domain.Models.Question", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CategoryID")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("OwnerID")
+                    b.Property<string>("OwnerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -335,33 +335,33 @@ namespace Repeat.Data.Migrations
                         .HasColumnType("nvarchar(1000)")
                         .HasMaxLength(1000);
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex("CategoryID");
+                    b.HasIndex("CategoryId");
 
-                    b.HasIndex("OwnerID");
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Questions");
                 });
 
             modelBuilder.Entity("Repeat.Domain.Models.QuestionSet", b =>
                 {
-                    b.Property<int>("QuestionID")
+                    b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SetID")
+                    b.Property<int>("SetId")
                         .HasColumnType("int");
 
-                    b.HasKey("QuestionID", "SetID");
+                    b.HasKey("QuestionId", "SetId");
 
-                    b.HasIndex("SetID");
+                    b.HasIndex("SetId");
 
                     b.ToTable("QuestionSets");
                 });
 
             modelBuilder.Entity("Repeat.Domain.Models.Set", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -374,70 +374,71 @@ namespace Repeat.Data.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
-                    b.Property<string>("OwnerID")
+                    b.Property<string>("OwnerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex("OwnerID");
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Sets");
                 });
 
             modelBuilder.Entity("Repeat.Domain.Models.Share", b =>
                 {
-                    b.Property<int>("SetID")
+                    b.Property<int>("SetId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserID")
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("SetID", "UserID");
+                    b.HasKey("SetId", "UserId");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Shares");
                 });
 
             modelBuilder.Entity("Repeat.Domain.Models.Test", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CurrentQuestionID")
+                    b.Property<int>("CurrentQuestionId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("SetID")
+                    b.Property<int?>("SetId")
+                        .IsRequired()
                         .HasColumnType("int");
 
-                    b.Property<string>("UserID")
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex("SetID");
+                    b.HasIndex("SetId");
 
                     b.ToTable("Tests");
                 });
 
             modelBuilder.Entity("Repeat.Domain.Models.TestQuestion", b =>
                 {
-                    b.Property<int>("TestID")
+                    b.Property<int>("TestId")
                         .HasColumnType("int");
 
-                    b.Property<int>("QuestionID")
+                    b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
-                    b.HasKey("TestID", "QuestionID");
+                    b.HasKey("TestId", "QuestionId");
 
-                    b.HasIndex("QuestionID");
+                    b.HasIndex("QuestionId");
 
                     b.ToTable("TestQuestions");
                 });
@@ -504,7 +505,7 @@ namespace Repeat.Data.Migrations
                 {
                     b.HasOne("Repeat.Domain.Models.Question", "Question")
                         .WithMany("Answers")
-                        .HasForeignKey("QuestionID")
+                        .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -513,13 +514,13 @@ namespace Repeat.Data.Migrations
                 {
                     b.HasOne("Repeat.Domain.Models.Question", "Question")
                         .WithMany()
-                        .HasForeignKey("QuestionID")
+                        .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Repeat.Domain.Models.TestQuestion", "TestQuestion")
                         .WithMany("ChoosenAnswers")
-                        .HasForeignKey("TestID", "QuestionID")
+                        .HasForeignKey("TestId", "QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -528,7 +529,7 @@ namespace Repeat.Data.Migrations
                 {
                     b.HasOne("Repeat.Domain.Models.Question", "Question")
                         .WithOne("Picture")
-                        .HasForeignKey("Repeat.Domain.Models.Picture", "ID")
+                        .HasForeignKey("Repeat.Domain.Models.Picture", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -537,13 +538,13 @@ namespace Repeat.Data.Migrations
                 {
                     b.HasOne("Repeat.Domain.Models.Category", "Category")
                         .WithMany("Questions")
-                        .HasForeignKey("CategoryID")
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Repeat.Domain.Models.ApplicationUser", "Owner")
                         .WithMany()
-                        .HasForeignKey("OwnerID")
+                        .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -552,13 +553,13 @@ namespace Repeat.Data.Migrations
                 {
                     b.HasOne("Repeat.Domain.Models.Question", "Question")
                         .WithMany("QuestionSets")
-                        .HasForeignKey("QuestionID")
+                        .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Repeat.Domain.Models.Set", "Set")
                         .WithMany("QuestionSets")
-                        .HasForeignKey("SetID")
+                        .HasForeignKey("SetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -567,7 +568,7 @@ namespace Repeat.Data.Migrations
                 {
                     b.HasOne("Repeat.Domain.Models.ApplicationUser", "Owner")
                         .WithMany()
-                        .HasForeignKey("OwnerID")
+                        .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -576,13 +577,13 @@ namespace Repeat.Data.Migrations
                 {
                     b.HasOne("Repeat.Domain.Models.Set", "Set")
                         .WithMany("Shares")
-                        .HasForeignKey("SetID")
+                        .HasForeignKey("SetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Repeat.Domain.Models.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserID")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -591,7 +592,7 @@ namespace Repeat.Data.Migrations
                 {
                     b.HasOne("Repeat.Domain.Models.Set", "Set")
                         .WithMany()
-                        .HasForeignKey("SetID")
+                        .HasForeignKey("SetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -600,13 +601,13 @@ namespace Repeat.Data.Migrations
                 {
                     b.HasOne("Repeat.Domain.Models.Question", "Question")
                         .WithMany()
-                        .HasForeignKey("QuestionID")
+                        .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Repeat.Domain.Models.Test", "Test")
                         .WithMany("TestQuestions")
-                        .HasForeignKey("TestID")
+                        .HasForeignKey("TestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

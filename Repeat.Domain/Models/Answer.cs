@@ -5,7 +5,7 @@ namespace Repeat.Domain.Models
 {
     public class Answer : Entity
     {
-        public int QuestionID { get; set; }
+        public int QuestionId { get; set; }
         public Question Question { get; set; }
         [Required, MaxLength(1000)]
         public string AnswerText { get; set; }

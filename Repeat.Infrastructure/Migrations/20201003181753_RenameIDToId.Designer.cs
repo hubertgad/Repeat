@@ -10,14 +10,14 @@ using Repeat.Infrastructure.Data;
 namespace Repeat.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200315182841_Update35")]
-    partial class Update35
+    [Migration("20201003181753_RenameIDToId")]
+    partial class RenameIDToId
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.2")
+                .HasAnnotation("ProductVersion", "3.1.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -84,6 +84,10 @@ namespace Repeat.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
@@ -135,6 +139,8 @@ namespace Repeat.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -223,7 +229,7 @@ namespace Repeat.Data.Migrations
 
             modelBuilder.Entity("Repeat.Domain.Models.Answer", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -233,101 +239,94 @@ namespace Repeat.Data.Migrations
                         .HasColumnType("nvarchar(1000)")
                         .HasMaxLength(1000);
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsTrue")
                         .HasColumnType("bit");
 
-                    b.Property<int>("QuestionID")
+                    b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex("QuestionID");
+                    b.HasIndex("QuestionId");
 
                     b.ToTable("Answers");
                 });
 
             modelBuilder.Entity("Repeat.Domain.Models.Category", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
-                    b.Property<string>("OwnerID")
+                    b.Property<string>("OwnerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Repeat.Domain.Models.ChoosenAnswer", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AnswerID")
+                    b.Property<int>("AnswerId")
                         .HasColumnType("int");
 
                     b.Property<bool>("GivenAnswer")
                         .HasColumnType("bit");
 
-                    b.Property<int>("QuestionID")
+                    b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("QuestionResponseID")
+                    b.Property<int>("TestId")
                         .HasColumnType("int");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex("QuestionResponseID");
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("TestId", "QuestionId");
 
                     b.ToTable("ChoosenAnswers");
                 });
 
             modelBuilder.Entity("Repeat.Domain.Models.Picture", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .HasColumnType("int");
 
                     b.Property<byte[]>("Data")
                         .HasColumnType("varbinary(max)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Pictures");
                 });
 
             modelBuilder.Entity("Repeat.Domain.Models.Question", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CategoryID")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("OwnerID")
+                    b.Property<string>("OwnerId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("QuestionText")
                         .IsRequired()
@@ -338,124 +337,119 @@ namespace Repeat.Data.Migrations
                         .HasColumnType("nvarchar(1000)")
                         .HasMaxLength(1000);
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex("CategoryID");
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Questions");
                 });
 
-            modelBuilder.Entity("Repeat.Domain.Models.QuestionResponse", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("QuestionID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TestID")
-                        .HasColumnType("int");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("TestID");
-
-                    b.ToTable("QuestionResponses");
-                });
-
             modelBuilder.Entity("Repeat.Domain.Models.QuestionSet", b =>
                 {
-                    b.Property<int>("QuestionID")
+                    b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SetID")
+                    b.Property<int>("SetId")
                         .HasColumnType("int");
 
-                    b.HasKey("QuestionID", "SetID");
+                    b.HasKey("QuestionId", "SetId");
 
-                    b.HasIndex("SetID");
+                    b.HasIndex("SetId");
 
                     b.ToTable("QuestionSets");
                 });
 
             modelBuilder.Entity("Repeat.Domain.Models.Set", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
-                    b.Property<string>("OwnerID")
+                    b.Property<string>("OwnerId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Sets");
                 });
 
             modelBuilder.Entity("Repeat.Domain.Models.Share", b =>
                 {
-                    b.Property<int>("SetID")
+                    b.Property<int>("SetId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserID")
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("SetID", "UserID");
+                    b.HasKey("SetId", "UserId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Shares");
                 });
 
             modelBuilder.Entity("Repeat.Domain.Models.Test", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CurrentQuestionIndex")
+                    b.Property<int>("CurrentQuestionId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("SetID")
+                    b.Property<int?>("SetId")
+                        .IsRequired()
                         .HasColumnType("int");
 
-                    b.Property<string>("UserID")
+                    b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex("SetID");
+                    b.HasIndex("SetId");
 
                     b.ToTable("Tests");
                 });
 
             modelBuilder.Entity("Repeat.Domain.Models.TestQuestion", b =>
                 {
-                    b.Property<int>("TestID")
+                    b.Property<int>("TestId")
                         .HasColumnType("int");
 
-                    b.Property<int>("QuestionID")
+                    b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Index")
-                        .HasColumnType("int");
+                    b.HasKey("TestId", "QuestionId");
 
-                    b.HasKey("TestID", "QuestionID");
-
-                    b.HasIndex("QuestionID");
+                    b.HasIndex("QuestionId");
 
                     b.ToTable("TestQuestions");
+                });
+
+            modelBuilder.Entity("Repeat.Domain.Models.ApplicationUser", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.HasDiscriminator().HasValue("ApplicationUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -511,18 +505,24 @@ namespace Repeat.Data.Migrations
 
             modelBuilder.Entity("Repeat.Domain.Models.Answer", b =>
                 {
-                    b.HasOne("Repeat.Domain.Models.Question", null)
+                    b.HasOne("Repeat.Domain.Models.Question", "Question")
                         .WithMany("Answers")
-                        .HasForeignKey("QuestionID")
+                        .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("Repeat.Domain.Models.ChoosenAnswer", b =>
                 {
-                    b.HasOne("Repeat.Domain.Models.QuestionResponse", null)
+                    b.HasOne("Repeat.Domain.Models.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Repeat.Domain.Models.TestQuestion", "TestQuestion")
                         .WithMany("ChoosenAnswers")
-                        .HasForeignKey("QuestionResponseID")
+                        .HasForeignKey("TestId", "QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -531,7 +531,7 @@ namespace Repeat.Data.Migrations
                 {
                     b.HasOne("Repeat.Domain.Models.Question", "Question")
                         .WithOne("Picture")
-                        .HasForeignKey("Repeat.Domain.Models.Picture", "ID")
+                        .HasForeignKey("Repeat.Domain.Models.Picture", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -540,16 +540,13 @@ namespace Repeat.Data.Migrations
                 {
                     b.HasOne("Repeat.Domain.Models.Category", "Category")
                         .WithMany("Questions")
-                        .HasForeignKey("CategoryID")
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
 
-            modelBuilder.Entity("Repeat.Domain.Models.QuestionResponse", b =>
-                {
-                    b.HasOne("Repeat.Domain.Models.Test", null)
-                        .WithMany("QuestionResponses")
-                        .HasForeignKey("TestID")
+                    b.HasOne("Repeat.Domain.Models.ApplicationUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -558,13 +555,22 @@ namespace Repeat.Data.Migrations
                 {
                     b.HasOne("Repeat.Domain.Models.Question", "Question")
                         .WithMany("QuestionSets")
-                        .HasForeignKey("QuestionID")
+                        .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Repeat.Domain.Models.Set", "Set")
                         .WithMany("QuestionSets")
-                        .HasForeignKey("SetID")
+                        .HasForeignKey("SetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Repeat.Domain.Models.Set", b =>
+                {
+                    b.HasOne("Repeat.Domain.Models.ApplicationUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -573,7 +579,13 @@ namespace Repeat.Data.Migrations
                 {
                     b.HasOne("Repeat.Domain.Models.Set", "Set")
                         .WithMany("Shares")
-                        .HasForeignKey("SetID")
+                        .HasForeignKey("SetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Repeat.Domain.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -582,7 +594,7 @@ namespace Repeat.Data.Migrations
                 {
                     b.HasOne("Repeat.Domain.Models.Set", "Set")
                         .WithMany()
-                        .HasForeignKey("SetID")
+                        .HasForeignKey("SetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -591,13 +603,13 @@ namespace Repeat.Data.Migrations
                 {
                     b.HasOne("Repeat.Domain.Models.Question", "Question")
                         .WithMany()
-                        .HasForeignKey("QuestionID")
+                        .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Repeat.Domain.Models.Test", "Test")
                         .WithMany("TestQuestions")
-                        .HasForeignKey("TestID")
+                        .HasForeignKey("TestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

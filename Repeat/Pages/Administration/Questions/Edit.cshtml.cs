@@ -36,7 +36,7 @@ namespace Repeat.Pages.Administration.Questions
 
             while (answers > this.Question.Answers.Count && answers < 11)
             {
-                this.Question.Answers.Add(new Answer { QuestionID = this.Question.ID });
+                this.Question.Answers.Add(new Answer { QuestionId = this.Question.Id });
             }
 
             if (this.Question == null)
@@ -54,9 +54,9 @@ namespace Repeat.Pages.Administration.Questions
             if (!ModelState.IsValid) return Page();
 
             var success = await UpdateQuestionAsync(question);
-            if (success == false) return NotFound();
+            if (!success) return NotFound();
 
-            return RedirectToPage($"./Details", new { question.ID });
+            return RedirectToPage($"./Details", new { question.Id });
         }
 
         public async Task<IActionResult> OnPostRemoveAsync(Question question, int? answerIndex)
@@ -66,9 +66,9 @@ namespace Repeat.Pages.Administration.Questions
             question.Answers.RemoveAt((int)answerIndex);
 
             var success = await UpdateQuestionAsync(question);
-            if (success == false) return NotFound();
+            if (!success) return NotFound();
 
-            return RedirectToPage(new { id = question.ID, answers = question.Answers.Count });
+            return RedirectToPage(new { id = question.Id, answers = question.Answers.Count });
         }
 
         public async Task<IActionResult> OnPostAddAsync(Question question)
@@ -76,39 +76,35 @@ namespace Repeat.Pages.Administration.Questions
             if (!ModelState.IsValid) return Page();
 
             var success = await UpdateQuestionAsync(question);
-            if (success == false) return NotFound();
+            if (!success) return NotFound();
 
-            return RedirectToPage(new { id = question.ID, answers = question.Answers.Count + 1 });
+            return RedirectToPage(new { id = question.Id, answers = question.Answers.Count + 1 });
         }
 
         private async Task BindDataToViewAsync()
         {
-            IEnumerable<int> selectedSetsValues = Question.QuestionSets.Select(q => q.SetID);
-            ViewData["CategoryID"] = new SelectList(await _questionService.GetCategoryListAsync(), "ID", "Name");
-            ViewData["SetID"] = new MultiSelectList(await _questionService.GetSetListAsync(), "ID", "Name", selectedSetsValues);
+            IEnumerable<int> selectedSetsValues = Question.QuestionSets.Select(q => q.SetId);
+            ViewData["CategoryId"] = new SelectList(await _questionService.GetCategoryListAsync(), "Id", "Name");
+            ViewData["SetId"] = new MultiSelectList(await _questionService.GetSetListAsync(), "Id", "Name", selectedSetsValues);
         }
 
         private async Task<bool> UpdateQuestionAsync(Question question)
         {
-            try
-            {
-                UpdateQuestionSets(ref question);
-                question = await FileUpload.UpdatePictureAsync(question);
-                await _questionService.UpdateQuestionAsync(question, this.RemovePicture);
-                return true;
-            }
-            catch { return false; }
+            UpdateQuestionSets(ref question);
+            question = await FileUpload.UpdatePictureAsync(question);
+            await _questionService.UpdateQuestionAsync(question, this.RemovePicture);
+            return true;
         }
 
         private void UpdateQuestionSets(ref Question question)
         {
             question.QuestionSets = new HashSet<QuestionSet>();
-            foreach (var setID in this.SelectedSets)
+            foreach (var setId in this.SelectedSets)
             {
                 question.QuestionSets.Add(new QuestionSet
                 {
-                    QuestionID = question.ID,
-                    SetID = setID
+                    QuestionId = question.Id,
+                    SetId = setId
                 });
             }
         }

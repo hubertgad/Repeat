@@ -7,22 +7,19 @@
 
 <h4>Select your test:</h4>
 
-<table class="table">
-    <tbody>
 @foreach (var set in Model.Sets)
-    {
-        <tr>
-            <td class="col-md-10">
-                @Html.DisplayFor(modelItem => set.Name) 
-                @if (set.OwnerID != Model.UserId)
-                {
-                    <span class="badge badge-dark">Shared by @Html.DisplayFor(m => set.Owner.UserName)</span>
-                }
-            </td>
-            <td class="col-md-2">
-                <a class="btn btn-nav2" asp-page="./Run" asp-route-id="@set.ID">RUN</a>
-            </td>
-        </tr>
+{
+    <hr class="bg-white " />
+    <div class="row my-2">
+        <div class="col-10">
+            @Html.DisplayFor(modelItem => set.Name)
+            @if (set.Owner.Id != Model.UserId)
+            {
+                <span class="badge badge-dark">Shared by @Html.DisplayFor(m => set.Owner.UserName)</span>
+            }
+        </div>
+        <div class="col-2 text-center">
+            <a class="btn btn-nav2" asp-page="./Run" asp-route-id="@set.Id">RUN</a>
+        </div>
+    </div>
 }
-    </tbody>
-</table>

@@ -20,21 +20,21 @@ namespace Repeat
 
         [BindProperty] public Share Share { get; set; }
         public List<Set> Sets { get; set; }
-        [BindProperty] public int SetId { get; set; }
+        [BindProperty] public int? SetId { get; set; }
         [BindProperty] public string UserName { get; set; }
 
 
         public async Task<IActionResult> OnGetAsync()
         {
             this.Sets = await _setService.GetSetsForCurrentUserAsync();
-            ViewData["SetID"] = new SelectList(this.Sets, "ID", "Name");
+            ViewData["SetId"] = new SelectList(this.Sets, "Id", "Name");
 
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            await _setService.AddShareAsync(this.SetId, this.UserName);
+            await _setService.AddShareAsync((int)this.SetId, this.UserName);
 
             return RedirectToPage();
         }

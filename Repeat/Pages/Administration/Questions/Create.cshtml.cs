@@ -54,8 +54,8 @@ namespace Repeat.Pages.Administration.Questions
 
         private async Task BindDataToViewAsync()
         {
-            ViewData["CategoryID"] = new SelectList(await _questionService.GetCategoryListAsync(), "ID", "Name");
-            ViewData["SetID"] = new SelectList(await _questionService.GetSetListAsync(), "ID", "Name");
+            ViewData["CategoryId"] = new SelectList(await _questionService.GetCategoryListAsync(), "Id", "Name");
+            ViewData["SetId"] = new SelectList(await _questionService.GetSetListAsync(), "Id", "Name");
         }
 
         private void CreateNewQuestion()
@@ -90,13 +90,13 @@ namespace Repeat.Pages.Administration.Questions
         private HashSet<QuestionSet> CreateListOfQuestionSets()
         {
             var questionSets = new HashSet<QuestionSet>();
-            foreach (var setID in SelectedSets)
+            foreach (var setId in SelectedSets)
             {
                 questionSets = new HashSet<QuestionSet>
                 {
                     new QuestionSet {
-                        QuestionID = this.Question.ID,
-                        SetID = setID
+                        QuestionId = this.Question.Id,
+                        SetId = setId
                     }
                 };
             }

@@ -6,11 +6,11 @@ namespace Repeat.Domain.Models
     public class ChoosenAnswer : Entity
     {
         [Required]
-        public int TestID { get; set; }
+        public int TestId { get; set; }
         [Required]
-        public int QuestionID { get; set; }
+        public int QuestionId { get; set; }
         [Required]
-        public int AnswerID { get; set; }
+        public int AnswerId { get; set; }
         public bool GivenAnswer { get; set; }
         public Question Question { get; set; }
         public TestQuestion TestQuestion { get; set; }

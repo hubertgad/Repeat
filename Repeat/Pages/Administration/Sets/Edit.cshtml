@@ -12,8 +12,8 @@
     <div class="col-md-12">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Set.ID" value="@Model.Set.ID" />
-            <input type="hidden" asp-for="Set.OwnerID" value="@Model.Set.OwnerID" />
+            <input type="hidden" asp-for="Set.Id" value="@Model.Set.Id" />
+            <input type="hidden" asp-for="Set.OwnerId" value="@Model.Set.OwnerId" />
             <div class="form-group">
                 <label asp-for="Set.Name" class="control-label"></label>
                 <input asp-for="Set.Name" class="form-control" />
@@ -26,30 +26,26 @@
     </div>
 </div>
 <h6>Questions in this set:</h6>
-<table class="table">
-    @{ int i = 0; }
-    @foreach (var questionSet in Model.Set.QuestionSets)
-    {
-        i++;
-        <tr>
-            <td class="text-left">
-                <nobr>
-                    <a class="small font-weight-bold">Question @i:</a>
-                </nobr>
-            </td>
-            <td class="text-left">
-                <partial name="Questions/_TextPartial" model="@questionSet.Question.QuestionText" />
-            </td>
-            <td class="text-right">
-                <form method="post" asp-page-handler="Detach" asp-route-id="@Model.Set.ID">
-                    <input type="hidden" asp-for="QuestionSet.QuestionID" value="@questionSet.QuestionID" />
-                    <input type="hidden" asp-for="QuestionSet.SetID" value="@questionSet.SetID" />
-                    <input type="submit" class="btn btn-danger btn-sm" value="Remove" />
-                </form>
-            </td>
-        </tr>
-    }
-</table>
+@{ int i = 0; }
+@foreach (var questionSet in Model.Set.QuestionSets)
+{
+    i++;
+    <div class="row">
+        <div class="col-2">
+            <a class="small font-weight-bold">Question @i:</a>
+        </div>
+        <div class="col-8">
+            <partial name="Questions/_TextPartial" model="@questionSet.Question.QuestionText" />
+        </div>
+        <div class="col-2">
+            <form method="post" asp-page-handler="Detach" asp-route-id="@Model.Set.Id">
+                <input type="hidden" asp-for="QuestionSet.QuestionId" value="@questionSet.QuestionId" />
+                <input type="hidden" asp-for="QuestionSet.SetId" value="@questionSet." />
+                <input type="submit" class="btn btn-danger btn-sm" value="Remove" />
+            </form>
+        </div>
+    </div>
+}
 <div>
     <a asp-page="./Index" class="btn btn-dark">Back to List</a>
 </div>

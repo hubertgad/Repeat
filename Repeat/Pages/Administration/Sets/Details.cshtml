@@ -37,9 +37,9 @@
     </dl>
 </div>
 <div>
-    @{ if (Model.Set.OwnerID == Model.userId)
+    @{ if (Model.Set.OwnerId == Model.userId)
         {
-            <a asp-page="./Edit" asp-route-id="@Model.Set.ID" class="btn btn-warning">Edit</a> <a>|</a>
+            <a asp-page="./Edit" asp-route-id="@Model.Set.Id" class="btn btn-warning">Edit</a> <a>|</a>
         }
     }
     <a asp-page="./Index" class="btn btn-dark">Back to List</a>
