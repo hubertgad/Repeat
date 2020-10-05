@@ -1,5 +1,5 @@
 ![Build Status](https://github.com/hubertgad/Repeat/workflows/.NET%20Core%20Build%20&%20Tests/badge.svg?branch=master) 
-[![Coverage Status](https://coveralls.io/repos/github/hubertgad/Repeat/badge.svg?branch=master)](https://coveralls.io/github/hubertgad/Repeat?branch=master) 
+[![Coverage Status](https://coveralls.io/repos/github/hubertgad/Repeat/badge.svg?branch=master)](https://coveralls.io/github/hubertgad/Repeat?branch=master)
 [![Website repeat.hubertgad.net](https://img.shields.io/website.svg?down_color=red&down_message=down&up_color=green&up_message=up&url=https://repeat.hubertgad.net/)](https://repeat.hubertgad.net/)
 # Closed questions database - ***Repeat***
 
