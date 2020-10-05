@@ -52,4 +52,7 @@ jobs:
       run: |
         .\.sonar\scanner\dotnet-sonarscanner begin /k:"hubertgad_Repeat" /o:"hubertgad" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
         dotnet build --configuration Release
+        cd ./Repeat.Infrastructure.Tests/
+        dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutputFormat=cobertura
+        sonar.cs.opencover.reportsPaths=./Repeat.Infrastructure.Tests/TestResults/Coverage/coverage.opencover.xml
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
