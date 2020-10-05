@@ -1,3 +1,5 @@
+![Build Status](https://github.com/hubertgad/Repeat/workflows/.NET%20Core%20Build%20&%20Tests/badge.svg?branch=master) 
+[![Coverage Status](https://coveralls.io/repos/github/hubertgad/Repeat/badge.svg?branch=master)](https://coveralls.io/github/hubertgad/Repeat?branch=github-actions) 
 # Closed questions database - ***Repeat***
 
 ## What?
