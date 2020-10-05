@@ -8,7 +8,6 @@ using System.Collections.Generic;
 
 namespace Repeat.Infrastructure.Services
 {
-    [SetUpFixture]
     public class RepeatTestBase
     {
         protected ApplicationDbContext _setUpContext;
