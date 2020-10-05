@@ -14,21 +14,21 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    
-    - uses: actions/checkout@v2
-    
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.301
+      
+      - uses: actions/checkout@v1
+      
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+           dotnet-version: 3.1.301
 
-    - name: Generate coverage report
+      - name: Generate coverage report
         run: |
-            cd ./Repeat.Infrastructure.Tests/
-            dotnet test /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+          cd ./Repeat.Infrastructure.Tests/
+          dotnet test /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
 
-    - name: Publish coverage report to coveralls.io
+      - name: Publish coverage report to coveralls.io
         uses: coverallsapp/github-action@v1.0.1
         with:
-            github-token: ${{ secrets.GITHUB_TOKEN }}
-            path-to-lcov: ./Repeat.Infrastructure.Tests/TestResults/coverage.info
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./Repeat.Infrastructure.Tests/TestResults/coverage.info
