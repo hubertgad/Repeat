@@ -10,7 +10,9 @@ on:
 
 jobs:
 
-  build:
+  sonarcloud:
+    
+    name: SonarCloud
     
     runs-on: windows-latest
     
