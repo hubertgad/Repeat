@@ -92,7 +92,10 @@ namespace Repeat.Infrastructure.Services
 
         public Task UpdateTestAsync(Test model)
         {
+            if (model.UserId != _currentUserId) throw new AccessDeniedException();
+
             _context.Tests.Update(model);
+            
             return _context.SaveChangesAsync();
         }
 
