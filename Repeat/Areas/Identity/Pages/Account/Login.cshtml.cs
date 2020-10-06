@@ -16,17 +16,14 @@ namespace Repeat.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
         public IConfiguration Configuration { get; }
 
         public LoginModel(SignInManager<ApplicationUser> signInManager,
             ILogger<LoginModel> logger,
-            UserManager<ApplicationUser> userManager,
             IConfiguration configuration)
         {
-            _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             Configuration = configuration;
