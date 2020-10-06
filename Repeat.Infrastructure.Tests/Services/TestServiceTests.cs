@@ -38,5 +38,28 @@ namespace Repeat.Infrastructure.Tests.Services
                 Throws.Exception.TypeOf<AccessDeniedException>());
         }
 
+        [Test]
+        public async Task UpdateTestAsync_WhenCalled_ShouldUpdateTestInDbAsync()
+        {
+            var test = _setUpContext.Tests.Find(1);
+            Assert.That(!test.IsCompleted);
+            test.IsCompleted = true;
+
+            await _testService.UpdateTestAsync(test);
+
+            var testInDb = _context.Tests.Find(1);
+            Assert.That(testInDb.IsCompleted);
+        }
+
+        [Test]
+        public void UpdateTestAsync_UserIsNotOwner_ThrowAccessDeniedException()
+        {
+            var test = _setUpContext.Tests.Find(2);
+            Assert.That(test.UserId != _currentUserService.UserId);
+            test.IsCompleted = true;
+
+            Assert.That(async () => await _testService.UpdateTestAsync(test),
+                Throws.Exception.TypeOf<AccessDeniedException>());
+        }
     }
 }
