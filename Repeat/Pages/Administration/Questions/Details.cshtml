@@ -4,88 +4,16 @@
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Pages/Administration/_Layout.cshtml";
-    string dtclass = "col-2 align-self-center my-2";
-    string ddclass = "col-10 align-self-center my-2";
 }
 
 <br />
-<div>
-    <h4>Question details</h4>
-    <hr />
+<h4>Question details</h4>
+<hr />
 
-    <dl class="row center">
-
-        <dt class="@dtclass">
-            <label>Category:</label>
-        </dt>
-        <dd class="@ddclass">
-            @Html.DisplayFor(model => model.Question.Category.Name)
-        </dd>
-
-        <dt class="@dtclass">
-            <label>Question:</label>
-        </dt>
-        <dd class="@ddclass">
-            <partial name="Questions/_TextPartial" model="Model.Question.QuestionText" />
-        </dd>
-
-        @if (Model.Question.Picture != null && Model.Question.Picture.Data != null)
-        {
-            <dt class="@dtclass">
-                <label>Picture:</label>
-            </dt>
-            <dd class="@ddclass">
-                <partial name="Questions/_PicturePartial" model="Model.Question.Picture" />
-            </dd>
-        }
-
-        @for (int i = 0; i < Model.Question.Answers.Count(); i++)
-        {
-            <dt class="@dtclass">
-                <label class="d-inline text-nowrap">
-                    <partial name="Questions/_QuestionBadgePartial" model="Model.Question.Answers[i]" />
-                    Answer @((char)('A' + i)):
-                </label>
-            </dt>
-            <dd class="@ddclass">
-                <partial name="Questions/_TextPartial" model="Model.Question.Answers[i].AnswerText" />
-            </dd>
-        }
-
-        @if (Model.Question.Reference != null)
-        {
-            <dt class="@dtclass">
-                <label>References:</label>
-            </dt>
-            <dd class="@ddclass">
-                <a class="multiline">@Html.DisplayFor(model => model.Question.Reference)</a>
-            </dd>
-        }
-
-        <dt class="@dtclass">
-            <label>Owner:</label>
-        </dt>
-        <dd class="@ddclass">
-            @*<label>@UserManager.FindByIdAsync(Model.Question.OwnerId).Result.UserName</label>*@
-            <label>@Model.Question.Owner.UserName</label>
-        </dd>
-
-        <dt class="@dtclass">
-            <label>Sets:</label>
-        </dt>
-        <dd class="@ddclass">
-            @foreach (var set in Model.Question.QuestionSets.Select(q => q.Set).ToList())
-            {
-                <label class="badge-pill badge-secondary">@set.Name</label>
-            }
-        </dd>
-
-    </dl>
-
-</div>
+<partial name="./_QuestionDetailsPartial" model="Model.Question" />
 
 <div>
-    <a asp-page="./Edit" asp-route-id="@Model.Question.Id" class="btn btn-warning">Edit</a> 
+    <a asp-page="./Edit" asp-route-id="@Model.Question.Id" class="btn btn-warning">Edit</a>
     <span>|</span>
     <a asp-page="Index" class="btn btn-dark">Back to List</a>
 </div>

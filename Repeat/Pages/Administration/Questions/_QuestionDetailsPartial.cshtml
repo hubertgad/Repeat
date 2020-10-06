@@ -1,0 +1,75 @@
+﻿@model Question
+@{
+    string dtclass = "col-2 align-self-center my-2";
+    string ddclass = "col-10 align-self-center my-2";
+}
+
+<div>
+    <dl class="row center">
+
+        <dt class="@dtclass">
+            <label>Category:</label>
+        </dt>
+        <dd class="@ddclass">
+            @Html.DisplayFor(model => model.Category.Name)
+        </dd>
+
+        <dt class="@dtclass">
+            <label>Question:</label>
+        </dt>
+        <dd class="@ddclass">
+            <partial name="Questions/_TextPartial" model="Model.QuestionText" />
+        </dd>
+
+        @if (Model.Picture != null && Model.Picture.Data != null)
+        {
+            <dt class="@dtclass">
+                <label>Picture:</label>
+            </dt>
+            <dd class="@ddclass">
+                <partial name="Questions/_PicturePartial" model="Model.Picture" />
+            </dd>
+        }
+
+        @for (int i = 0; i < Model.Answers.Count(); i++)
+        {
+            <dt class="@dtclass">
+                <label class="d-inline text-nowrap">
+                    <partial name="Questions/_QuestionBadgePartial" model="Model.Answers[i]" />
+                    Answer @((char)('A' + i)):
+                </label>
+            </dt>
+            <dd class="@ddclass">
+                <partial name="Questions/_TextPartial" model="Model.Answers[i].AnswerText" />
+            </dd>
+        }
+
+        @if (Model.Reference != null)
+        {
+            <dt class="@dtclass">
+                <label>References:</label>
+            </dt>
+            <dd class="@ddclass">
+                <a class="multiline">@Html.DisplayFor(model => model.Reference)</a>
+            </dd>
+        }
+
+        <dt class="@dtclass">
+            <label>Owner:</label>
+        </dt>
+        <dd class="@ddclass">
+            <label>@Model.Owner.UserName</label>
+        </dd>
+
+        <dt class="@dtclass">
+            <label>Sets:</label>
+        </dt>
+        <dd class="@ddclass">
+            @foreach (var set in Model.QuestionSets.Select(q => q.Set).ToList())
+            {
+                <label class="badge-pill badge-secondary">@set.Name</label>
+            }
+        </dd>
+
+    </dl>
+</div>

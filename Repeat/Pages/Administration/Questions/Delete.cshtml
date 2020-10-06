@@ -12,58 +12,7 @@
 <h4>Are you sure you want to delete this Question?</h4>
 <hr />
 
-<div>
-    <dl class="row center">
-
-        <dt class="@dtclass">
-            <label>Category:</label>
-        </dt>
-        <dd class="@ddclass">
-            @Html.DisplayFor(model => model.Question.Category.Name)
-        </dd>
-
-        <dt class="@dtclass">
-            <label>Question:</label>
-        </dt>
-        <dd class="@ddclass">
-            <partial name="Questions/_TextPartial" model="Model.Question.QuestionText" />
-        </dd>
-
-        @if (Model.Question.Picture != null && Model.Question.Picture.Data != null)
-        {
-            <dt class="@dtclass">
-                <label>Picture:</label>
-            </dt>
-            <dd class="@ddclass">
-                <partial name="Questions/_PicturePartial" model="Model.Question.Picture" />
-            </dd>
-        }
-
-        @for (int i = 0; i < Model.Question.Answers.Count(); i++)
-        {
-            <dt class="@dtclass">
-                <label class="d-inline text-nowrap">
-                    <partial name="Questions/_QuestionBadgePartial" model="Model.Question.Answers[i]" />
-                    Answer @((char)('A' + i)):
-                </label>
-            </dt>
-            <dd class="@ddclass">
-                <partial name="Questions/_TextPartial" model="Model.Question.Answers[i].AnswerText" />
-            </dd>
-        }
-
-        <dt class="@dtclass">
-            <label>Sets:</label>
-        </dt>
-        <dd class="@ddclass">
-            @foreach (var set in Model.Question.QuestionSets.Select(q => q.Set).ToList())
-            {
-                <label class="badge-pill badge-secondary">@set.Name</label>
-            }
-        </dd>
-
-    </dl>
-</div>
+<partial name="./_QuestionDetailsPartial" model="Model.Question" />
 
 <div>
     <form method="post">
