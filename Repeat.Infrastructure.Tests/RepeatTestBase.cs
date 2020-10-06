@@ -86,14 +86,26 @@ namespace Repeat.Infrastructure.Services
                 }
             };
 
-            var test = new Test
+            var tests = new List<Test>()
             {
-                Id = 1,
-                SetId = 1,
-                CurrentQuestionId = 0,
-                IsCompleted = false,
-                UserId = _currentUserService.UserId,
-                TestQuestions = new List<TestQuestion>()
+                new Test
+                {
+                    Id = 1,
+                    SetId = 1,
+                    CurrentQuestionId = 0,
+                    IsCompleted = false,
+                    UserId = _currentUserService.UserId,
+                    TestQuestions = new List<TestQuestion>()
+                },
+                new Test
+                {
+                    Id = 2,
+                    SetId = 2,
+                    CurrentQuestionId = 0,
+                    IsCompleted = false,
+                    UserId = "SecondUserId",
+                    TestQuestions = new List<TestQuestion>()
+                }
             };
 
             var questions = new List<Question>
@@ -158,7 +170,7 @@ namespace Repeat.Infrastructure.Services
 
             _setUpContext.Sets.AddRange(sets);
 
-            _setUpContext.Tests.Add(test);
+            _setUpContext.Tests.AddRange(tests);
 
             _setUpContext.Questions.AddRange(questions);
 
