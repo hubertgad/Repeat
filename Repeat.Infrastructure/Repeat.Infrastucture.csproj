@@ -9,6 +9,10 @@
     <Compile Remove="Migrations\20201003174052_Initial.cs" />
     <Compile Remove="Migrations\20201003174052_Initial.Designer.cs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\.sonarlint\repeat\CSharp\SonarLint.xml" Link="SonarLint.xml" />
+  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
