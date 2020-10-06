@@ -26,11 +26,13 @@ namespace Repeat
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            if (id == null) return NotFound();
+
             this.Test = await _testService.GetOpenTestBySetIdAsync(id);
 
             if (this.Test == null)
             {
-                await _testService.CreateTestFromSetAsync(id);
+                await _testService.CreateTestFromSetAsync((int)id);
                 this.Test = await _testService.GetOpenTestBySetIdAsync(id);
 
                 if (this.Test == null)

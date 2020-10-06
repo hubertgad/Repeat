@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
+using Repeat.Infrastucture.Exceptions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace Repeat.Infrastructure.Services
             _currentUserId = user.UserId;
         }
 
-        public async Task AddTestAsync(Test model)
+        private async Task AddTestAsync(Test model)
         {
             _context.Tests.Add(model);
             await _context.SaveChangesAsync();
@@ -34,13 +35,21 @@ namespace Repeat.Infrastructure.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task CreateTestFromSetAsync(int? setId)
+        private async Task<bool> HasUserAccessAsync(int setId)
         {
-            if (setId == null) return;
+            var isOwned = await _context.Sets.AnyAsync(q => q.Id == setId && q.OwnerId == _currentUserId);
+            var isShared = await _context.Shares.AnyAsync(q => q.SetId == setId && q.UserId == _currentUserId);
+            return (isOwned || isShared);
+        }
+
+        public async Task CreateTestFromSetAsync(int setId)
+        {
+            if (!await _context.Sets.AnyAsync(q => q.Id == setId)) return;
+            if (!await HasUserAccessAsync(setId)) throw new AccessDeniedException();
 
             var test = new Test
             {
-                SetId = (int)setId,
+                SetId = setId,
                 Set = await _context.Sets.FirstOrDefaultAsync(q => q.Id == setId),
                 UserId = _currentUserId,
                 IsCompleted = false,
@@ -48,7 +57,7 @@ namespace Repeat.Infrastructure.Services
             };
 
             var questions = await _context.Questions
-                .Where(q => q.QuestionSets.Any(w => w.SetId == (int)setId))
+                .Where(q => q.QuestionSets.Any(w => w.SetId == setId))
                 .Include(q => q.Answers)
                 .ToListAsync();
 

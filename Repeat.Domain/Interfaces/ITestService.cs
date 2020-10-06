@@ -6,8 +6,7 @@ namespace Repeat.Domain.Interfaces
 {
     public interface ITestService
     {
-        Task AddTestAsync(Test model);
-        Task CreateTestFromSetAsync(int? setId);
+        Task CreateTestFromSetAsync(int setId);
         Task UpdateTestAsync(Test model);
         Task UpdateChoosenAnswersAsync(IList<ChoosenAnswer> choosenAnswers);
         Task MoveToPreviousQuestion(int? setId);
