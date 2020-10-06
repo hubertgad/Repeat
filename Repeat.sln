@@ -12,7 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.a11yrc = .a11yrc
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
-		.github\workflows\coverage.yml = .github\workflows\coverage.yml
 		.github\workflows\dotnet-core.yml = .github\workflows\dotnet-core.yml
 		README.md = README.md
 		.github\workflows\sonar.yml = .github\workflows\sonar.yml
