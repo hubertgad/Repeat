@@ -18,7 +18,7 @@ namespace Repeat.Infrastucture.Exceptions
         public NotValidOwnerIdException(string message, Exception innerException) : base(message, innerException)
         {
         }
-        
+
         protected NotValidOwnerIdException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {

@@ -176,7 +176,7 @@ namespace Repeat.Infrastructure.Tests.Services
             var set = _setUpContext.Sets.Find(3);
             set.Name = "New name";
 
-            Assert.That(async () => await _setService.UpdateSetAsync(set), 
+            Assert.That(async () => await _setService.UpdateSetAsync(set),
                 Throws.Exception.TypeOf<NotValidOwnerIdException>());
         }
 
