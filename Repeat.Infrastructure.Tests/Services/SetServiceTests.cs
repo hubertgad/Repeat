@@ -19,18 +19,19 @@ namespace Repeat.Infrastructure.Tests.Services
         {
             base.SetUp();
 
-            _setService = new SetService(_context, _currentUserService);
+            _setService = new SetService(_serviceContext, _currentUserService);
         }
 
         [Test]
         public async Task AddSetAsync_WhenCalled_ShouldSaveSetInDb()
         {
+            var initialCount = _setUpContext.Sets.Count();
             var set = new Set { Id = 5 };
 
             await _setService.AddSetAsync(set);
 
-            var savedSet = _context.Sets.First(q => q.Id == set.Id);
-            Assert.That(savedSet, Is.EqualTo(set));
+            var currentCount = _context.Sets.Count();
+            Assert.That(currentCount, Is.GreaterThan(initialCount));
         }
 
         [Test]

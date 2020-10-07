@@ -12,6 +12,7 @@ namespace Repeat.Infrastructure.Services
     {
         protected ApplicationDbContext _setUpContext;
         protected ApplicationDbContext _context;
+        protected ApplicationDbContext _serviceContext;
         protected ICurrentUserService _currentUserService;
 
         [SetUp]
@@ -25,6 +26,7 @@ namespace Repeat.Infrastructure.Services
 
             _setUpContext = new ApplicationDbContext(options);
             _context = new ApplicationDbContext(options);
+            _serviceContext = new ApplicationDbContext(options);
 
             _setUpContext.Database.EnsureCreated();
 
@@ -38,6 +40,7 @@ namespace Repeat.Infrastructure.Services
 
             _setUpContext.Dispose();
             _context.Dispose();
+            _serviceContext.Dispose();
         }
 
         private void SeedTestDb()
@@ -86,28 +89,6 @@ namespace Repeat.Infrastructure.Services
                 }
             };
 
-            var tests = new List<Test>()
-            {
-                new Test
-                {
-                    Id = 1,
-                    SetId = 1,
-                    CurrentQuestionId = 0,
-                    IsCompleted = false,
-                    UserId = _currentUserService.UserId,
-                    TestQuestions = new List<TestQuestion>()
-                },
-                new Test
-                {
-                    Id = 2,
-                    SetId = 2,
-                    CurrentQuestionId = 0,
-                    IsCompleted = false,
-                    UserId = "SecondUserId",
-                    TestQuestions = new List<TestQuestion>()
-                }
-            };
-
             var questions = new List<Question>
             {
                 new Question
@@ -119,8 +100,8 @@ namespace Repeat.Infrastructure.Services
                     CategoryId = 1,
                     Answers = new List<Answer>
                     {
-                        new Answer { QuestionId = 1, AnswerText = "Answer 1-1" },
-                        new Answer { QuestionId = 1, AnswerText = "Answer 1-2" }
+                        new Answer { Id = 1, QuestionId = 1, AnswerText = "Answer 1-1" },
+                        new Answer { Id = 2, QuestionId = 1, AnswerText = "Answer 1-2" }
                     },
                     QuestionSets = new HashSet<QuestionSet>
                     {
@@ -137,8 +118,8 @@ namespace Repeat.Infrastructure.Services
                     CategoryId = 2,
                     Answers = new List<Answer>
                     {
-                        new Answer { QuestionId = 2, AnswerText = "Answer 2-1" },
-                        new Answer { QuestionId = 2, AnswerText = "Answer 2-2" }
+                        new Answer { Id = 3, QuestionId = 2, AnswerText = "Answer 2-1" },
+                        new Answer { Id = 4, QuestionId = 2, AnswerText = "Answer 2-2" }
                     },
                     QuestionSets = new HashSet<QuestionSet>
                     {
@@ -154,13 +135,61 @@ namespace Repeat.Infrastructure.Services
                     CategoryId = 2,
                     Answers = new List<Answer>
                     {
-                        new Answer { QuestionId = 3, AnswerText = "Answer 3-1" },
-                        new Answer { QuestionId = 3, AnswerText = "Answer 3-2" }
+                        new Answer { Id = 5, QuestionId = 3, AnswerText = "Answer 3-1" },
+                        new Answer { Id = 6, QuestionId = 3, AnswerText = "Answer 3-2" }
                     },
                     QuestionSets = new HashSet<QuestionSet>
                     {
                         new QuestionSet { QuestionId = 3, SetId = 3 }
                     }
+                }
+            };
+
+            var tests = new List<Test>()
+            {
+                new Test
+                {
+                    Id = 1,
+                    SetId = 1,
+                    CurrentQuestionId = 1,
+                    IsCompleted = false,
+                    UserId = _currentUserService.UserId,
+                    TestQuestions = new List<TestQuestion>
+                    {
+                        new TestQuestion
+                        {
+                            QuestionId = 1,
+                            TestId = 1,
+                            ChoosenAnswers = new List<ChoosenAnswer>
+                            {
+                                new ChoosenAnswer
+                                {
+                                    Id = 1,
+                                    AnswerId = 1,
+                                    QuestionId = 1,
+                                    TestId = 1,
+                                    GivenAnswer = false
+                                },
+                                new ChoosenAnswer
+                                {
+                                    Id = 2,
+                                    AnswerId = 2,
+                                    QuestionId = 1,
+                                    TestId = 1,
+                                    GivenAnswer = false
+                                }
+                            }
+                        }
+                    }
+                },
+                new Test
+                {
+                    Id = 2,
+                    SetId = 2,
+                    CurrentQuestionId = 0,
+                    IsCompleted = false,
+                    UserId = "SecondUserId",
+                    TestQuestions = new List<TestQuestion>()
                 }
             };
 
@@ -170,9 +199,9 @@ namespace Repeat.Infrastructure.Services
 
             _setUpContext.Sets.AddRange(sets);
 
-            _setUpContext.Tests.AddRange(tests);
-
             _setUpContext.Questions.AddRange(questions);
+
+            _setUpContext.Tests.AddRange(tests);
 
             _setUpContext.SaveChanges();
         }

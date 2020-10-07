@@ -17,18 +17,19 @@ namespace Repeat.Infrastructure.Tests.Services
         {
             base.SetUp();
 
-            _questionService = new QuestionService(_context, _currentUserService);
+            _questionService = new QuestionService(_serviceContext, _currentUserService);
         }
 
         [Test]
         public async Task AddQuestionAsync_WhenCalled_ShouldSaveQuestionInDb()
         {
+            var initialCount = _setUpContext.Questions.Count();
             var question = new Question();
 
             await _questionService.AddQuestionAsync(question);
 
-            var savedQuestion = _context.Questions.First(q => q == question);
-            Assert.That(savedQuestion, Is.EqualTo(question));
+            var currentCount = _context.Questions.Count();
+            Assert.That(currentCount, Is.GreaterThan(initialCount));
         }
 
         [Test]

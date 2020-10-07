@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
 using Repeat.Domain.Interfaces;
 using Repeat.Infrastructure.Services;
 using Repeat.Infrastucture.Exceptions;
@@ -17,7 +18,7 @@ namespace Repeat.Infrastructure.Tests.Services
         {
             base.SetUp();
 
-            _testService = new TestService(_context, _currentUserService);
+            _testService = new TestService(_serviceContext, _currentUserService);
         }
 
         [Test]
@@ -59,6 +60,26 @@ namespace Repeat.Infrastructure.Tests.Services
             test.IsCompleted = true;
 
             Assert.That(async () => await _testService.UpdateTestAsync(test),
+                Throws.Exception.TypeOf<AccessDeniedException>());
+        }
+
+        [Test]
+        public async Task UpdateChoosenAnswersAsync_WhenCalled_ShouldUpdateChoosenAnswersInDbAsync()
+        {
+            var choosenAnwers = await _setUpContext.ChoosenAnswers.ToListAsync();
+            Assert.That(choosenAnwers.FirstOrDefault().GivenAnswer, Is.False);
+            choosenAnwers.FirstOrDefault().GivenAnswer = true;
+
+            await _testService.UpdateChoosenAnswersAsync(choosenAnwers);
+
+            var currentChoosenAnswers = await _context.ChoosenAnswers.ToListAsync();
+            Assert.That(currentChoosenAnswers.FirstOrDefault().GivenAnswer, Is.True);
+        }
+
+        [Test]
+        public void MoveToPreviousQuestion_NotSharedToUser_ThrowAccessDeniedEception()
+        {
+            Assert.That(async () => await _testService.MoveToPreviousQuestion(3),
                 Throws.Exception.TypeOf<AccessDeniedException>());
         }
     }

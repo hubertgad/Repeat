@@ -18,7 +18,7 @@ namespace Repeat.Infrastructure.Tests.Services
         {
             base.SetUp();
 
-            _categoryService = new CategoryService(_context, _currentUserService);
+            _categoryService = new CategoryService(_serviceContext, _currentUserService);
         }
 
         [Test]
@@ -30,7 +30,6 @@ namespace Repeat.Infrastructure.Tests.Services
             await _categoryService.AddCategoryAsync(category);
 
             var savedCategory = _context.Categories.First(q => q.Id == category.Id);
-            Assert.That(savedCategory, Is.EqualTo(category));
             Assert.That(savedCategory.Name, Is.EqualTo(name));
         }
 
