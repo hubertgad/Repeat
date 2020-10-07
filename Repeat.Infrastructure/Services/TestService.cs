@@ -114,8 +114,10 @@ namespace Repeat.Infrastructure.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task MoveToPreviousQuestion(int? setId)
+        public async Task MoveToPreviousQuestion(int setId)
         {
+            if (!await HasUserAccessAsync(setId)) throw new AccessDeniedException();
+
             var test = _context.Tests
                 .FirstOrDefault(q => q.SetId == setId && !q.IsCompleted && q.UserId == _currentUserId);
 
@@ -126,8 +128,10 @@ namespace Repeat.Infrastructure.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task MoveToNextQuestion(int? setId)
+        public async Task MoveToNextQuestion(int setId)
         {
+            if (!await HasUserAccessAsync(setId)) throw new AccessDeniedException();
+
             var test = _context.Tests
                 .FirstOrDefault(q => q.SetId == setId && !q.IsCompleted && q.UserId == _currentUserId);
 
@@ -138,8 +142,10 @@ namespace Repeat.Infrastructure.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task FinishTest(int? setId)
+        public async Task FinishTest(int setId)
         {
+            if (!await HasUserAccessAsync(setId)) throw new AccessDeniedException();
+
             var test = _context.Tests
                 .FirstOrDefault(q => q.SetId == setId && !q.IsCompleted && q.UserId == _currentUserId);
 
@@ -148,7 +154,7 @@ namespace Repeat.Infrastructure.Services
             await _context.SaveChangesAsync();
         }
 
-        public Task<Test> GetOpenTestBySetIdAsync(int? setId)
+        public Task<Test> GetOpenTestBySetIdAsync(int setId)
         {
             return _context.Tests
                 .Where(q => q.UserId == _currentUserId && q.SetId == setId && !q.IsCompleted)

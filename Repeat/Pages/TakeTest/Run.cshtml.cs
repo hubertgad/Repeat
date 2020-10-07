@@ -22,18 +22,18 @@ namespace Repeat
         }
         public Test Test { get; set; }
         public int CurrentQuestionIndex { get; set; }
-        [BindProperty] public IList<ChoosenAnswer> ChoosenAnswers { get; set; }
+        [BindProperty] public List<ChoosenAnswer> ChoosenAnswers { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null) return NotFound();
 
-            this.Test = await _testService.GetOpenTestBySetIdAsync(id);
+            this.Test = await _testService.GetOpenTestBySetIdAsync((int)id);
 
             if (this.Test == null)
             {
                 await _testService.CreateTestFromSetAsync((int)id);
-                this.Test = await _testService.GetOpenTestBySetIdAsync(id);
+                this.Test = await _testService.GetOpenTestBySetIdAsync((int)id);
 
                 if (this.Test == null)
                 {
@@ -51,22 +51,28 @@ namespace Repeat
 
         public async Task<IActionResult> OnPostFinishAsync(int? id)
         {
-            return await OnPostCommonAsync(id, () => _testService.FinishTest(id));
+            if (id == null) return NotFound();
+
+            return await OnPostCommonAsync((int)id, () => _testService.FinishTest((int)id));
         }
 
         public async Task<IActionResult> OnPostPreviousAsync(int? id)
         {
-            return await OnPostCommonAsync(id, () => _testService.MoveToPreviousQuestion(id));
+            if (id == null) return NotFound();
+
+            return await OnPostCommonAsync((int)id, () => _testService.MoveToPreviousQuestion((int)id));
         }
 
 
         public async Task<IActionResult> OnPostNextAsync(int? id)
         {
-            return await OnPostCommonAsync(id, () => _testService.MoveToNextQuestion(id));
+            if (id == null) return NotFound();
+
+            return await OnPostCommonAsync((int)id, () => _testService.MoveToNextQuestion((int)id));
         }
 
         [NonHandler]
-        public async Task<IActionResult> OnPostCommonAsync(int? id, Func<Task> task)
+        private async Task<IActionResult> OnPostCommonAsync(int id, Func<Task> task)
         {
             if (!ModelState.IsValid) return Page();
 
