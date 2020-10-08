@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using Repeat.Domain.Interfaces;
+using Repeat.Domain.Models;
 using Repeat.Infrastructure.Services;
 using Repeat.Infrastucture.Exceptions;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task CreateTestFromSetAsync_WhenCalled_ShouldSaveTestInDbAsync()
+        public async Task CreateTestFromSetAsync_WhenCalled_SaveTestInDbAsync()
         {
             var initialTestCount = _setUpContext.Tests.Count();
 
@@ -40,15 +41,15 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task UpdateTestAsync_WhenCalled_ShouldUpdateTestInDbAsync()
+        public async Task UpdateTestAsync_WhenCalled_UpdateTestInDbAsync()
         {
-            var test = _setUpContext.Tests.Find(1);
+            var test = await _setUpContext.Tests.FindAsync(3);
             Assert.That(!test.IsCompleted);
             test.IsCompleted = true;
 
             await _testService.UpdateTestAsync(test);
 
-            var testInDb = _context.Tests.Find(1);
+            var testInDb = await _context.Tests.FindAsync(3);
             Assert.That(testInDb.IsCompleted);
         }
 
@@ -64,7 +65,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task UpdateChoosenAnswersAsync_WhenCalled_ShouldUpdateChoosenAnswersInDbAsync()
+        public async Task UpdateChoosenAnswersAsync_WhenCalled_UpdateChoosenAnswersInDbAsync()
         {
             var choosenAnwers = await _setUpContext.ChoosenAnswers.ToListAsync();
             Assert.That(choosenAnwers.FirstOrDefault().GivenAnswer, Is.False);
@@ -77,10 +78,138 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public void MoveToPreviousQuestion_NotSharedToUser_ThrowAccessDeniedEception()
+        public void MoveToPreviousQuestionAsync_NotSharedToUser_ThrowAccessDeniedEception()
         {
-            Assert.That(async () => await _testService.MoveToPreviousQuestion(3),
+            Assert.That(async () => await _testService.MoveToPreviousQuestionAsync(3),
                 Throws.Exception.TypeOf<AccessDeniedException>());
+        }
+
+        [Test]
+        public async Task MoveToPreviousQuestionAsync_WhenCalled_ChangeCurrentQuestionIdToPreviousAsync()
+        {
+            var initialQuestionId = _setUpContext.Tests
+                .LastOrDefault(q => q.SetId == 1 && q.UserId == _currentUserService.UserId && !q.IsCompleted)
+                .CurrentQuestionId;
+
+            await _testService.MoveToPreviousQuestionAsync(1);
+
+            var currentQuestionId =  _context.Tests
+                .LastOrDefault(q => q.SetId == 1 && q.UserId == _currentUserService.UserId && !q.IsCompleted)
+                .CurrentQuestionId;
+            Assert.That(currentQuestionId, Is.LessThan(initialQuestionId));
+        }
+
+        [Test]
+        public void MoveToNextQuestionAsync_NotSharedToUser_ThrowAccessDeniedEception()
+        {
+            Assert.That(async () => await _testService.MoveToNextQuestionAsync(3),
+                Throws.Exception.TypeOf<AccessDeniedException>());
+        }
+
+        [Test]
+        public async Task MoveToNextQuestionAsync_WhenCalled_ChangeCurrentQuestionIdToNextAsync()
+        {
+            var initialQuestionId = _setUpContext.Tests
+                .LastOrDefault(q => q.SetId == 1 && q.UserId == _currentUserService.UserId && !q.IsCompleted)
+                .CurrentQuestionId;
+
+            await _testService.MoveToNextQuestionAsync(1);
+
+            var currentQuestionId = _context.Tests
+                .LastOrDefault(q => q.SetId == 1 && q.UserId == _currentUserService.UserId && !q.IsCompleted)
+                .CurrentQuestionId;
+            Assert.That(currentQuestionId, Is.GreaterThan(initialQuestionId));
+        }
+
+        [Test]
+        public void FinishTestAsync_NotSharedToUser_ThrowAccessDeniedEception()
+        {
+            Assert.That(async () => await _testService.FinishTestAsync(3),
+                Throws.Exception.TypeOf<AccessDeniedException>());
+        }
+
+        [Test]
+        public async Task FinishTestAsync_WhenCalled_ChangeIsCompletedToTrueInDbAsync()
+        {
+            var initial = _setUpContext.Tests
+                .LastOrDefault(q => q.SetId == 1 && q.UserId == _currentUserService.UserId && !q.IsCompleted);
+            Assert.That(initial.IsCompleted, Is.False);
+
+            await _testService.FinishTestAsync(1);
+
+            var current = _context.Tests
+                .LastOrDefault(q => q.SetId == 1 && q.UserId == _currentUserService.UserId && q.IsCompleted);
+            Assert.That(initial.Id, Is.EqualTo(current.Id));
+            Assert.That(current.IsCompleted, Is.True);
+        }
+
+        [Test]
+        public async Task GetOpenedTestByIdAsync_WhenCalled_GetListOfTestsAsync()
+        {
+            var test = await _testService.GetOpenTestBySetIdAsync(1);
+
+            Assert.That(test, Is.TypeOf<Test>());
+        }
+
+        [Test]
+        public async Task GetOpenedTestByIdAsync_WhenCalled_ContainQuestionsWithAnswersAsync()
+        {
+            var test = await _testService.GetOpenTestBySetIdAsync(1);
+
+            Assert.That(test.TestQuestions.FirstOrDefault().Question.Answers, 
+                Has.All.TypeOf<Answer>());
+        }
+
+        [Test]
+        public async Task GetOpenedTestByIdAsync_WhenCalled_ContainQuestionsWithPictureAsync()
+        {
+            var test = await _testService.GetOpenTestBySetIdAsync(1);
+
+            Assert.That(test.TestQuestions.FirstOrDefault().Question.Picture.Data, 
+                Is.TypeOf<byte[]>());
+        }
+
+        [Test]
+        public async Task GetLastFinishedTestBySetIdAsync_WhenCalled_ReturnTestAsync()
+        {
+            var test = await _testService.GetLastFinishedTestBySetIdAsync(1);
+
+            Assert.That(test, Is.TypeOf<Test>());
+        }
+
+        [Test]
+        public async Task GetLastFinishedTestBySetIdAsync_WhenCalled_ContainQuestionsAndAnswersAsync()
+        {
+            var test = await _testService.GetLastFinishedTestBySetIdAsync(1);
+
+            Assert.That(test.TestQuestions.FirstOrDefault().Question.Answers,
+                Has.All.TypeOf<Answer>());
+        }
+
+        [Test]
+        public async Task GetLastFinishedTestBySetIdAsync_WhenCalled_ContainQuestionsWithPictureAsync()
+        {
+            var test = await _testService.GetLastFinishedTestBySetIdAsync(1);
+
+            Assert.That(test.TestQuestions.FirstOrDefault().Question.Picture.Data,
+                Is.TypeOf<byte[]>());
+        }
+
+        [Test]
+        public async Task GetLastFinishedTestBySetIdAsync_WhenCalled_ContainChoosenAnswersAsync()
+        {
+            var test = await _testService.GetLastFinishedTestBySetIdAsync(1);
+
+            Assert.That(test.TestQuestions.FirstOrDefault().ChoosenAnswers,
+                Has.All.TypeOf<ChoosenAnswer>());
+        }
+
+        [Test]
+        public async Task GetLastFinishedTestBySetIdAsync_WhenCalled_ContainSetAsync()
+        {
+            var test = await _testService.GetLastFinishedTestBySetIdAsync(1);
+
+            Assert.That(test.Set, Is.TypeOf<Set>());
         }
     }
 }
