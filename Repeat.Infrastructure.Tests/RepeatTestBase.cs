@@ -151,8 +151,8 @@ namespace Repeat.Infrastructure.Services
                 {
                     Id = 1,
                     SetId = 1,
-                    CurrentQuestionId = 1,
-                    IsCompleted = false,
+                    CurrentQuestionId = 2,
+                    IsCompleted = true,
                     UserId = _currentUserService.UserId,
                     TestQuestions = new List<TestQuestion>
                     {
@@ -179,6 +179,18 @@ namespace Repeat.Infrastructure.Services
                                     GivenAnswer = false
                                 }
                             }
+                        },
+                        new TestQuestion
+                        {
+                            QuestionId = 2,
+                            TestId = 1,
+                            ChoosenAnswers = new List<ChoosenAnswer>()
+                        },
+                        new TestQuestion
+                        {
+                            QuestionId = 3,
+                            TestId = 1,
+                            ChoosenAnswers = new List<ChoosenAnswer>()
                         }
                     }
                 },
@@ -190,6 +202,53 @@ namespace Repeat.Infrastructure.Services
                     IsCompleted = false,
                     UserId = "SecondUserId",
                     TestQuestions = new List<TestQuestion>()
+                },
+                new Test
+                {
+                    Id = 3,
+                    SetId = 1,
+                    CurrentQuestionId = 2,
+                    IsCompleted = false,
+                    UserId = _currentUserService.UserId,
+                    TestQuestions = new List<TestQuestion>
+                    {
+                        new TestQuestion
+                        {
+                            QuestionId = 1,
+                            TestId = 3,
+                            ChoosenAnswers = new List<ChoosenAnswer>
+                            {
+                                new ChoosenAnswer
+                                {
+                                    Id = 3,
+                                    AnswerId = 1,
+                                    QuestionId = 1,
+                                    TestId = 3,
+                                    GivenAnswer = false
+                                },
+                                new ChoosenAnswer
+                                {
+                                    Id = 4,
+                                    AnswerId = 2,
+                                    QuestionId = 1,
+                                    TestId = 3,
+                                    GivenAnswer = false
+                                }
+                            }
+                        },
+                        new TestQuestion
+                        {
+                            QuestionId = 2,
+                            TestId = 3,
+                            ChoosenAnswers = new List<ChoosenAnswer>()
+                        },
+                        new TestQuestion
+                        {
+                            QuestionId = 3,
+                            TestId = 3,
+                            ChoosenAnswers = new List<ChoosenAnswer>()
+                        }
+                    }
                 }
             };
 
