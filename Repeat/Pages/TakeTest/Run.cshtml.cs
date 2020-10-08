@@ -53,14 +53,14 @@ namespace Repeat
         {
             if (id == null) return NotFound();
 
-            return await OnPostCommonAsync((int)id, () => _testService.FinishTest((int)id));
+            return await OnPostCommonAsync((int)id, () => _testService.FinishTestAsync((int)id));
         }
 
         public async Task<IActionResult> OnPostPreviousAsync(int? id)
         {
             if (id == null) return NotFound();
 
-            return await OnPostCommonAsync((int)id, () => _testService.MoveToPreviousQuestion((int)id));
+            return await OnPostCommonAsync((int)id, () => _testService.MoveToPreviousQuestionAsync((int)id));
         }
 
 
@@ -68,7 +68,7 @@ namespace Repeat
         {
             if (id == null) return NotFound();
 
-            return await OnPostCommonAsync((int)id, () => _testService.MoveToNextQuestion((int)id));
+            return await OnPostCommonAsync((int)id, () => _testService.MoveToNextQuestionAsync((int)id));
         }
 
         [NonHandler]
