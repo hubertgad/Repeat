@@ -114,12 +114,13 @@ namespace Repeat.Infrastructure.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task MoveToPreviousQuestion(int setId)
+        public async Task MoveToPreviousQuestionAsync(int setId)
         {
             if (!await HasUserAccessAsync(setId)) throw new AccessDeniedException();
 
             var test = _context.Tests
-                .FirstOrDefault(q => q.SetId == setId && !q.IsCompleted && q.UserId == _currentUserId);
+                .Include(q => q.TestQuestions)
+                .LastOrDefault(q => q.SetId == setId && !q.IsCompleted && q.UserId == _currentUserId);
 
             var currentQuestionIndex = test.TestQuestions.IndexOf(
                 test.TestQuestions.FirstOrDefault(q => q.QuestionId == test.CurrentQuestionId));
@@ -128,11 +129,12 @@ namespace Repeat.Infrastructure.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task MoveToNextQuestion(int setId)
+        public async Task MoveToNextQuestionAsync(int setId)
         {
             if (!await HasUserAccessAsync(setId)) throw new AccessDeniedException();
 
             var test = _context.Tests
+                .Include(q => q.TestQuestions)
                 .FirstOrDefault(q => q.SetId == setId && !q.IsCompleted && q.UserId == _currentUserId);
 
             var currentQuestionIndex = test.TestQuestions.IndexOf(
@@ -142,7 +144,7 @@ namespace Repeat.Infrastructure.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task FinishTest(int setId)
+        public async Task FinishTestAsync(int setId)
         {
             if (!await HasUserAccessAsync(setId)) throw new AccessDeniedException();
 
@@ -167,9 +169,9 @@ namespace Repeat.Infrastructure.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<Test> GetClosedTestBySetIdAsync(int? setId)
+        public Task<Test> GetLastFinishedTestBySetIdAsync(int? setId)
         {
-            var tests = await _context.Tests
+            return _context.Tests
                 .Where(q => q.UserId == _currentUserId && q.SetId == setId && q.IsCompleted)
                 .Include(q => q.TestQuestions)
                     .ThenInclude(q => q.Question)
@@ -180,9 +182,7 @@ namespace Repeat.Infrastructure.Services
                     .ThenInclude(q => q.Question)
                     .ThenInclude(q => q.Picture)
                 .Include(q => q.Set)
-                .ToListAsync();
-
-            return tests.LastOrDefault();
+                .LastOrDefaultAsync();
         }
 
         public Task<List<ChoosenAnswer>> GetChoosenAnswersAsync(int? testId, int? questionId)
