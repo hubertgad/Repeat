@@ -34,7 +34,7 @@ namespace Repeat.Pages.TakeTest
                 return NotFound();
             }
 
-            this.Test = await _testService.GetLastFinishedTestBySetIdAsync(id);
+            this.Test = await _testService.GetLastFinishedTestBySetIdAsync((int)id);
 
             if (this.Test == null)
             {

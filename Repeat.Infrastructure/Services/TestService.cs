@@ -169,7 +169,7 @@ namespace Repeat.Infrastructure.Services
                 .FirstOrDefaultAsync();
         }
 
-        public Task<Test> GetLastFinishedTestBySetIdAsync(int? setId)
+        public Task<Test> GetLastFinishedTestBySetIdAsync(int setId)
         {
             return _context.Tests
                 .Where(q => q.UserId == _currentUserId && q.SetId == setId && q.IsCompleted)
@@ -185,7 +185,7 @@ namespace Repeat.Infrastructure.Services
                 .LastOrDefaultAsync();
         }
 
-        public Task<List<ChoosenAnswer>> GetChoosenAnswersAsync(int? testId, int? questionId)
+        public Task<List<ChoosenAnswer>> GetChoosenAnswersAsync(int testId, int questionId)
         {
             return _context.ChoosenAnswers
                 .Where(q => q.TestId == testId && q.QuestionId == questionId)
