@@ -27,7 +27,7 @@ namespace Repeat
                 return NotFound();
             }
 
-            this.Set = await _setService.GetSetByIdAsync(id);
+            this.Set = await _setService.GetSetByIdAsync((int)id);
 
             if (this.Set == null)
             {

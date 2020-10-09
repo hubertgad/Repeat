@@ -12,7 +12,7 @@ namespace Repeat.Domain.Interfaces
         Task RemoveQuestionFromSetAsync(QuestionSet model);
         Task RemoveShareAsync(Share model);
         Task UpdateSetAsync(Set model);
-        Task<Set> GetSetByIdAsync(int? id);
+        Task<Set> GetSetByIdAsync(int id);
         Task<List<Set>> GetSetsForCurrentUserAsync();
     }
 }

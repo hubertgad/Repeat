@@ -36,7 +36,7 @@ namespace Repeat.Infrastructure.Services
 
             var set = await _context.Sets.FindAsync(setId);
 
-            if (set.OwnerId != _currentUserId) throw new NotValidOwnerIdException();
+            if (set.OwnerId != _currentUserId) throw new AccessDeniedException();
 
             if (set.OwnerId == user.Id) return;
 
@@ -54,7 +54,7 @@ namespace Repeat.Infrastructure.Services
 
         public async Task RemoveSetAsync(Set model)
         {
-            if (model.OwnerId != _currentUserId) throw new NotValidOwnerIdException();
+            if (model.OwnerId != _currentUserId) throw new AccessDeniedException();
 
             var tests = _context.Tests.Where(q => q.SetId == model.Id);
             _context.Tests.RemoveRange(tests);
@@ -66,7 +66,7 @@ namespace Repeat.Infrastructure.Services
 
         public async Task RemoveQuestionFromSetAsync(QuestionSet model)
         {
-            if (model.Set.OwnerId != _currentUserId) throw new NotValidOwnerIdException();
+            if (model.Set.OwnerId != _currentUserId) throw new AccessDeniedException();
 
             _context.QuestionSets.Remove(model);
 
@@ -76,7 +76,7 @@ namespace Repeat.Infrastructure.Services
         public async Task RemoveShareAsync(Share model)
         {
             model.Set = _context.Sets.Find(model.SetId);
-            if (model.Set.OwnerId != _currentUserId) throw new NotValidOwnerIdException();
+            if (model.Set.OwnerId != _currentUserId) throw new AccessDeniedException();
 
             _context.Shares.Remove(model);
 
@@ -85,14 +85,14 @@ namespace Repeat.Infrastructure.Services
 
         public Task UpdateSetAsync(Set model)
         {
-            if (model.OwnerId != _currentUserId) throw new NotValidOwnerIdException();
+            if (model.OwnerId != _currentUserId) throw new AccessDeniedException();
 
             _context.Sets.Update(model);
 
             return _context.SaveChangesAsync();
         }
 
-        public Task<Set> GetSetByIdAsync(int? id)
+        public Task<Set> GetSetByIdAsync(int id)
         {
             return _context.Sets
                 .Where(q => q.OwnerId == _currentUserId)

@@ -72,7 +72,7 @@ namespace Repeat.Infrastructure.Tests.Services
 
 
             Assert.That(async () => await _setService.AddShareAsync(5, "Third User"),
-                Throws.Exception.TypeOf<NotValidOwnerIdException>());
+                Throws.Exception.TypeOf<AccessDeniedException>());
         }
 
         [Test]
@@ -103,7 +103,7 @@ namespace Repeat.Infrastructure.Tests.Services
             _setUpContext.SaveChanges();
 
             Assert.That(async () => await _setService.RemoveSetAsync(set),
-                Throws.Exception.TypeOf<NotValidOwnerIdException>());
+                Throws.Exception.TypeOf<AccessDeniedException>());
         }
 
         [Test]
@@ -135,7 +135,7 @@ namespace Repeat.Infrastructure.Tests.Services
             var questionSet = _setUpContext.QuestionSets.Find(3, 3);
 
             Assert.That(async () => await _setService.RemoveQuestionFromSetAsync(questionSet),
-                Throws.Exception.TypeOf<NotValidOwnerIdException>());
+                Throws.Exception.TypeOf<AccessDeniedException>());
         }
 
         [Test]
@@ -156,7 +156,7 @@ namespace Repeat.Infrastructure.Tests.Services
             var share = _setUpContext.Shares.Find(3, "ThirdUserId");
 
             Assert.That(async () => await _setService.RemoveShareAsync(share),
-                Throws.Exception.TypeOf<NotValidOwnerIdException>());
+                Throws.Exception.TypeOf<AccessDeniedException>());
         }
 
         [Test]
@@ -178,7 +178,7 @@ namespace Repeat.Infrastructure.Tests.Services
             set.Name = "New name";
 
             Assert.That(async () => await _setService.UpdateSetAsync(set),
-                Throws.Exception.TypeOf<NotValidOwnerIdException>());
+                Throws.Exception.TypeOf<AccessDeniedException>());
         }
 
         [Test]
