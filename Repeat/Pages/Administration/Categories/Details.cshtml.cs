@@ -23,7 +23,12 @@ namespace Repeat.Pages.Administration.Categories
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            this.Category = await _categoryService.GetCategoryByIdAsync(id);
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            this.Category = await _categoryService.GetCategoryByIdAsync((int) id);
 
             if (this.Category == null)
             {

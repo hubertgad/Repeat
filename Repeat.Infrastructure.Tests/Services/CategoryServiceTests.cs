@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
 using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
 using Repeat.Infrastructure.Services;
@@ -22,53 +23,53 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task AddCategoryAsync_WhenCalled_ShouldSaveCategoryInDb()
+        public async Task AddCategoryAsync_WhenCalled_SaveCategoryInDbAsync()
         {
             var name = Guid.NewGuid().ToString();
             var category = new Category { Name = name };
 
             await _categoryService.AddCategoryAsync(category);
 
-            var savedCategory = _context.Categories.First(q => q.Id == category.Id);
+            var savedCategory = await _context.Categories.FirstAsync(q => q.Id == category.Id);
             Assert.That(savedCategory.Name, Is.EqualTo(name));
         }
 
         [Test]
-        public async Task AddCategoryAsync_NotValidOwnerId_ShouldCorrectId()
+        public async Task AddCategoryAsync_NotValidOwnerId_CorrectIdAsync()
         {
             var category = new Category { OwnerId = "not-valid-id" };
 
             await _categoryService.AddCategoryAsync(category);
 
-            var savedOwnerId = _context.Categories.First(q => q.Id == category.Id).OwnerId;
-            Assert.That(savedOwnerId, Is.EqualTo(_currentUserService.UserId));
+            var savedCategory = await _context.Categories.FirstAsync(q => q.Id == category.Id);
+            Assert.That(savedCategory.OwnerId, Is.EqualTo(_currentUserService.UserId));
         }
 
         [Test]
-        public async Task RemoveCategory_WhenCalled_ShouldRemoveCategoryFromDb()
+        public async Task RemoveCategory_WhenCalled_RemoveCategoryFromDbAsync()
         {
-            var category = _setUpContext.Categories.FirstOrDefault();
+            var category = await _setUpContext.Categories.FirstAsync();
             var initialCount = _setUpContext.Categories.Count();
 
             await _categoryService.RemoveCategoryAsync(category);
 
-            Assert.That(_context.Categories.Count(), Is.EqualTo(initialCount - 1));
+            Assert.That(_context.Categories.Count(), Is.LessThan(initialCount));
         }
 
         [Test]
-        public async Task UpdateCategoryAsync_WhenCalled_ShouldUpdateCategoryInDb()
+        public async Task UpdateCategoryAsync_WhenCalled_UpdateCategoryInDbAsync()
         {
             var category = _setUpContext.Categories.FirstOrDefault();
             category.Name = "New name";
 
             await _categoryService.UpdateCategoryAsync(category);
 
-            var savedName = _context.Categories.First(q => q.Id == category.Id).Name;
-            Assert.That(savedName, Is.EqualTo("New name"));
+            var savedCategory = await _context.Categories.FirstAsync(q => q.Id == category.Id);
+            Assert.That(savedCategory.Name, Is.EqualTo("New name"));
         }
 
         [Test]
-        public async Task UpdateCategoryAsync_NotValidOwnerId_ShouldCorrectId()
+        public async Task UpdateCategoryAsync_NotValidOwnerId_CorrectIdAsync()
         {
             var category = _setUpContext.Categories.FirstOrDefault();
             category.Name = "New name";
@@ -76,12 +77,12 @@ namespace Repeat.Infrastructure.Tests.Services
 
             await _categoryService.UpdateCategoryAsync(category);
 
-            var savedOwnerId = _context.Categories.First(q => q.Id == category.Id).OwnerId;
-            Assert.That(savedOwnerId, Is.EqualTo(_currentUserService.UserId));
+            var savedCategory = await _context.Categories.FirstAsync(q => q.Id == category.Id);
+            Assert.That(savedCategory.OwnerId, Is.EqualTo(_currentUserService.UserId));
         }
 
         [Test]
-        public async Task GetCategoryById_CategoryExists_ShouldReturnCategory()
+        public async Task GetCategoryById_CategoryExists_ReturnCategoryAsync()
         {
             var result = await _categoryService.GetCategoryByIdAsync(1);
 
@@ -89,7 +90,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetCategoryByIdAsync_CategoryExists_ShouldContainListOfQuestions()
+        public async Task GetCategoryByIdAsync_CategoryExists_ContainListOfQuestionsAsync()
         {
             var result = await _categoryService.GetCategoryByIdAsync(1);
 
@@ -97,7 +98,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetCategoryByIdAsync_CategoryDontExists_ShouldReturnNull()
+        public async Task GetCategoryByIdAsync_CategoryDontExists_ReturnNullAsync()
         {
             var result = await _categoryService.GetCategoryByIdAsync(-2);
 
@@ -105,7 +106,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetCategoriesForCurrentUser_WhenCalled_ShouldReturnAllCategories()
+        public async Task GetCategoriesForCurrentUser_WhenCalled_ReturnAllCategoriesAsync()
         {
             var result = await _categoryService.GetCategoriesForCurrentUserAsync();
 

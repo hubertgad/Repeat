@@ -1,7 +1,9 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
 using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
 using Repeat.Infrastructure.Services;
+using Repeat.Infrastucture.Exceptions;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,7 +23,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task AddQuestionAsync_WhenCalled_ShouldSaveQuestionInDb()
+        public async Task AddQuestionAsync_WhenCalled_SaveQuestionInDbAsync()
         {
             var initialCount = _setUpContext.Questions.Count();
             var question = new Question();
@@ -33,33 +35,35 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task AddQuestionAsync_NotValidOwnerId_ShouldCorrectId()
+        public async Task AddQuestionAsync_NotValidOwnerId_CorrectIdAsync()
         {
             var question = new Question { OwnerId = "not-valid-id" };
 
             await _questionService.AddQuestionAsync(question);
 
-            var savedOwnerId = _context.Questions.First(q => q.Id == question.Id).OwnerId;
-            Assert.That(savedOwnerId, Is.EqualTo(_currentUserService.UserId));
+            var savedQuestion = await _context.Questions
+                .FirstAsync(q => q.Id == question.Id);
+            Assert.That(savedQuestion.OwnerId, Is.EqualTo(_currentUserService.UserId));
         }
 
         [Test]
-        public async Task RemoveQuestionAsync_WhenCalled_ShouldRemoveQuestionFromDb()
+        public async Task RemoveQuestionAsync_WhenCalled_RemoveQuestionFromDbAsync()
         {
-            var question = _setUpContext.Questions.FirstOrDefault();
+            var question = await _setUpContext.Questions.FirstAsync();
             var initialCount = _setUpContext.Questions.Count();
 
             await _questionService.RemoveQuestionAsync(question);
 
             var currentCount = _context.Questions.Count();
             Assert.That(currentCount, Is.EqualTo(initialCount - 1));
-            Assert.That(() => _context.Questions.First(q => q == question), Throws.Exception);
+            Assert.That(async () => await _context.Questions.FirstAsync(q => q == question), 
+                Throws.Exception);
         }
 
         [Test]
-        public async Task RemoveQuestionAsync_WhenCalled_ShouldRemoveAssociatedQuestionSetsFromDb()
+        public async Task RemoveQuestionAsync_WhenCalled_RemoveAssociatedQuestionSetsFromDbAsync()
         {
-            var question = _setUpContext.Questions.First();
+            var question = await _setUpContext.Questions.FirstAsync();
 
             await _questionService.RemoveQuestionAsync(question);
 
@@ -70,9 +74,9 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task RemoveQuestionAsync_WhenCalled_ShouldRemoveAssociatedTestQuestionsFromDb()
+        public async Task RemoveQuestionAsync_WhenCalled_RemoveAssociatedTestQuestionsFromDbAsync()
         {
-            var question = _setUpContext.Questions.First();
+            var question = await _setUpContext.Questions.FirstAsync();
 
             await _questionService.RemoveQuestionAsync(question);
 
@@ -83,9 +87,9 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task RemoveQuestionAsync_WhenCalled_ShouldRemoveAssociatedChoosenAnswersFromDb()
+        public async Task RemoveQuestionAsync_WhenCalled_RemoveAssociatedChoosenAnswersFromDbAsync()
         {
-            var question = _setUpContext.Questions.First();
+            var question = await _setUpContext.Questions.FirstAsync();
 
             await _questionService.RemoveQuestionAsync(question);
 
@@ -95,50 +99,59 @@ namespace Repeat.Infrastructure.Tests.Services
             Assert.That(associatedChoosenAnswers, Is.Empty);
         }
 
+        [Test]
+        public async Task RemoveQuestionAsync_UserIsNotOwner_ThrowAccessDeniedExceptionAsync()
+        {
+            var question = await _setUpContext.Questions.FindAsync(3);
+
+            Assert.That(() => _questionService.RemoveQuestionAsync(question),
+                Throws.Exception.TypeOf<AccessDeniedException>());
+        }
+
         //#TODO: UpdateQuestionAsync() method tests
 
         /*
         [Test]
-        public async Task UpdateQuestionAsync_WhenCalled_ShouldUpdateQuestionInDb()
+        public async Task UpdateQuestionAsync_WhenCalled_UpdateQuestionInDb()
         {
             var question = _setUpContext.Questions.FirstOrDefault();
-            question.QuestionText = "New name";
+            question.QuestionText = "New question text";
 
             await _questionService.UpdateQuestionAsync(question, false);
 
-            var savedName = _context.Questions.First(q => q.ID == question.ID).QuestionText;
-            Assert.That(savedName, Is.EqualTo("New name"));
+            var savedQuestion = await _context.Questions.FirstAsync(q => q.Id == question.Id);
+            Assert.That(savedQuestion.QuestionText, Is.EqualTo("New question text"));
         }
 
-       
-       [Test]
-       public async Task UpdateQuestionAsync_RemovePictureIsTrue_ShouldRemovePictureFromDb()
-       {
-           var question = _setUpContext.Questions.FirstOrDefault();
-           Assert.That(question.Picture, Is.Not.Null);
-
-           await _questionService.UpdateQuestionAsync(question, true);
-
-           var savedQustion = _context.Questions.First(q => q == question);
-           Assert.That(savedQustion.Picture, Is.Null);
-       }
-
-       [Test]
-       public async Task UpdateQuestionAsync_RemovedAnswer_ShouldRemoveAnswerFromDb()
-       {
-           var question = _setUpContext.Questions.FirstOrDefault();
-           var answersCount = question.Answers.Count;
-           question.Answers.RemoveAt(0);
-
-           await _questionService.UpdateQuestionAsync(question, false);
-
-           var questionInDb = _context.Questions.First(q => q.ID == question.ID);
-           Assert.That(question.Answers.Count, Is.EqualTo(answersCount - 1));
-       }
-       */
 
         [Test]
-        public async Task GetQuestionByIdAsync_WhenCalled_ShouldReturnQuestion()
+        public async Task UpdateQuestionAsync_RemovePictureIsTrue_RemovePictureFromDb()
+        {
+            var question = _setUpContext.Questions.FirstOrDefault();
+            Assert.That(question.Picture, Is.Not.Null);
+
+            await _questionService.UpdateQuestionAsync(question, true);
+
+            var savedQustion = _context.Questions.First(q => q == question);
+            Assert.That(savedQustion.Picture, Is.Null);
+        }
+
+        [Test]
+        public async Task UpdateQuestionAsync_RemovedAnswer_RemoveAnswerFromDb()
+        {
+            var question = _setUpContext.Questions.FirstOrDefault();
+            var answersCount = question.Answers.Count;
+            question.Answers.RemoveAt(0);
+
+            await _questionService.UpdateQuestionAsync(question, false);
+
+            var questionInDb = _context.Questions.First(q => q.Id == question.Id);
+            Assert.That(question.Answers.Count, Is.EqualTo(answersCount - 1));
+        }
+        */
+
+        [Test]
+        public async Task GetQuestionByIdAsync_WhenCalled_ReturnQuestionAsync()
         {
             var question = await _questionService.GetQuestionByIdAsync(1);
 
@@ -146,7 +159,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetQuestionByIdAsync_WhenCalled_ShouldContainCategory()
+        public async Task GetQuestionByIdAsync_WhenCalled_ContainCategoryAsync()
         {
             var question = await _questionService.GetQuestionByIdAsync(1);
 
@@ -154,7 +167,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetQuestionByIdAsync_WhenCalled_ShouldContainPicture()
+        public async Task GetQuestionByIdAsync_WhenCalled_ContainPictureAsync()
         {
             var question = await _questionService.GetQuestionByIdAsync(1);
 
@@ -162,7 +175,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetQuestionByIdAsync_WhenCalled_ShouldContainSets()
+        public async Task GetQuestionByIdAsync_WhenCalled_ContainSetsAsync()
         {
             var question = await _questionService.GetQuestionByIdAsync(1);
 
@@ -170,7 +183,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetQuestionByIdAsync_WhenCalled_ShouldContainAnswers()
+        public async Task GetQuestionByIdAsync_WhenCalled_ContainAnswersAsync()
         {
             var question = await _questionService.GetQuestionByIdAsync(1);
 
@@ -178,7 +191,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetQuestionByIdAsync_WhenCalled_ShouldContainOwner()
+        public async Task GetQuestionByIdAsync_WhenCalled_ContainOwnerAsync()
         {
             var question = await _questionService.GetQuestionByIdAsync(1);
 
@@ -186,7 +199,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetQuestionListAsync_WhenCalled_ShouldReturnTwoQuestions()
+        public async Task GetQuestionListAsync_WhenCalled_ReturnTwoQuestionsAsync()
         {
             var questions = await _questionService.GetQuestionListAsync(null, null);
 
@@ -194,7 +207,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetQuestionListAsync_WhenCalled_ShouldContainQuestionSets()
+        public async Task GetQuestionListAsync_WhenCalled_ContainQuestionSetsAsync()
         {
             var questions = await _questionService.GetQuestionListAsync(null, null);
 
@@ -202,7 +215,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetQuestionListAsync_WhenCalled_ShouldContainAnswers()
+        public async Task GetQuestionListAsync_WhenCalled_ContainAnswersAsync()
         {
             var questions = await _questionService.GetQuestionListAsync(null, null);
 
@@ -210,7 +223,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetQuestionListAsync_WhenCategoryIdIsPassed_AllReturnedQuestionsShouldBelongToThisCategory()
+        public async Task GetQuestionListAsync_WhenCategoryIdIsPassed_AllReturnedQuestionsShouldBelongToThisCategoryAsync()
         {
             var questions = await _questionService.GetQuestionListAsync(1, null);
 
@@ -218,7 +231,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetQuestionListAsync_WhenSetIdIsPassed_AllReturnedQuestionsShouldBelongToThisSet()
+        public async Task GetQuestionListAsync_WhenSetIdIsPassed_AllReturnedQuestionsShouldBelongToThisSetAsync()
         {
             var questions = await _questionService.GetQuestionListAsync(null, 1);
 
@@ -226,7 +239,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetSetListAsync_WhenCalled_ShouldReturnTwoSets()
+        public async Task GetSetListAsync_WhenCalled_ReturnTwoSetsAsync()
         {
             var sets = await _questionService.GetSetListAsync();
 
@@ -234,7 +247,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetSetListAsync_WhenCalled_ShouldContainShares()
+        public async Task GetSetListAsync_WhenCalled_ContainSharesAsync()
         {
             var sets = await _questionService.GetSetListAsync();
 
@@ -242,7 +255,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetSetListAsync_WhenCalled_ShouldContainQuestionsWithCategories()
+        public async Task GetSetListAsync_WhenCalled_ContainQuestionsWithCategoriesAsync()
         {
             var sets = await _questionService.GetSetListAsync();
 
@@ -252,7 +265,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetCategoryListAsync_WhenCalled_ShouldReturnTwoCategories()
+        public async Task GetCategoryListAsync_WhenCalled_ReturnTwoCategoriesAsync()
         {
             var categories = await _questionService.GetCategoryListAsync();
 

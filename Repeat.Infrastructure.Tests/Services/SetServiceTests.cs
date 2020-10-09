@@ -23,7 +23,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task AddSetAsync_WhenCalled_ShouldSaveSetInDb()
+        public async Task AddSetAsync_WhenCalled_SaveSetInDbAsync()
         {
             var initialCount = _setUpContext.Sets.Count();
             var set = new Set { Id = 5 };
@@ -35,7 +35,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task AddSetAsync_NotValidOwnerId_ShouldCorrectId()
+        public async Task AddSetAsync_NotValidOwnerId_CorrectIdAsync()
         {
             var set = new Set { Id = 5, OwnerId = "SecondUserId" };
 
@@ -46,7 +46,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task AddShareAsync_WhenCalled_ShouldSaveShareInDb()
+        public async Task AddShareAsync_WhenCalled_SaveShareInDbAsync()
         {
             await _setService.AddShareAsync(2, "Second User");
 
@@ -56,7 +56,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task AddShareAsync_WrongUserName_ShouldNotSaveShare()
+        public async Task AddShareAsync_WrongUserName_NotSaveShareAsync()
         {
             await _setService.AddShareAsync(2, "Wrong Name");
 
@@ -76,7 +76,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task AddShareAsync_TryToShareToOwner_ShouldNotSaveShare()
+        public async Task AddShareAsync_TryToShareToOwner_NotSaveShareAsync()
         {
             await _setService.AddShareAsync(2, "User");
 
@@ -85,7 +85,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task RemoveSetAsync_WhenCalled_ShouldRemoveSetFromDb()
+        public async Task RemoveSetAsync_WhenCalled_RemoveSetFromDbAsync()
         {
             var set = _setUpContext.Sets.Find(1);
 
@@ -107,7 +107,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task RemoveSetAsync_WhenCalled_ShouldRemoveAssociatedTests()
+        public async Task RemoveSetAsync_WhenCalled_RemoveAssociatedTestsAsync()
         {
             var set = _setUpContext.Sets.Find(1);
 
@@ -118,7 +118,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task RemoveQuestionFromSetAsync_WhenCalled_ShouldRemoveQuestion()
+        public async Task RemoveQuestionFromSetAsync_WhenCalled_RemoveQuestionAsync()
         {
             var questionSet = _setUpContext.QuestionSets.Find(1, 1);
 
@@ -139,7 +139,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task RemoveShareAsync_WhenCalled_ShouldRemoveShare()
+        public async Task RemoveShareAsync_WhenCalled_RemoveShareAsync()
         {
             var share = _setUpContext.Shares.Find(1, "SecondUserId");
 
@@ -160,7 +160,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task UpdateSetAsync_WhenCalled_ShouldUpdateSet()
+        public async Task UpdateSetAsync_WhenCalled_UpdateSetAsync()
         {
             var set = _setUpContext.Sets.Find(1);
             set.Name = "New name";
@@ -182,7 +182,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetSetByIdAsync_WhenCalled_ShouldReturnSetAsync()
+        public async Task GetSetByIdAsync_WhenCalled_ReturnSetAsync()
         {
             var result = await _setService.GetSetByIdAsync(1);
 
@@ -190,7 +190,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetSetByIdAsync_WhenCalled_ShouldContainQuestionsAsync()
+        public async Task GetSetByIdAsync_WhenCalled_ContainQuestionsAsync()
         {
             var result = await _setService.GetSetByIdAsync(1);
 
@@ -198,7 +198,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetSetByIdAsync_NotValidOwnerId_ShouldReturnNullAsync()
+        public async Task GetSetByIdAsync_NotValidOwnerId_ReturnNullAsync()
         {
             var result = await _setService.GetSetByIdAsync(3);
 
@@ -206,7 +206,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetSetsForCurrentUserAsync_WhenCalled_ShouldReturnListOfSetsAsync()
+        public async Task GetSetsForCurrentUserAsync_WhenCalled_ReturnListOfSetsAsync()
         {
             var result = await _setService.GetSetsForCurrentUserAsync();
 
@@ -215,7 +215,7 @@ namespace Repeat.Infrastructure.Tests.Services
         }
 
         [Test]
-        public async Task GetSetsForCurrentUserAsync_WhenCalled_ShouldContainUserReferenceAsync()
+        public async Task GetSetsForCurrentUserAsync_WhenCalled_ContainUserReferenceAsync()
         {
             var result = await _setService.GetSetsForCurrentUserAsync();
             var share = result.FirstOrDefault().Shares.FirstOrDefault();

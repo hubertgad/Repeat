@@ -32,7 +32,7 @@ namespace Repeat.Pages.Administration.Questions
                 return NotFound();
             }
 
-            this.Question = await _questionService.GetQuestionByIdAsync(id);
+            this.Question = await _questionService.GetQuestionByIdAsync((int) id);
 
             while (answers > this.Question.Answers.Count && answers < 11)
             {

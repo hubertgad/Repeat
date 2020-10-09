@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
+using Repeat.Infrastucture.Exceptions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,6 +29,8 @@ namespace Repeat.Infrastructure.Services
 
         public async Task RemoveQuestionAsync(Question model)
         {
+            if (model.OwnerId != _currentUserId) throw new AccessDeniedException();
+
             _context.TestQuestions.RemoveRange(_context.TestQuestions.Where(q => q.QuestionId == model.Id));
             _context.ChoosenAnswers.RemoveRange(_context.ChoosenAnswers.Where(q => q.QuestionId == model.Id));
             _context.Questions.Remove(model);
@@ -37,7 +40,7 @@ namespace Repeat.Infrastructure.Services
 
         public async Task UpdateQuestionAsync(Question model, bool removePicture)
         {
-            model.OwnerId = _currentUserId;
+            if (model.OwnerId != _currentUserId) throw new AccessDeniedException();
 
             var currentQuestionSets = _context.QuestionSets.Where(q => q.QuestionId == model.Id).AsEnumerable();
             _context.QuestionSets.RemoveRange(currentQuestionSets.Except(model.QuestionSets));
@@ -57,7 +60,7 @@ namespace Repeat.Infrastructure.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Question> GetQuestionByIdAsync(int? id)
+        public async Task<Question> GetQuestionByIdAsync(int id)
         {
             var question = await _context.Questions
                 .Where(q => q.OwnerId == _currentUserId)

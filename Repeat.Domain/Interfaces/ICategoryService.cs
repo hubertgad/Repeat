@@ -9,7 +9,7 @@ namespace Repeat.Domain.Interfaces
         Task AddCategoryAsync(Category model);
         Task RemoveCategoryAsync(Category model);
         Task UpdateCategoryAsync(Category model);
-        Task<Category> GetCategoryByIdAsync(int? id);
+        Task<Category> GetCategoryByIdAsync(int id);
         Task<List<Category>> GetCategoriesForCurrentUserAsync();
     }
 }

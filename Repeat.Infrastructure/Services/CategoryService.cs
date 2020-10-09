@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Repeat.Domain.Interfaces;
 using Repeat.Domain.Models;
+using Repeat.Infrastucture.Exceptions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,6 +29,8 @@ namespace Repeat.Infrastructure.Services
 
         public Task RemoveCategoryAsync(Category model)
         {
+            if (model.OwnerId != _currentUserId) throw new AccessDeniedException();
+
             _context.Categories.Remove(model);
 
             return _context.SaveChangesAsync();
@@ -41,7 +44,7 @@ namespace Repeat.Infrastructure.Services
             return _context.SaveChangesAsync();
         }
 
-        public Task<Category> GetCategoryByIdAsync(int? id)
+        public Task<Category> GetCategoryByIdAsync(int id)
         {
             return _context.Categories
                 .Where(q => q.OwnerId == _currentUserId && q.Id == id)
