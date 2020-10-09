@@ -13,8 +13,8 @@ namespace Repeat.Domain.Interfaces
         Task MoveToNextQuestionAsync(int setId);
         Task FinishTestAsync(int setId);
         Task<Test> GetOpenTestBySetIdAsync(int setId);
-        Task<Test> GetLastFinishedTestBySetIdAsync(int? setId);
-        Task<List<ChoosenAnswer>> GetChoosenAnswersAsync(int? testId, int? questionId);
+        Task<Test> GetLastFinishedTestBySetIdAsync(int setId);
+        Task<List<ChoosenAnswer>> GetChoosenAnswersAsync(int testId, int questionId);
         Task<List<Set>> GetAvailableSetsAsync();
     }
 }

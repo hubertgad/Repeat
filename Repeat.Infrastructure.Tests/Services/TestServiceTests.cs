@@ -211,5 +211,62 @@ namespace Repeat.Infrastructure.Tests.Services
 
             Assert.That(test.Set, Is.TypeOf<Set>());
         }
+
+        [Test]
+        public async Task GetChoosenAnswersAsync_WhenCalled_ReturnListOfChoosenAnswers()
+        {
+            var choosenAnswers = await _testService.GetChoosenAnswersAsync(1, 1);
+
+            Assert.That(choosenAnswers, Has.All.TypeOf<ChoosenAnswer>());
+        }
+
+        [Test]
+        public async Task GetChoosenAnswersAsync_NotValidTestId_ReturnEmptyList()
+        {
+            var choosenAnswers = await _testService.GetChoosenAnswersAsync(-2, 1);
+
+            Assert.That(choosenAnswers, Is.Empty);
+        }
+
+        [Test]
+        public async Task GetChoosenAnswersAsync_NotValidQuestionId_ReturnEmptyList()
+        {
+            var choosenAnswers = await _testService.GetChoosenAnswersAsync(1, -2);
+
+            Assert.That(choosenAnswers, Is.Empty);
+        }
+
+        [Test]
+        public async Task GetAvailableSetsAsync_WhenCalled_ReturnListOfSets()
+        {
+            var sets = await _testService.GetAvailableSetsAsync();
+
+            Assert.That(sets, Has.All.TypeOf<Set>());
+        }
+
+        [Test]
+        public async Task GetAvailableSetsAsync_WhenCalled_ContainShares()
+        {
+            var sets = await _testService.GetAvailableSetsAsync();
+
+            Assert.That(sets.FirstOrDefault().Shares, Has.All.TypeOf<Share>());
+        }
+
+        [Test]
+        public async Task GetAvailableSetsAsync_WhenCalled_ContainQuestionsWithCategories()
+        {
+            var sets = await _testService.GetAvailableSetsAsync();
+
+            Assert.That(sets.FirstOrDefault().QuestionSets.FirstOrDefault().Question.Category, 
+                Is.TypeOf<Category>());
+        }
+
+        [Test]
+        public async Task GetAvailableSetsAsync_WhenCalled_ContainOwner()
+        {
+            var sets = await _testService.GetAvailableSetsAsync();
+
+            Assert.That(sets.FirstOrDefault().Owner, Is.TypeOf<ApplicationUser>());
+        }
     }
 }
